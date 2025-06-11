@@ -1,0 +1,31 @@
+{
+  "name": "decking-chatbot",
+  "version": "1.0.0",
+  "description": "Decking Sales Chatbot Server",
+  "main": "server.cjs",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.cjs"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.0",
+    "compromise": "^14.14.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "franc": "^6.2.0",
+    "fuse.js": "^7.1.0",
+    "helmet": "^8.1.0",
+    "jimp": "^1.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "node-nlp": "^5.0.0-alpha.5",
+    "node-record-lpcm16": "^1.0.1",
+    "openai": "^5.2.0",
+    "sentiment": "^5.0.2",
+    "sharp": "^0.34.2",
+    "socket.io": "^4.8.1",
+    "speech-to-text": "^2.9.1",
+    "tesseract.js": "^4.1.4"
+  }
+}
