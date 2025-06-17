@@ -33,5 +33,8 @@ Thumbs.db
 !PROMPT.md
 !LICENSE
 !.env
+<<<<<<< HEAD
 frontend/memory.sqlite
 frontend/logs/*.json
+=======
+>>>>>>> 5e1f009 (Wire frontend to backend API and add LLaVA route)

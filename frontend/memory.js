@@ -15,13 +15,13 @@ try {
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS messages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY,
   role TEXT NOT NULL,
   content TEXT NOT NULL,
   timestamp INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS measurements (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id INTEGER PRIMARY KEY,
   data TEXT NOT NULL,
   timestamp INTEGER NOT NULL
 );`);
@@ -32,9 +32,8 @@ CREATE TABLE IF NOT EXISTS measurements (
  * @param {string} content
  */
 function addMessage(role, content) {
- HEAD
-  const entry = { role, content, timestamp: Date.now() };
-  if (db) {
+const entry = { role, content, timestamp: Date.now() };
+if (db) {
     try {
       const stmt = db.prepare(
         'INSERT INTO messages (role, content, timestamp) VALUES (?, ?, ?)'
@@ -43,26 +42,16 @@ function addMessage(role, content) {
     } catch (err) {
       console.error('Error adding message to database:', err);
     }
-  } else {
-    inMemoryMessages.push(entry);
-=======
-  try {
-    const stmt = db.prepare(
-      'INSERT INTO messages (role, content, timestamp) VALUES (?, ?, ?)'
-    );
-    stmt.run(role, content, Date.now());
-  } catch (err) {
-    console.error('Error adding message to database:', err);
- ee194f2 (Fix npm startup and backend dependencies)
-  }
+} else {
+  inMemoryMessages.push(entry);
+}
 }
 /**
  * Adds a measurement to the database.
  * @param {any} data - The measurement data to store (will be stringified as JSON).
  */
 function addMeasurement(data) {
-  const entry = { id: Date.now(), data, timestamp: Date.now() };
-  if (db) {
+  const entry = { data, timestamp: Date.now() };
     try {
       const stmt = db.prepare('INSERT INTO measurements (data, timestamp) VALUES (?, ?)');
       stmt.run(JSON.stringify(data), entry.timestamp);
@@ -70,9 +59,7 @@ function addMeasurement(data) {
       console.error('Error adding measurement to database:', err);
       throw err;
     }
-  } else {
-    inMemoryMeasurements.push(entry);
-  }
+  inMemoryMeasurements.push(entry);
 }
 
 /**
@@ -148,10 +135,10 @@ function cleanTempFile(filePath) {
 }
 
 module.exports = {
-  addMessage,
   addMeasurement,
-  getAllMeasurements,
+  addMessage,
+  cleanTempFile,
   clearMemory,
-  getRecentMessages,
-  cleanTempFile
+  getAllMeasurements,
+  getRecentMessages
 };
