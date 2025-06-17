@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-family: 'Inter', sans-serif;
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1e1e1e;
+  --border-color: #444;
+  --input-bg: #2a2a2a;
+  --input-text: #fff;
+}
+
+[data-theme="light"] {
+  --bg-color: #f8f9fa;
+  --text-color: #212529;
+  --card-bg: #fff;
+  --border-color: #ced4da;
+  --input-bg: #fff;
+  --input-text: #212529;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+body {
+  margin: 0;
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+.navbar,
+.card-header {
+  font-weight: 600;
+}
+.card {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+#chatbox {
+  flex-grow: 1;
+  padding: 1rem;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  overflow-y: auto;
+}
+.message {
+  margin-bottom: 0.5rem;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.4s forwards;
+}
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+#chatInput,
+#sendChat,
+#fileInput {
+  font-family: var(--font-family);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+#chatInput:focus,
+#sendChat:hover,
+#fileInput:hover {
+  box-shadow: 0 0 4px var(--border-color);
+}
+#sendChat {
+  border: 1px solid var(--border-color);
+}
+#dropZone {
+  border: 2px dashed var(--border-color);
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  background-color: var(--input-bg);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+#dropZone.dragover {
+  background-color: var(--border-color);
+}
+#preview {
+  max-width: 100%;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  opacity: 0;
+  animation: fadeInUp 0.4s forwards;
+}
+
+#renderCanvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.25rem;
+}
+#blueprintContainer {
+  width: 100%;
+  min-height: 300px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--border-color);
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+#blueprintContainer.loaded {
+  opacity: 1;
+}
+#themeToggle {
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+#themeToggle:hover {
+  background-color: var(--border-color);
+  color: var(--text-color);
+}

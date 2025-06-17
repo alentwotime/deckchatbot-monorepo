@@ -1,6 +1,7 @@
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const preview = document.getElementById('preview');
+const blueprintContainer = document.getElementById('blueprintContainer');
 const spinner = document.getElementById('spinner');
 
 function handleFiles(files) {
@@ -13,6 +14,9 @@ function handleFiles(files) {
   reader.onload = e => {
     preview.src = e.target.result;
     preview.classList.remove('d-none');
+    if (blueprintContainer) {
+      blueprintContainer.classList.remove('loaded');
+    }
   };
   reader.readAsDataURL(file);
 }
