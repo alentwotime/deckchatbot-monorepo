@@ -35,13 +35,4 @@ Thumbs.db
 !.env
 !run.sh
 !run.bat
- li58ee-codex/adapt-lowe’s-deck-designer-features-to-deckchatbot
-frontend/memory.sqlite
-frontend/logs/*.json
-=======
- codex/adapt-lowe’s-deck-designer-features-to-deckchatbot
-frontend/memory.sqlite
-frontend/logs/*.json
-=======
- main
- main
+!docs/
