@@ -37,6 +37,7 @@ You are coding an interactive 3D deck visualization in a React/Three.js app. Usi
 - Includes a drag/transform control so the user can move selected vertices or objects and automatically rebuilds the deck geometry.
 - Calculates deck area and board lengths and shows them in a side panel.
 - Provides buttons to export the deck as a 2D blueprint PDF and as a 3D glTF model.
+For a high-level design, see [Real-Time 3D Deck Design Blueprint](docs/REALTIME_3D_DECK_DESIGN_BLUEPRINT.md).
 
 Write React/JavaScript code snippets (using react-three-fiber and standard Three.js classes) illustrating how to set up the scene, create and update the extruded floor geometry, handle mouse interaction for selecting and dragging parts, and generate a PDF with deck dimensions. 
 
