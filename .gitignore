@@ -32,3 +32,6 @@ Thumbs.db
 !README.md
 !PROMPT.md
 !LICENSE
+!.env
+frontend/memory.sqlite
+frontend/logs/*.json
