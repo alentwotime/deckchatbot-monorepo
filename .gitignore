@@ -33,3 +33,8 @@ Thumbs.db
 !PROMPT.md
 !LICENSE
 !.env
+ codex/adapt-lowe’s-deck-designer-features-to-deckchatbot
+frontend/memory.sqlite
+frontend/logs/*.json
+=======
+ main
