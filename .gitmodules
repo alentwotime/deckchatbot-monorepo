@@ -1,3 +1,6 @@
 [submodule "deckchatbot-monorepo/frontend/deckchatbot"]
 	path = deckchatbot-monorepo/frontend/deckchatbot
 	url = https://github.com/yourusername/deckchatbot
+[submodule "frontend/deckchatbot"]
+	path = frontend/deckchatbot
+	url = https://github.com/alentwotime/deckchatbot
