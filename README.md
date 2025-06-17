@@ -28,6 +28,17 @@ deckchatbot-monorepo/
 ---
 
 ## 🎯 Core Features
+You are coding an interactive 3D deck visualization in a React/Three.js app. Using react-three-fiber, implement a DeckScene component that:
+- Creates a Three.js scene with a PerspectiveCamera and OrbitControls.
+- Generates a deck floor by extruding a user-defined polygonal outline (use Three.js Shape and ExtrudeGeometry).
+- Adds separate meshes for deck posts, beams, and railings based on input dimensions.
+- Applies materials/textures to surfaces based on user selection.
+- Enables clicking on any deck surface to select and highlight it (using raycasting), then displays editable parameters (length, height, etc.).
+- Includes a drag/transform control so the user can move selected vertices or objects and automatically rebuilds the deck geometry.
+- Calculates deck area and board lengths and shows them in a side panel.
+- Provides buttons to export the deck as a 2D blueprint PDF and as a 3D glTF model.
+
+Write React/JavaScript code snippets (using react-three-fiber and standard Three.js classes) illustrating how to set up the scene, create and update the extruded floor geometry, handle mouse interaction for selecting and dragging parts, and generate a PDF with deck dimensions. 
 
 - **Dynamic Deck Shape Builder**: L-shape, octagon, and custom sketch input.
 - **Image Upload with AI Recognition**: OCR + vision model analysis.
