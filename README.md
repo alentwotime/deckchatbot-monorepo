@@ -78,6 +78,16 @@ npm install
 npm run dev
 ```
 
+### 4. One-Command Start
+
+If everything is installed, you can run both servers with a single command:
+
+```bash
+./run.sh
+```
+
+This script launches the FastAPI backend (`poetry run uvicorn API.api:app --reload`) and the frontend (`npm run dev`) and waits on both processes.
+
 Then open `http://localhost:3000/deck-viewer.html` in your browser to try the new 3D deck viewer built with Babylon.js. Use the toolbar to render a deck and export blueprint screenshots or a GLB model.
 
 ---
