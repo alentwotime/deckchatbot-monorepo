@@ -8,9 +8,13 @@ function calculateDeckMaterials(req, res) {
       waste = 10
     } = req.body;
 
-    if (!length || !width || length <= 0 || width <= 0) {
+    if (
+      typeof length !== 'number' || typeof width !== 'number' ||
+      typeof boardWidth !== 'number' || typeof boardLength !== 'number' ||
+      typeof waste !== 'number' || length <= 0 || width <= 0
+    ) {
       return res.status(400).json({
-        errors: [{ msg: 'Valid length and width are required' }]
+        errors: [{ msg: 'Valid numeric values for length, width, boardWidth, boardLength, and waste are required' }]
       });
     }
 
