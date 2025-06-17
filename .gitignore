@@ -33,8 +33,14 @@ Thumbs.db
 !PROMPT.md
 !LICENSE
 !.env
-<<<<<<< HEAD
+ HEAD
+ HEAD
+
+!run.sh
+!run.bat
+ li58ee-codex/adapt-lowe’s-deck-designer-features-to-deckchatbot
+ 923a711 (Add run script to start backend and frontend)
 frontend/memory.sqlite
 frontend/logs/*.json
-=======
->>>>>>> 5e1f009 (Wire frontend to backend API and add LLaVA route)
+
+ 5e1f009 (Wire frontend to backend API and add LLaVA route)
