@@ -8,6 +8,9 @@ function toFeetDecimal(feet, inches) {
 // Allow a single value like "10' 6\"" or 10.5 to be converted to feet
 function normalizeMeasurement(ft, inch, combined) {
   if (combined != null) {
+    if (typeof combined !== 'string' && typeof combined !== 'number') {
+      return null; // Reject invalid types
+    }
     const parsed = parseMeasurement(String(combined));
     if (typeof parsed === 'number' && !Number.isNaN(parsed)) {
       return parsed;
@@ -33,6 +36,16 @@ function calculateSkirting(req, res) {
     sides = 4,
     material
   } = req.body;
+
+  if (
+    (length != null && typeof length !== 'string' && typeof length !== 'number') ||
+    (width != null && typeof width !== 'string' && typeof width !== 'number') ||
+    (height != null && typeof height !== 'string' && typeof height !== 'number')
+  ) {
+    return res.status(400).json({
+      errors: [{ msg: 'Invalid input types for length, width, or height.' }]
+    });
+  }
 
   const lengthVal = normalizeMeasurement(lengthFt, lengthIn, length);
   const widthVal = normalizeMeasurement(widthFt, widthIn, width);
