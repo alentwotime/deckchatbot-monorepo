@@ -44,6 +44,10 @@ deckchatbot-monorepo/
 ```bash
 git clone https://github.com/yourusername/deckchatbot-monorepo.git
 cd deckchatbot-monorepo
+
+# create a .env with your keys
+echo "OPENAI_API_KEY=your-key" > .env
+echo "DEBUG=true" >> .env
 ```
 
 ### 2. Start the Backend
@@ -51,7 +55,8 @@ cd deckchatbot-monorepo
 ```bash
 cd backend-ai
 # (Activate your environment or install requirements)
-uvicorn api:app --reload
+poetry install
+poetry run uvicorn API.api:app --reload
 ```
 
 ### 3. Launch the Frontend
@@ -61,6 +66,8 @@ cd ../frontend
 npm install
 npm run dev
 ```
+
+Then open `http://localhost:3000/deck-viewer.html` in your browser to try the new 3D deck viewer built with Babylon.js. Use the toolbar to render a deck and export blueprint screenshots or a GLB model.
 
 ---
 
