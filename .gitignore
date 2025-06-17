@@ -33,5 +33,13 @@ Thumbs.db
 !PROMPT.md
 !LICENSE
 !.env
+ li58ee-codex/adapt-lowe’s-deck-designer-features-to-deckchatbot
 frontend/memory.sqlite
 frontend/logs/*.json
+=======
+ codex/adapt-lowe’s-deck-designer-features-to-deckchatbot
+frontend/memory.sqlite
+frontend/logs/*.json
+=======
+ main
+ main

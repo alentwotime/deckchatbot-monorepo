@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS measurements (
  * @param {string} content
  */
 function addMessage(role, content) {
+ li58ee-codex/adapt-lowe’s-deck-designer-features-to-deckchatbot
   const entry = { role, content, timestamp: Date.now() };
   if (db) {
     try {
@@ -44,6 +45,15 @@ function addMessage(role, content) {
     }
   } else {
     inMemoryMessages.push(entry);
+=======
+  try {
+    const stmt = db.prepare(
+      'INSERT INTO messages (role, content, timestamp) VALUES (?, ?, ?)'
+    );
+    stmt.run(role, content, Date.now());
+  } catch (err) {
+    console.error('Error adding message to database:', err);
+ main
   }
 }
 /**
