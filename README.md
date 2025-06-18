@@ -1,151 +1,110 @@
-# DeckChatbot Monorepo 🛠️🤖
+# 📐 DeckChatbot Monorepo
 
-Welcome to the **DeckChatbot Monorepo** — a full-stack AI-powered assistant designed to streamline the quoting, sketching, and logic validation process for deck construction projects.
+An AI-powered assistant to help salespeople analyze, measure, and visualize decks based on field drawings and customer-provided images. This tool guides users through a friendly step-by-step process that starts with chat and ends with a 3D render.
 
 ---
- codex/clean-up-project-and-verify-routing
 
-## 🧠 Scope of Work
+## 🧠 Project Scope
 
-You are reviewing a monorepo containing:
-- A Python FastAPI backend (`backend-ai/`)
-- A Node.js frontend application (`frontend/deckchatbot/` — a Git submodule)
-- Shared logic for deck estimation and AI chat
+DeckChatbot is built to assist with:
 
-Include logic, files, routes, and scripts from *all* folders — including any submodules.
+- 🖼️ Analyzing blueprint/drawing photos of decks
+- 📏 Extracting measurements (in feet and inches)
+- 🧮 Calculating square footage
+- 🧊 Generating 2D deck layouts from field sketches
+- 🏡 Rendering 3D deck visuals placed over actual house images
 
-Ignore unrelated system files or directories outside this project.
- main
+---
 
-## 📦 Project Structure
-
-```
- codex/clean-up-project-and-verify-routing
-.
+## 🧰 Monorepo Structure
 
 deckchatbot-monorepo/
- main
-├── frontend/        # React or HTML-based UI for user interaction
-├── backend-ai/      # FastAPI / Python backend with AI integrations
-├── .vscode/         # IDE settings and extensions
-├── PROMPT.md        # Instruction file for project-wide automation and cleanup
-├── README.md        # You're here!
-```
+├── apps/
+│ ├── frontend/ # Chat UI, image upload, drawing canvas, 3D viewer
+│ └── backend/ # AI model integration, image parsing, deck logic
+└── shared/ # Shared utils, models, or constants (optional)
 
-
-
-## 🎯 Core Features
- codex/clean-up-project-and-verify-routing
-
-You are coding an interactive 3D deck visualization in a React/Three.js app. Using react-three-fiber, implement a DeckScene component that:
-- Creates a Three.js scene with a PerspectiveCamera and OrbitControls.
-- Generates a deck floor by extruding a user-defined polygonal outline (use Three.js Shape and ExtrudeGeometry).
-- Adds separate meshes for deck posts, beams, and railings based on input dimensions.
-- Applies materials/textures to surfaces based on user selection.
-- Enables clicking on any deck surface to select and highlight it (using raycasting), then displays editable parameters (length, height, etc.).
-- Includes a drag/transform control so the user can move selected vertices or objects and automatically rebuilds the deck geometry.
-- Calculates deck area and board lengths and shows them in a side panel.
-- Provides buttons to export the deck as a 2D blueprint PDF and as a 3D glTF model.
-For a high-level design, see [Real-Time 3D Deck Design Blueprint](docs/REALTIME_3D_DECK_DESIGN_BLUEPRINT.md).
-
-Write React/JavaScript code snippets (using react-three-fiber and standard Three.js classes) illustrating how to set up the scene, create and update the extruded floor geometry, handle mouse interaction for selecting and dragging parts, and generate a PDF with deck dimensions. 
- main
-
-- **Dynamic Deck Shape Builder**: L-shape, octagon, and custom sketch input.
-- **Image Upload with AI Recognition**: OCR + vision model analysis.
-- **Skirting & Material Calculations**: Supports Composite, PVC, and Mineral Board.
-- **Ollama Integration**: Running LLaVA-Llama3 model for image + text queries.
-- **Drag & Drop Support**: Upload drawings or images directly to calculate.
+yaml
+Copy
+Edit
 
 ---
+
+## 💬 User Journey
+
+1. **Chatbot Greeting**  
+   The deck assistant introduces itself and asks for the type of job (e.g., resurface, new deck).
+
+2. **Upload Phase**  
+   User uploads:
+   - Photos of the deck area or home
+   - Blueprint drawing with exact measurements
+   - Sketch with direction markers (stairs, door, elevation arrows)
+
+3. **Image + Drawing Analysis**  
+   The backend uses AI (OCR + Vision) to:
+   - Extract outline dimensions
+   - Identify doors, stairs, and elevation
+   - Normalize the layout to scale
+
+4. **2D Deck Generation**  
+   A clean, digital 2D drawing is created from the sketch.
+
+5. **Bot Follow-Up**  
+   Chatbot asks any missing questions (e.g., deck height, material choice).
+
+6. **3D Visualization**  
+   Final output is a 3D deck image **pasted over the house photo** for visual presentation.
 
 ## 🚀 Getting Started
 
-### 1. Clone the Repo
+### Frontend Setup
 
 ```bash
-git clone https://github.com/yourusername/deckchatbot-monorepo.git
-cd deckchatbot-monorepo
- codex/clean-up-project-and-verify-routing
-
-
-# create a .env with your keys
-echo "OPENAI_API_KEY=your-key" > .env
-echo "DEBUG=true" >> .env
- main
-```
-
-### 2. Start the Backend
-
-```bash
-cd backend-ai
- codex/clean-up-project-and-verify-routing
-poetry install
-uvicorn API.api:app --reload
-
-# (Activate your environment or install requirements)
-poetry install
-poetry run uvicorn API.api:app --reload
- main
-```
-
-### 3. Launch the Frontend
-
-```bash
-cd ../frontend
+cd apps/frontend
 npm install
 npm run dev
-```
+Requires Node.js & modern browser
 
- codex/clean-up-project-and-verify-routing
-The frontend will use `PYTHON_API_URL` (default `http://localhost:8000`) to
-forward image requests to the FastAPI service.
+Backend Setup
+bash
+Copy
+Edit
+cd apps/backend
+pip install -r requirements.txt
+uvicorn main:app --reload
+Requires Python 3.10+ with FastAPI
 
-### 4. One-Command Start
+🔭 Future Features
+ AI-assisted sketch correction
 
-If everything is installed, you can run both servers with a single command:
+ Auto-detect stair orientation from arrows
 
-```bash
-./run.sh
-```
+ Multiple deck shapes (L, octagon, etc.)
 
-This script launches the FastAPI backend (`poetry run uvicorn API.api:app --reload`) and the frontend (`npm run dev`) and waits on both processes.
+ Photo background blending for 3D renders
 
-Then open `http://localhost:3000/deck-viewer.html` in your browser to try the new 3D deck viewer built with Babylon.js. Use the toolbar to render a deck and export blueprint screenshots or a GLB model.
- main
+👨‍💻 Built By
+AlenTwoTime
+GitHub: @alentwotime
 
+📄 License
+MIT License
 
-
-## 🧠 AI Integration
-
-We use [Ollama](https://ollama.com/library/llava-llama3) to run LLaVA-Llama3 locally.
-
-```bash
-ollama run llava-llama3
-```
-
-- HuggingFace support through `xtuner` (model loaders / pipelines)
+yaml
+Copy
+Edit
 
 
 
-## 🗂 Prompt-based Automation
 
-See `PROMPT.md` for full instructions on:
 
-- Cleanup automation
-- Logical merging of duplicate files
-- Enhancing layout logic, routing, and data flow
 
----
 
-## 📌 TODO (Contributions Welcome!)
 
-- [ ] Auto-detect and suggest corrections for invalid deck sketches
-- [ ] Export deck plans to PDF
-- [ ] Add user accounts + login
 
----
 
-## ⚖️ License
 
-MIT License. Feel free to fork and expand.
+
+
+
