@@ -75,4 +75,8 @@ app.listen(PORT, () => {
   logger.info(`🚀 Deck Chatbot Server running on http://localhost:${PORT}`);
 });
 
+ codex/clean-up-project-and-verify-routing
 module.exports = { app, logger };
+=======
+module.exports = { app, logger };
+ main

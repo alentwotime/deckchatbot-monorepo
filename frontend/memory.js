@@ -4,6 +4,17 @@ const config = require('./config');
 
 const dbFile = config.MEM_DB || path.join(__dirname, 'memory.sqlite');
 let db;
+ codex/clean-up-project-and-verify-routing
+try {
+  db = new Database(dbFile);
+} catch (err) {
+  if (err.code === 'SQLITE_CANTOPEN') {
+    console.error(`Failed to open or create the database file at "${dbFile}". Please check file permissions or the path exists.`);
+  } else {
+    console.error('Failed to initialize the database:', err.message);
+  }
+  process.exit(1);
+
 let inMemoryMessages = [];
 let inMemoryMeasurements = [];
 try {
@@ -11,16 +22,27 @@ try {
 } catch (err) {
   console.error('Failed to initialize the database, falling back to in-memory storage:', err.message);
   db = null;
+ main
 }
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS messages (
+ codex/clean-up-project-and-verify-routing
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+=======
   id INTEGER PRIMARY KEY,
+ main
   role TEXT NOT NULL,
   content TEXT NOT NULL,
   timestamp INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS measurements (
+ codex/clean-up-project-and-verify-routing
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  data TEXT NOT NULL,
+  timestamp INTEGER NOT NULL
+);`);
+
   id INTEGER PRIMARY KEY,
   data TEXT NOT NULL,
   timestamp INTEGER NOT NULL
@@ -46,11 +68,21 @@ if (db) {
   inMemoryMessages.push(entry);
 }
 }
+ main
 /**
  * Adds a measurement to the database.
  * @param {any} data - The measurement data to store (will be stringified as JSON).
  */
 function addMeasurement(data) {
+ codex/clean-up-project-and-verify-routing
+  try {
+    const stmt = db.prepare('INSERT INTO measurements (data, timestamp) VALUES (?, ?)');
+    stmt.run(JSON.stringify(data), Date.now());
+  } catch (err) {
+    console.error('Error adding measurement to database:', err);
+    throw err;
+  }
+
   const entry = { data, timestamp: Date.now() };
     try {
       const stmt = db.prepare('INSERT INTO measurements (data, timestamp) VALUES (?, ?)');
@@ -60,6 +92,7 @@ function addMeasurement(data) {
       throw err;
     }
   inMemoryMeasurements.push(entry);
+ main
 }
 
 /**
@@ -67,6 +100,19 @@ function addMeasurement(data) {
  * @returns {({id: number, data: any, timestamp: number})[]}
  */
 function getAllMeasurements() {
+ codex/clean-up-project-and-verify-routing
+  try {
+    const stmt = db.prepare('SELECT * FROM measurements ORDER BY timestamp DESC');
+    const rows = stmt.all();
+    return rows.map(row => ({
+      ...row,
+      data: JSON.parse(row.data)
+    }));
+  } catch (err) {
+    console.error('Error retrieving measurements:', err);
+    return [];
+  }
+
   if (db) {
     try {
       const stmt = db.prepare('SELECT * FROM measurements ORDER BY timestamp DESC');
@@ -81,12 +127,21 @@ function getAllMeasurements() {
     }
   }
   return [...inMemoryMeasurements];
+ main
 }
 
 /**
  * Clears all messages and measurements from the database.
  */
 function clearMemory() {
+ codex/clean-up-project-and-verify-routing
+  try {
+    db.prepare('DELETE FROM messages').run();
+    db.prepare('DELETE FROM measurements').run();
+  } catch (err) {
+    console.error('Error clearing memory:', err);
+    throw err;
+
   if (db) {
     try {
       db.prepare('DELETE FROM messages').run();
@@ -98,6 +153,7 @@ function clearMemory() {
   } else {
     inMemoryMessages = [];
     inMemoryMeasurements = [];
+ main
   }
 }
 
@@ -107,6 +163,15 @@ function clearMemory() {
  * @returns {Array<{id: number, role: string, content: string, timestamp: number}>}
  */
 function getRecentMessages(limit = 10) {
+ codex/clean-up-project-and-verify-routing
+  try {
+    const stmt = db.prepare('SELECT * FROM messages ORDER BY timestamp DESC LIMIT ?');
+    return stmt.all(limit);
+  } catch (err) {
+    console.error('Error retrieving recent messages:', err);
+    return [];
+  }
+
   if (db) {
     try {
       const stmt = db.prepare('SELECT * FROM messages ORDER BY timestamp DESC LIMIT ?');
@@ -117,6 +182,7 @@ function getRecentMessages(limit = 10) {
     }
   }
   return inMemoryMessages.slice(-limit).reverse();
+ main
 }
 
 /**
@@ -135,10 +201,19 @@ function cleanTempFile(filePath) {
 }
 
 module.exports = {
+ codex/clean-up-project-and-verify-routing
+  addMessage,
+  addMeasurement,
+  getAllMeasurements,
+  clearMemory,
+  getRecentMessages,
+  cleanTempFile
+
   addMeasurement,
   addMessage,
   cleanTempFile,
   clearMemory,
   getAllMeasurements,
   getRecentMessages
+ main
 };

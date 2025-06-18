@@ -1,3 +1,31 @@
+ codex/clean-up-project-and-verify-routing
+# 🧠 Codex Prompt for DeckChatbot Monorepo
+
+## 🗂️ Project Structure (Simplified)
+
+```
+/deckchatbot-monorepo
+├── backend-ai/
+│   ├── API/
+│   ├── llama_integration/
+│   ├── Scripts/
+│   ├── pyproject.toml
+│   └── requirements.txt
+├── frontend/
+│   ├── deckchatbot/
+│   ├── routes/, public/, services/, utils/
+│   ├── index.js, server.js
+│   ├── package.json
+│   └── README.md
+├── .vscode/
+│   └── settings.json
+└── PROMPT.md (this file)
+```
+
+---
+
+## 🎯 Goal
+
 ## 🧠 Scope of Work
 
 You are reviewing a monorepo containing:
@@ -11,6 +39,7 @@ Ignore unrelated system files or directories outside this project.
 
 # 🧠 Codex Prompt for DeckChatbot Monorepo
 
+ main
 
 Clean up, consolidate, and optimize this monorepo to ensure the frontend and backend are properly integrated.
 

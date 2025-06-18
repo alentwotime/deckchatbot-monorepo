@@ -4,7 +4,11 @@
     { "path": "backend-ai" }
   ],
   "settings": {
+codex/clean-up-project-and-verify-routing
+    "python.defaultInterpreterPath": "python",
+
     "python.pythonPath": "backend-ai/.venv/Scripts/python.exe", 
+
     "eslint.workingDirectories": [
       { "mode": "auto" },
       "frontend"
@@ -16,7 +20,12 @@
     "files.exclude": {
       "**/__pycache__": true,
       "**/.venv": true,
+ codex/clean-up-project-and-verify-routing
+      "**/node_modules": true,
+      "**/.codex-prompt.md": false
+
       "**/node_modules": true
+ main
     },
     "search.exclude": {
       "**/__pycache__": true,
@@ -25,8 +34,11 @@
     }
   }
 }
+ codex/clean-up-project-and-verify-routing
+
 {
   "files.exclude": {
     "**/.codex-prompt.md": false
   }
 }
+ main

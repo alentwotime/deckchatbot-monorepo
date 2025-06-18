@@ -1127,6 +1127,8 @@ files = [
 cli = ["click (>=5.0)"]
 
 [[package]]
+ codex/clean-up-project-and-verify-routing
+
 name = "python-multipart"
 version = "0.0.20"
 description = "A streaming multipart parser for Python"
@@ -1139,6 +1141,7 @@ files = [
 ]
 
 [[package]]
+ main
 name = "pyyaml"
 version = "6.0.2"
 description = "YAML parser and emitter for Python"
@@ -2039,4 +2042,8 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
+ codex/clean-up-project-and-verify-routing
+content-hash = "40aa0e12670a802e9fe90099009dc173bbc0b02d3cf5ea8391d436b063a891cd"
+
 content-hash = "7296bbf2efe93358c303c59f4958b2fa91aec9d7e84e75e97004385de14e30eb"
+ main

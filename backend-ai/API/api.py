@@ -1,19 +1,41 @@
+ codex/clean-up-project-and-verify-routing
+from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+
+from llama_integration.predict import run_model
+
 import os
 import sqlite3
 from fastapi import FastAPI, UploadFile, File, Form, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from llama_integration.llava_runner import run_llava
+ main
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
+ codex/clean-up-project-and-verify-routing
+=======
     allow_credentials=True,
+ main
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+ codex/clean-up-project-and-verify-routing
+@app.get("/")
+def root():
+    return {"message": "Deckbot AI backend is alive!"}
+
+@app.post("/predict")
+async def predict(file: UploadFile = File(...)):
+    image_bytes = await file.read()
+    result = run_model(image_bytes)
+    return {"result": result}
+
 
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'deckchatbot.db')
 
@@ -111,3 +133,4 @@ async def query_llava(image: UploadFile = File(...), prompt: str = Form(...)):
     data = await image.read()
     result = run_llava(data, prompt)
     return {"response": result}
+ main

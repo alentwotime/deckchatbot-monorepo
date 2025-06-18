@@ -16,8 +16,11 @@ pydantic = "*"
 pillow = "*"
 numpy = "*"
 scipy = "*"
+ codex/clean-up-project-and-verify-routing
+
 python-multipart = "*"
 requests = "*"
+ main
 
 [tool.poetry.group.dev.dependencies]
 pyright = "*"

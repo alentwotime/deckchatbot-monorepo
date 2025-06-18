@@ -1,6 +1,10 @@
 # Node & Python
 node_modules/
+ codex/clean-up-project-and-verify-routing
+__pycache__/
+=======
 __py_cache__/
+ main
 *.py[cod]
 *.sqlite3
 *.db
@@ -14,10 +18,16 @@ __py_cache__/
 *.tmp
 *.bak
 *.swp
+ codex/clean-up-project-and-verify-routing
+*.env
+*.env.*
+ 
 
 # OS-specific
 .DS_Store
 Thumbs.db
+
+codex/clean-up-project-and-verify-routing
 
 # Ignore .env files
 *.env
