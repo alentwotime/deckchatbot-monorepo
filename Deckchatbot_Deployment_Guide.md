@@ -10,16 +10,18 @@ This README provides a full step-by-step guide for deploying DeckChatbot using A
 * **Backend**: Node.js Express API → Azure **App Service**
 * **CI/CD**: GitHub → Azure Static Web App
 * **Custom Domain**: Supported (see section below)
+* **Local Dev**: Supports WSL2 or native Windows (Windows 11 Pro recommended)
+* **Containerization**: Docker and Azure Container Apps supported
 
 ---
 
 ## 📁 Project Structure Assumption
 
-```
+
 deckchatbot-monorepo/
 ├── frontend/        # Express backend
 ├── client/          # React or Vite frontend
-```
+
 
 ---
 
@@ -37,6 +39,48 @@ If you're using Cloud Shell, you're already logged in. Otherwise, failing to run
 
 ```
 ERROR: Please run 'az login' to setup account.
+```
+
+---
+
+## 🧱 WSL2 and Local Environment Setup (Recommended)
+
+If using Windows 11 Pro, enable WSL2 for best compatibility:
+
+```powershell
+wsl --install
+```
+
+Then, inside Ubuntu:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+sudo apt install nodejs npm python3-pip build-essential git -y
+```
+
+Optional: Configure Docker with WSL integration via Docker Desktop.
+
+---
+
+## ❌ Ensure Windows 11 Pro and System Updates Are Current
+
+To avoid compatibility issues, make sure your system is fully up to date:
+
+1. Open **Settings > Windows Update**
+2. Click **Check for updates** and install everything available
+3. Reboot your system when prompted
+4. Verify Windows version:
+
+```powershell
+winver
+```
+
+You should see "Windows 11 Pro" listed with a recent build number (e.g., 22H2 or later).
+
+Also ensure PowerShell, WSL, and Windows Subsystem components are current by running:
+
+```powershell
+wsl --update
 ```
 
 ---
@@ -101,8 +145,7 @@ export default defineConfig({
 });
 ```
 
-**For CRA**:
-Ensure `StaticWebApp.config.json` exists:
+**For CRA**: Ensure `StaticWebApp.config.json` exists:
 
 ```json
 {
@@ -135,6 +178,12 @@ az webapp config appsettings set \
   --name deckchatbot-api-backend \
   --resource-group deckchatbot-shell-rg \
   --settings OPENAI_API_KEY=sk-xxx
+```
+
+You can also add additional environment variables like:
+
+```bash
+--settings STORAGE_ACCOUNT=deckbotuploads IMAGE_ANALYZER=llava3 AI_MODE=prod
 ```
 
 ---
@@ -175,15 +224,29 @@ You can also manually trigger deploys or customize the workflow.
 * [x] Frontend live at `deckchatbot-frontend.azurestaticapps.net`
 * [x] API connected via environment-based URL
 * [x] GitHub pushes deploy automatically
+* [x] Docker and WSL2 verified (if used locally)
+* [x] Windows 11 Pro up to date with latest system updates
 
 ---
 
-## 🧼 Cleanup (if needed)
+## 💼 Cleanup (if needed)
 
 ```bash
 az staticwebapp delete --name deckchatbot-frontend --resource-group deckchatbot-shell-rg
 az webapp delete --name deckchatbot-api-backend --resource-group deckchatbot-shell-rg
 ```
+
+---
+
+## 🧠 Extras (Optional Tools)
+
+| Tool               | Use Case                        |
+| ------------------ | ------------------------------- |
+| Postman            | Test backend API endpoints      |
+| Azurite            | Emulate Azure Blob Storage      |
+| Docker Desktop     | Local container testing         |
+| VS Code Extensions | Azure CLI, Docker, ESLint       |
+| Tesseract OCR      | For AI-assisted blueprint input |
 
 ---
 
