@@ -1,3 +1,4 @@
+ codex/clean-up-project-and-verify-routing
 # Dependencies
 node_modules/
 npm-debug.log*
@@ -88,3 +89,9 @@ test-results/
 # Backup files
 *.backup
 *.bak
+node_modules/
+logs/
+*.log
+yarn.lock
+logs*.json
+ main

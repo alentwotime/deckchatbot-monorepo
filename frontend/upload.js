@@ -1,6 +1,10 @@
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const preview = document.getElementById('preview');
+ codex/clean-up-project-and-verify-routing
+=======
+const blueprintContainer = document.getElementById('blueprintContainer');
+ main
 const spinner = document.getElementById('spinner');
 
 function handleFiles(files) {
@@ -13,6 +17,12 @@ function handleFiles(files) {
   reader.onload = e => {
     preview.src = e.target.result;
     preview.classList.remove('d-none');
+ codex/clean-up-project-and-verify-routing
+
+    if (blueprintContainer) {
+      blueprintContainer.classList.remove('loaded');
+    }
+ main
   };
   reader.readAsDataURL(file);
 }
