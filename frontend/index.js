@@ -4,8 +4,14 @@ const { app, logger } = require('./server.js');
 const config = require('./config');
 
 const PORT = config.PORT ?? 3000;
+ codex/clean-up-project-and-verify-routing
 
 if (cluster.isPrimary) {
+
+const useCluster = process.env.CLUSTER === 'true';
+
+if (useCluster && cluster.isPrimary) {
+ main
   const numCPUs = os.cpus().length;
   logger.info(
     `${config.USE_LOG_EMOJI ? '🧠 ' : ''}Primary process started. Forking ${numCPUs} workers...`
@@ -37,6 +43,10 @@ if (cluster.isPrimary) {
   });
 } else {
   app.listen(PORT, () => {
+ codex/clean-up-project-and-verify-routing
     logger.info(`✅ Worker ${process.pid} running at http://localhost:${PORT}`);
+
+    logger.info(`🚀 Deck Chatbot Server running on http://localhost:${PORT}`);
+ main
   });
 }

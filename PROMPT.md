@@ -1,3 +1,4 @@
+ codex/clean-up-project-and-verify-routing
 # 🧠 Codex Prompt for DeckChatbot Monorepo
 
 ## 🗂️ Project Structure (Simplified)
@@ -24,6 +25,21 @@
 ---
 
 ## 🎯 Goal
+
+## 🧠 Scope of Work
+
+You are reviewing a monorepo containing:
+- A Python FastAPI backend (`backend-ai/`)
+- A Node.js frontend application (`frontend/deckchatbot/` — a Git submodule)
+- Shared logic for deck estimation and AI chat
+
+Include logic, files, routes, and scripts from *all* folders — including any submodules.
+
+Ignore unrelated system files or directories outside this project.
+
+# 🧠 Codex Prompt for DeckChatbot Monorepo
+
+ main
 
 Clean up, consolidate, and optimize this monorepo to ensure the frontend and backend are properly integrated.
 
