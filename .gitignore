@@ -48,3 +48,4 @@ frontend/logs/*.json
 
 !docs/
 f0f7227 (Add deck design blueprint documentation)
+.env
