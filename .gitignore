@@ -1,6 +1,6 @@
 # Node & Python
 node_modules/
-__pycache__/
+__py_cache__/
 *.py[cod]
 *.sqlite3
 *.db
@@ -14,12 +14,14 @@ __pycache__/
 *.tmp
 *.bak
 *.swp
-*.env
-*.env.*
 
 # OS-specific
 .DS_Store
 Thumbs.db
+
+# Ignore .env files
+*.env
+!.env.example
 
 # Root ignore rule: ignore everything...
 /*
@@ -32,20 +34,6 @@ Thumbs.db
 !README.md
 !PROMPT.md
 !LICENSE
-!.env
-HEAD
-HEAD
-
 !run.sh
 !run.bat
- HEAD
- li58ee-codex/adapt-lowe’s-deck-designer-features-to-deckchatbot
- 923a711 (Add run script to start backend and frontend)
-frontend/memory.sqlite
-frontend/logs/*.json
-
- 5e1f009 (Wire frontend to backend API and add LLaVA route)
-
 !docs/
-f0f7227 (Add deck design blueprint documentation)
-.env
