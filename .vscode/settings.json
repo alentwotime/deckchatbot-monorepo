@@ -4,7 +4,7 @@
     { "path": "backend-ai" }
   ],
   "settings": {
-    "python.pythonPath": "backend-ai/.venv/Scripts/python.exe", 
+    "python.defaultInterpreterPath": "python",
     "eslint.workingDirectories": [
       { "mode": "auto" },
       "frontend"
@@ -16,17 +16,13 @@
     "files.exclude": {
       "**/__pycache__": true,
       "**/.venv": true,
-      "**/node_modules": true
+      "**/node_modules": true,
+      "**/.codex-prompt.md": false
     },
     "search.exclude": {
       "**/__pycache__": true,
       "**/.venv": true,
       "**/node_modules": true
     }
-  }
-}
-{
-  "files.exclude": {
-    "**/.codex-prompt.md": false
   }
 }

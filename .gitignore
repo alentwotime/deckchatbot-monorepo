@@ -21,14 +21,3 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Root ignore rule: ignore everything...
-/*
-
-# ...except these project folders & files:
-!backend-ai/
-!frontend/
-!.vscode/
-!.gitignore
-!README.md
-!PROMPT.md
-!LICENSE

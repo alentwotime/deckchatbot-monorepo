@@ -7,7 +7,7 @@ Welcome to the **DeckChatbot Monorepo** — a full-stack AI-powered assistant de
 ## 📦 Project Structure
 
 ```
-deckchatbot-monorepo/
+.
 ├── frontend/        # React or HTML-based UI for user interaction
 ├── backend-ai/      # FastAPI / Python backend with AI integrations
 ├── .vscode/         # IDE settings and extensions
@@ -40,8 +40,8 @@ cd deckchatbot-monorepo
 
 ```bash
 cd backend-ai
-# (Activate your environment or install requirements)
-uvicorn api:app --reload
+poetry install
+uvicorn API.api:app --reload
 ```
 
 ### 3. Launch the Frontend
@@ -51,6 +51,9 @@ cd ../frontend
 npm install
 npm run dev
 ```
+
+The frontend will use `PYTHON_API_URL` (default `http://localhost:8000`) to
+forward image requests to the FastAPI service.
 
 ---
 

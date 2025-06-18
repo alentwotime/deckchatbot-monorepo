@@ -11,6 +11,7 @@ const config = {
   // API Keys
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   API_KEY: process.env.API_KEY || 'revamp123secure',
+  PYTHON_API_URL: process.env.PYTHON_API_URL || 'http://localhost:8000',
   
   // Security
   JWT_SECRET: process.env.JWT_SECRET || 'fallback-secret-change-in-production',
