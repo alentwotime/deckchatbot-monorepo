@@ -51,5 +51,8 @@ Thumbs.db
 !LICENSE
 !run.sh
 !run.bat
+!Azureworkspaces.csv
+!Deckchatbot_Deployment_Guide.md
+!deck-vision.md
 !.conaarc
 !docker-compose.yml
