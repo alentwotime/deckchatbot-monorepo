@@ -1,4 +1,3 @@
- codex/clean-up-project-and-verify-routing
 # 🧠 Codex Prompt for DeckChatbot Monorepo
 
 ## 🗂️ Project Structure (Simplified)
@@ -39,7 +38,6 @@ Ignore unrelated system files or directories outside this project.
 
 # 🧠 Codex Prompt for DeckChatbot Monorepo
 
- main
 
 Clean up, consolidate, and optimize this monorepo to ensure the frontend and backend are properly integrated.
 

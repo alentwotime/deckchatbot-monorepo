@@ -1,43 +1,25 @@
- codex/clean-up-project-and-verify-routing
-from fastapi import FastAPI, UploadFile, File
-from fastapi.middleware.cors import CORSMiddleware
-
-from llama_integration.predict import run_model
-
-import os
-import sqlite3
 from fastapi import FastAPI, UploadFile, File, Form, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+from llama_integration.predict import run_model
 from llama_integration.llava_runner import run_llava
- main
+
+import os
+import sqlite3
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
- codex/clean-up-project-and-verify-routing
-=======
     allow_credentials=True,
- main
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
- codex/clean-up-project-and-verify-routing
-@app.get("/")
-def root():
-    return {"message": "Deckbot AI backend is alive!"}
-
-@app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    image_bytes = await file.read()
-    result = run_model(image_bytes)
-    return {"result": result}
-
-
 DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'deckchatbot.db')
+
 
 def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -54,6 +36,7 @@ def init_db():
     conn.commit()
     conn.close()
 
+
 init_db()
 
 
@@ -65,7 +48,7 @@ class DeckCalcRequest(BaseModel):
     waste: float | None = 10
 
 
-@app.get('/')
+@app.get("/")
 def root():
     return {"message": "Deckbot AI backend is alive!"}
 
@@ -73,6 +56,13 @@ def root():
 @app.get('/health')
 def health():
     return {"status": "healthy"}
+
+
+@app.post('/predict')
+async def predict(file: UploadFile = File(...)):
+    image_bytes = await file.read()
+    result = run_model(image_bytes)
+    return {"result": result}
 
 
 @app.post('/calculate-deck-materials')
@@ -106,6 +96,11 @@ async def upload_image(image: UploadFile = File(...)):
     return {'filename': image.filename, 'size': len(data)}
 
 
+@app.post('/upload-drawing')
+async def upload_drawing(image: UploadFile = File(...)):
+    return await upload_image(image)
+
+
 @app.post('/digitalize-drawing')
 async def digitalize_drawing(drawing: UploadFile = File(...)):
     data = await drawing.read()
@@ -118,11 +113,6 @@ async def measurements(image: UploadFile = File(...)):
     return {"message": "Measurement processing not implemented", "size": len(data)}
 
 
-@app.post('/upload-drawing')
-async def upload_drawing(image: UploadFile = File(...)):
-    return await upload_image(image)
-
-
 @app.post('/chatbot')
 def chatbot(message: str = Body(..., embed=True)):
     return {"response": f"Echo: {message}"}
@@ -133,4 +123,3 @@ async def query_llava(image: UploadFile = File(...), prompt: str = Form(...)):
     data = await image.read()
     result = run_llava(data, prompt)
     return {"response": result}
- main

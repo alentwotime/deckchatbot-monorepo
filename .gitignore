@@ -1,9 +1,6 @@
 # Node & Python
 node_modules/
-codex/clean-up-project-and-verify-routing
 __pycache__/
-=======
-__py_cache__/
 *.py[cod]
 *.sqlite3
 *.db
@@ -17,16 +14,12 @@ __py_cache__/
 *.tmp
 *.bak
 *.swp
-codex/clean-up-project-and-verify-routing
 *.env
 *.env.*
-
 
 # OS-specific
 .DS_Store
 Thumbs.db
-
-codex/clean-up-project-and-verify-routing
 
 # Ignore .env files
 *.env
@@ -37,7 +30,20 @@ codex/clean-up-project-and-verify-routing
 
 # ...except these project folders & files:
 !backend-ai/
+!backend/
 !frontend/
+!ai-service/
+!config/
+!controllers/
+!routes/
+!services/
+!utils/
+!middleware/
+!memory/
+!scripts/
+!public/
+!docs/
+!__tests__/
 !.vscode/
 !.gitignore
 !README.md
@@ -45,11 +51,4 @@ codex/clean-up-project-and-verify-routing
 !LICENSE
 !run.sh
 !run.bat
-!docs/
-!Deckchatbot_Deployment_Guide.md     
-!deck-vision.md
-!h
-!Azureworkspaces.csv
 !.conaarc
-!ai-service
-!app
