@@ -155,16 +155,18 @@ The frontend will be available at [http://localhost:3000](http://localhost:3000)
 
 ### Deploying to Azure
 
-Use your own container registry and web app. Example commands:
+Images can be built and pushed to your Azure Container Registry and deployed to Azure Container Apps. A GitHub Actions workflow (`.github/workflows/deploy.yml`) automates this whenever `main` is pushed. It requires `AZURE_CREDENTIALS`, `ACR_NAME` and `AZURE_RG` secrets.
+
+For manual deployment you can run:
 
 ```bash
-# Build and push images
+# Build images
 az acr build --registry <ACR_NAME> --image deckchatbot-backend:latest -f backend/backend-ai/Dockerfile ./backend/backend-ai
 az acr build --registry <ACR_NAME> --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
 
-# Deploy containers (App Service or Container Apps)
-az webapp create --name deckchatbot-backend --resource-group <RG> --plan <PLAN> --deployment-container-image-name <ACR_NAME>.azurecr.io/deckchatbot-backend:latest
-az webapp create --name deckchatbot-frontend --resource-group <RG> --plan <PLAN> --deployment-container-image-name <ACR_NAME>.azurecr.io/deckchatbot-frontend:latest
+# Create or update Container Apps
+az containerapp create --name deckchatbot-backend-app --resource-group <RG> --image <ACR_NAME>.azurecr.io/deckchatbot-backend:latest --target-port 8000
+az containerapp create --name deckchatbot-frontend-app --resource-group <RG> --image <ACR_NAME>.azurecr.io/deckchatbot-frontend:latest --target-port 3000
 ```
 
 ## 🔭 Future Features
