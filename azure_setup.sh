@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This script automates the Azure deployment steps from Deckchatbot_Deployment_Guide.md
+
+# Required environment variables
+: "${AZURE_RG?Need AZURE_RG}"       # Resource group
+: "${ACR_NAME?Need ACR_NAME}"       # Azure Container Registry name
+: "${LOCATION?Need LOCATION}"       # Deployment location, e.g. "Central US"
+
+BACKEND_APP=deckchatbot-backend-app
+FRONTEND_APP=deckchatbot-frontend-app
+
+# Ensure Azure CLI is installed
+if ! command -v az >/dev/null; then
+  echo "Azure CLI not found. Please install it first." >&2
+  exit 1
+fi
+
+# Verify login
+if ! az account show >/dev/null 2>&1; then
+  echo "Please run 'az login' before executing this script." >&2
+  exit 1
+fi
+
+# Build and push Docker images to ACR
+az acr build --registry "$ACR_NAME" --image deckchatbot-backend:latest -f backend/backend-ai/Dockerfile ./backend/backend-ai
+az acr build --registry "$ACR_NAME" --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
+
+# Deploy container apps
+az containerapp create --name "$BACKEND_APP" --resource-group "$AZURE_RG" \
+  --image "$ACR_NAME.azurecr.io/deckchatbot-backend:latest" --target-port 8000
+
+az containerapp create --name "$FRONTEND_APP" --resource-group "$AZURE_RG" \
+  --image "$ACR_NAME.azurecr.io/deckchatbot-frontend:latest" --target-port 3000
+
+# Example of setting backend environment variables
+# az containerapp update --name "$BACKEND_APP" --resource-group "$AZURE_RG" \
+#   --set-env-vars OPENAI_API_KEY=your-key STORAGE_ACCOUNT=deckbotuploads
+
+echo "Deployment complete."
