@@ -94,7 +94,7 @@ function clearMemory() {
  */
 function getRecentMessages(limit = 10) {
   try {
-    const stmt = db.prepare('SELECT * FROM messages ORDER BY id ASC LIMIT ?');
+    const stmt = db.prepare('SELECT role, content FROM messages ORDER BY timestamp ASC LIMIT ?');
     return stmt.all(limit);
   } catch (err) {
     console.error('Error retrieving recent messages:', err);

@@ -1,43 +1,17 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
 const { chatbot, validate } = require('../controllers/chatbotController');
-const { calculateDeckMaterials } = require('../controllers/deckCalcController');
-const skirtingRouter = require('./skirting');
-const multiShapeRouter = require('./multishape');
-const measurementsRouter = require('./measurements');
-const uploadDrawingRouter = require('./uploadDrawing');
-const digitalizeRouter = require('./digitalize');
-const config = require('../config');
+
+// Child routers
+const multishapeRoutes = require('./multishape');
+const measurementsRoutes = require('./measurements');
+const skirtingRoutes = require('./skirting');
+const deckCalcRoutes = require('./deckCalc');
+const digitalizeRoutes = require('./digitalize');
+const uploadDrawingRoutes = require('./uploadDrawing');
 
 const router = express.Router();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: config.MAX_FILE_SIZE
-  },
-  fileFilter: (req, file, cb) => {
-    if (config.ALLOWED_FILE_TYPES.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type. Only images are allowed.'));
-    }
-  }
-});
-
-// Health check endpoint
+// Health check
 router.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
@@ -46,32 +20,13 @@ router.get('/health', (req, res) => {
   });
 });
 
-// Chatbot endpoint
+// Primary endpoints
 router.post('/chatbot', validate, chatbot);
-
-// Deck calculator endpoint
-router.post('/calculate-deck-materials', calculateDeckMaterials);
-
-// File upload endpoints
-router.post('/upload-image', upload.single('image'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
-  }
-
-  res.json({
-    message: 'Image uploaded successfully',
-    filename: req.file.filename,
-    originalName: req.file.originalname,
-    size: req.file.size
-  });
-});
-
-router.use('/digitalize-drawing', digitalizeRouter);
-
-// Additional feature routes
-router.use('/calculate-skirting', skirtingRouter);
-router.use('/calculate-multi-shape', multiShapeRouter);
-router.use('/upload-measurements', measurementsRouter);
-router.use('/upload-drawing', uploadDrawingRouter);
+router.use('/calculate-multi-shape', multishapeRoutes);
+router.use('/upload-measurements', measurementsRoutes);
+router.use('/calculate-skirting', skirtingRoutes);
+router.use('/calculate-deck-materials', deckCalcRoutes);
+router.use('/digitalize-drawing', digitalizeRoutes);
+router.use('/upload-drawing', uploadDrawingRoutes);
 
 module.exports = router;
