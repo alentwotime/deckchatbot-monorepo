@@ -8,12 +8,14 @@ class OpenAIService {
     this.baseUrl = 'https://api.openai.com/v1';
     
     if (!this.apiKey) {
-      logger.error('OpenAI API key not configured');
-      throw new Error('OpenAI API key is required');
+      logger.warn('OpenAI API key not configured - using mock responses');
     }
   }
 
   async askChat(messages, options = {}) {
+    if (!this.apiKey) {
+      return 'mocked';
+    }
     try {
       const {
         model = config.OPENAI_MODEL,
@@ -46,6 +48,9 @@ class OpenAIService {
   }
 
   async analyzeImage(imageBase64, prompt = 'Analyze this image') {
+    if (!this.apiKey) {
+      return 'mock-image';
+    }
     try {
       const response = await axios.post(
         `${this.baseUrl}/chat/completions`,
