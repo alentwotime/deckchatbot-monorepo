@@ -120,25 +120,52 @@ To ensure accurate AI measurement and rendering, please follow these guidelines 
 ### Frontend Setup
 
 ```bash
-cd apps/frontend
+cd frontend
 npm install
 npm run dev
-
-
-> Requires Node.js & modern browser
-
-
+```
 
 ### Backend Setup
-> Requires Node.js 18+ and a modern browser
 
 ```bash
-cd apps/backend
-pip install -r requirements.txt
-uvicorn main:app --reload
+cd backend/backend-ai
+poetry install --no-root
+poetry run uvicorn API.api:app --reload
+```
 
-> Requires Python 3.10+ with FastAPI  
-> If you do not have FastAPI, install it with `pip install fastapi[all]`
+> Requires Node.js 18+ and Python 3.10+
+
+### Quick Local Run
+
+From the repository root:
+
+```bash
+./run.sh
+```
+
+### Docker Quick Start
+
+Build and run both services with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+The frontend will be available at [http://localhost:3000](http://localhost:3000) and the backend at [http://localhost:8000](http://localhost:8000).
+
+### Deploying to Azure
+
+Use your own container registry and web app. Example commands:
+
+```bash
+# Build and push images
+az acr build --registry <ACR_NAME> --image deckchatbot-backend:latest -f backend/backend-ai/Dockerfile ./backend/backend-ai
+az acr build --registry <ACR_NAME> --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
+
+# Deploy containers (App Service or Container Apps)
+az webapp create --name deckchatbot-backend --resource-group <RG> --plan <PLAN> --deployment-container-image-name <ACR_NAME>.azurecr.io/deckchatbot-backend:latest
+az webapp create --name deckchatbot-frontend --resource-group <RG> --plan <PLAN> --deployment-container-image-name <ACR_NAME>.azurecr.io/deckchatbot-frontend:latest
+```
 
 ## 🔭 Future Features
 
