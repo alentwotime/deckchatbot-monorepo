@@ -52,3 +52,4 @@ Thumbs.db
 !run.sh
 !run.bat
 !.conaarc
+!docker-compose.yml

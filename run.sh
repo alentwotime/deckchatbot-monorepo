@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ ! -d "backend-ai" ] || [ ! -d "frontend" ]; then
+BACKEND_DIR="backend/backend-ai"
+FRONTEND_DIR="frontend"
+
+if [ ! -d "$BACKEND_DIR" ] || [ ! -d "$FRONTEND_DIR" ]; then
   echo "Please run this script from the repository root." >&2
   exit 1
 fi
@@ -13,14 +16,14 @@ trap 'echo "\nStopping servers..."; kill "$BACKEND_PID" "$FRONTEND_PID" 2>/dev/n
 
 echo "Starting FastAPI backend..."
 (
-  cd backend-ai
+  cd "$BACKEND_DIR"
   poetry run uvicorn API.api:app --reload
 ) &
 BACKEND_PID=$!
 
 echo "Starting frontend..."
 (
-  cd frontend
+  cd "$FRONTEND_DIR"
   npm run dev
 ) &
 FRONTEND_PID=$!

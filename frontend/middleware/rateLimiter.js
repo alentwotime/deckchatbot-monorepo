@@ -29,7 +29,7 @@ const rateLimiter = rateLimit({
     res.status(429).json({
       errors: [{ 
         msg: 'Too many requests from this IP, please try again later.',
-        retryAfter: Math.round(config.RATE_LIMIT_WINDOW_MS / 1000)
+        retryAfter: Math.round(config.RATE_LIMIT_WINDOW / 1000)
       }]
     });
   },
