@@ -1,4 +1,3 @@
- codex/clean-up-project-and-verify-routing
 # DeckChatbot AI Backend
 
 Python FastAPI backend with AI integrations for deck planning and material calculation.
@@ -22,4 +21,3 @@ uvicorn API.api:app --reload
 
 To fine‑tune the vision‑capable LLaVA‑LLaMA3 model on the ShareGPT4V and InternVL datasets,
 see the detailed instructions in `fine_tuning/README.md`.
- main
