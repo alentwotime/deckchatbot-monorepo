@@ -27,6 +27,21 @@ CREATE TABLE IF NOT EXISTS measurements (
   data TEXT NOT NULL,
   timestamp INTEGER NOT NULL
 );`);
+
+/**
+ * Adds a chat message to the database.
+ * @param {string} role - Sender role (e.g., 'user' or 'assistant').
+ * @param {string} content - Message text.
+ */
+function addMessage(role, content) {
+  try {
+    const stmt = db.prepare('INSERT INTO messages (role, content, timestamp) VALUES (?, ?, ?)');
+    stmt.run(role, content, Date.now());
+  } catch (err) {
+    console.error('Error adding message to database:', err);
+    throw err;
+  }
+}
 /**
  * Adds a measurement to the database.
  * @param {any} data - The measurement data to store (will be stringified as JSON).
