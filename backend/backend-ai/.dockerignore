@@ -1,0 +1,9 @@
+# Ignore Python cache and dev files
+__pycache__/
+*.pyc
+*.pyo
+.git
+*.md
+Dockerfile*
+.dockerignore
+tests/
