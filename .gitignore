@@ -61,3 +61,4 @@ Thumbs.db
 !.conaarc
 !docker-compose.yml
 !/.github/
+frontend/memory.sqlite

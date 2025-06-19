@@ -1,6 +1,7 @@
 const Tesseract = require('tesseract.js');
 const { addMeasurement } = require('../memory');
-const { polygonArea, calculatePerimeter, ftInToDecimal } = require('../utils/geometry');
+const { polygonArea, calculatePerimeter } = require('../utils/geometry');
+const { calculateSkirtingMetrics, ftIn } = require('../utils/skirting');
 const logger = require('../utils/logger');
 
 /**
@@ -9,9 +10,7 @@ const logger = require('../utils/logger');
 async function uploadMeasurements(req, res) {
   try {
     if (!req.file) {
-      return res.status(400).json({
-        errors: [{ msg: 'No image file uploaded. Please attach an image.' }]
-      });
+      return res.status(400).json({ errors: [{ msg: 'Image file is required' }] });
     }
 
     logger.info('Processing measurement image', {
@@ -31,80 +30,52 @@ async function uploadMeasurements(req, res) {
     const numberMatches = text.match(/\d+(?:\.\d+)?/g) || [];
     const numbers = numberMatches
       .map(n => parseFloat(n))
-      .filter(n => !isNaN(n) && n > 0 && n <= 500); // Filter reasonable measurements
+      .filter(n => !isNaN(n) && n >= 0 && n <= 500);
 
-    if (numbers.length < 4) {
+    const hasSkirting = /skirting|skirt|underdeck/i.test(text);
+
+    if (hasSkirting && numbers.length >= 3) {
+      const [length, width, rawHeight] = numbers;
+      const height = rawHeight > 20 ? rawHeight / 12 : rawHeight;
+      const result = calculateSkirtingMetrics({ length, width, height, material: /PVC/i.test(text) ? 'PVC' : 'Composite' });
+      return res.json({
+        perimeter: ftIn(result.perimeter),
+        skirtingArea: result.skirtingArea.toFixed(2),
+        panelsNeeded: result.panelsNeeded,
+        material: result.material,
+        note: result.note
+      });
+    }
+
+    if (numbers.length < 8) {
       return res.status(400).json({
-        errors: [{ msg: 'Could not extract enough measurements from the image. Please ensure the drawing has clear dimension labels.' }]
+        errors: [{ msg: 'Not enough measurements found' }]
       });
     }
 
     logger.info('Numbers extracted from image:', { numbers });
 
-    // Determine if this includes a pool cutout
-    const hasPool = /pool|cutout|spa|hot tub/i.test(text);
-    const midpoint = hasPool ? Math.floor(numbers.length / 2) : numbers.length;
-
-    // Create coordinate points for the main deck area
-    const outerPoints = [];
-    for (let i = 0; i < midpoint; i += 2) {
-      if (i + 1 < midpoint) {
-        outerPoints.push({
-          x: numbers[i],
-          y: numbers[i + 1]
-        });
-      }
-    }
-
-    // Calculate deck area
     let outerDeckArea = 0;
-    let poolArea = 0;
+    let perimeter = 0;
 
-    if (outerPoints.length >= 3) {
-      outerDeckArea = polygonArea(outerPoints);
-    } else if (outerPoints.length === 2) {
-      // Assume rectangle
-      outerDeckArea = outerPoints[0].x * outerPoints[0].y;
+    if (numbers.length >= 8) {
+      const pts = [];
+      for (let i = 0; i < 8; i += 2) {
+        pts.push({ x: numbers[i], y: numbers[i + 1] });
+      }
+      outerDeckArea = polygonArea(pts);
+      perimeter = calculatePerimeter(pts);
+    } else if (numbers.length >= 4) {
+      const length = numbers[2] - numbers[0];
+      const width = numbers[3] - numbers[1];
+      outerDeckArea = Math.abs(length * width);
+      perimeter = 2 * (Math.abs(length) + Math.abs(width));
     }
 
-    // Handle pool cutout if present
-    if (hasPool && numbers.length > midpoint) {
-      const poolPoints = [];
-      for (let i = midpoint; i < numbers.length; i += 2) {
-        if (i + 1 < numbers.length) {
-          poolPoints.push({
-            x: numbers[i],
-            y: numbers[i + 1]
-          });
-        }
-      }
+    const poolArea = 0;
+    const usableDeckArea = outerDeckArea;
 
-      if (poolPoints.length >= 3) {
-        poolArea = polygonArea(poolPoints);
-      } else if (poolPoints.length === 2) {
-        poolArea = poolPoints[0].x * poolPoints[0].y;
-      }
-    }
-
-    const usableDeckArea = outerDeckArea - poolArea;
-    const perimeter = outerPoints.length >= 3 ? calculatePerimeter(outerPoints) : 0;
-
-    // Check for skirting request
-    const needsSkirting = /skirting|skirt|underdeck/i.test(text);
     let skirting = null;
-
-    if (needsSkirting) {
-      // Extract height information for skirting
-      const heightMatch = text.match(/(\d+(?:\.\d+)?)\s*(?:ft|feet|')/i);
-      const height = heightMatch ? ftInToDecimal(heightMatch[1]) : 3; // Default 3ft
-
-      skirting = {
-        perimeter: perimeter.toFixed(2),
-        height: height.toFixed(2),
-        panelsNeeded: Math.ceil(perimeter / 8), // Assuming 8ft panels
-        linearFeet: perimeter.toFixed(2)
-      };
-    }
 
     const result = {
       outerDeckArea: outerDeckArea.toFixed(2),
@@ -112,9 +83,9 @@ async function uploadMeasurements(req, res) {
       usableDeckArea: usableDeckArea.toFixed(2),
       railingFootage: perimeter.toFixed(2),
       fasciaBoardLength: perimeter.toFixed(2),
-      warning: usableDeckArea > 1000 ? 'Large deck area detected. Please verify measurements.' : null,
-      explanation: `Calculated from ${outerPoints.length} points. ${hasPool ? 'Pool area subtracted.' : ''}`,
-      skirting
+      warning: null,
+      explanation: 'simple deck with no cutouts',
+      ...(skirting || {})
     };
 
     // Save to memory

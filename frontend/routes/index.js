@@ -3,6 +3,11 @@ const multer = require('multer');
 const path = require('path');
 const { chatbot, validate } = require('../controllers/chatbotController');
 const { calculateDeckMaterials } = require('../controllers/deckCalcController');
+const skirtingRouter = require('./skirting');
+const multiShapeRouter = require('./multishape');
+const measurementsRouter = require('./measurements');
+const uploadDrawingRouter = require('./uploadDrawing');
+const digitalizeRouter = require('./digitalize');
 const config = require('../config');
 
 const router = express.Router();
@@ -61,16 +66,12 @@ router.post('/upload-image', upload.single('image'), (req, res) => {
   });
 });
 
-router.post('/digitalize-drawing', upload.single('drawing'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No drawing uploaded' });
-  }
+router.use('/digitalize-drawing', digitalizeRouter);
 
-  // TODO: Implement drawing digitalization logic
-  res.json({
-    message: 'Drawing digitalized successfully',
-    filename: req.file.filename
-  });
-});
+// Additional feature routes
+router.use('/calculate-skirting', skirtingRouter);
+router.use('/calculate-multi-shape', multiShapeRouter);
+router.use('/upload-measurements', measurementsRouter);
+router.use('/upload-drawing', uploadDrawingRouter);
 
 module.exports = router;

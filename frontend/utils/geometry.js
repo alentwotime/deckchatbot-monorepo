@@ -1,4 +1,3 @@
-const math = require('mathjs');
 
 /**
  * Geometry utility functions for deck calculations
