@@ -1,4 +1,3 @@
-const sharp = require('sharp');
 const potrace = require('potrace');
 const { validationResult } = require('express-validator');
 const logger = require('../utils/logger');
@@ -13,18 +12,11 @@ async function digitalizeDrawing(req, res) {
     }
 
     if (!req.file) {
-      return res.status(400).json({ errors: [{ msg: 'No image file uploaded. Please attach an image.' }] });
+      return res.status(400).json({ error: 'Please upload an image' });
     }
 
-    const buffer = await sharp(req.file.buffer)
-      .grayscale()
-      .normalise()
-      .threshold(200)
-      .png()
-      .toBuffer();
-  
     const svg = await new Promise((resolve, reject) => {
-      potrace.trace(buffer, { threshold: POTRACE_THRESHOLD, turdSize: 2 }, (err, svgOutput) => {
+      potrace.trace(req.file.buffer, { threshold: POTRACE_THRESHOLD, turdSize: 2 }, (err, svgOutput) => {
         if (err) {
           logger.error('Potrace tracing error:', err);
           return reject(new Error('Error occurred during SVG tracing'));
@@ -44,7 +36,7 @@ async function digitalizeDrawing(req, res) {
     } else {
       logger.error('Error in digitalizeDrawing:', err.message || err);
     }
-    res.status(500).json({ errors: [{ msg: 'Error processing drawing.' }] });
+    res.status(500).json({ errors: [{ msg: 'Error digitalizing drawing.' }] });
   }
 }
 

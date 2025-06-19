@@ -25,9 +25,10 @@ exports.calculateMultiShape = (req, res) => {
             throw new Error(`Invalid rectangle dimensions for shape ${index + 1}: length and width must be numbers`);
           }
           const area = length * width;
-          totalArea += area;
           if (isPool) {
             poolArea += area;
+          } else {
+            totalArea += area;
           }
           break;
         }
@@ -37,9 +38,10 @@ exports.calculateMultiShape = (req, res) => {
             throw new Error(`Invalid circle dimensions for shape ${index + 1}: radius must be a number`);
           }
           const area = Math.PI * radius * radius;
-          totalArea += area;
           if (isPool) {
             poolArea += area;
+          } else {
+            totalArea += area;
           }
           break;
         }
@@ -83,10 +85,7 @@ exports.calculateMultiShape = (req, res) => {
       usableDeckArea: usableArea.toFixed(2),
       adjustedDeckArea: adjustedArea.toFixed(2),
       note: wastagePercent > 0 ? `Adjusted for ${wastagePercent}% wastage.` : 'No wastage adjustment applied.',
-      explanation: deckAreaExplanation({
-        hasCutout: poolArea > 0,
-        hasMultipleShapes: shapes.length > 1
-      }),
+      explanation: `The usable surface area is ${usableArea.toFixed(2)} square feet.`,
       ...(label && { projectLabel: label })
     };
 
