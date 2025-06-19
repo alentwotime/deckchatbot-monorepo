@@ -7,7 +7,7 @@ exports.calculateMultiShape = (req, res) => {
     return res.status(400).json({ errors: [{ msg: 'shapes must be a non-empty array' }] });
   }
 
-  let deckArea = 0;
+  let totalArea = 0;
   let poolArea = 0;
 
   try {
@@ -28,7 +28,7 @@ exports.calculateMultiShape = (req, res) => {
           if (isPool) {
             poolArea += area;
           } else {
-            deckArea += area;
+            totalArea += area;
           }
           break;
         }
@@ -41,7 +41,7 @@ exports.calculateMultiShape = (req, res) => {
           if (isPool) {
             poolArea += area;
           } else {
-            deckArea += area;
+            totalArea += area;
           }
           break;
         }
@@ -52,10 +52,9 @@ exports.calculateMultiShape = (req, res) => {
             throw new Error(`Invalid L-shape dimensions for shape ${index + 1}: all dimensions must be numbers`);
           }
           const area = (length1 * width1) + (length2 * width2);
+          totalArea += area;
           if (isPool) {
             poolArea += area;
-          } else {
-            deckArea += area;
           }
           break;
         }
@@ -65,10 +64,9 @@ exports.calculateMultiShape = (req, res) => {
             throw new Error(`Invalid octagon dimensions for shape ${index + 1}: side must be a number`);
           }
           const area = 2 * (1 + Math.sqrt(2)) * side * side;
+          totalArea += area;
           if (isPool) {
             poolArea += area;
-          } else {
-            deckArea += area;
           }
           break;
         }
@@ -78,17 +76,16 @@ exports.calculateMultiShape = (req, res) => {
     });
 
     // Calculate usable and adjusted deck area
-    const usableArea = deckArea - poolArea;
+    const usableArea = totalArea - poolArea;
     const adjustedArea = usableArea * (1 + wastagePercent / 100);
 
     const response = {
-      totalShapeArea: deckArea.toFixed(2),
+      totalShapeArea: totalArea.toFixed(2),
       poolArea: poolArea.toFixed(2),
       usableDeckArea: usableArea.toFixed(2),
       adjustedDeckArea: adjustedArea.toFixed(2),
       note: wastagePercent > 0 ? `Adjusted for ${wastagePercent}% wastage.` : 'No wastage adjustment applied.',
-      explanation: usableArea === deckArea ?
-        'simple deck with no cutouts' : 'usable surface',
+      explanation: `The usable surface area is ${usableArea.toFixed(2)} square feet.`,
       ...(label && { projectLabel: label })
     };
 
