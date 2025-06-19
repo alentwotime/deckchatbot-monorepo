@@ -56,6 +56,9 @@ Thumbs.db
 !Azureworkspaces.csv
 !Deckchatbot_Deployment_Guide.md
 !deck-vision.md
+!server.cjs
+!memory.js
 !.conaarc
 !docker-compose.yml
 !/.github/
+frontend/memory.sqlite

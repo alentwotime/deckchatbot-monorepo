@@ -1,4 +1,3 @@
-const math = require('mathjs');
 
 /**
  * Geometry utility functions for deck calculations
@@ -43,25 +42,78 @@ function triangleArea(base, height) {
 }
 
 /**
+ * Calculate the area of an arbitrary polygon using the shoelace formula
+ * @param {Array<{x:number,y:number}>} points - vertices of the polygon
+ * @returns {number} The polygon area in square units
+ */
+function polygonArea(points) {
+  if (!Array.isArray(points) || points.length < 3) {
+    throw new Error('Polygon must have at least 3 points');
+  }
+  let sum = 0;
+  for (let i = 0; i < points.length; i++) {
+    const j = (i + 1) % points.length;
+    sum += points[i].x * points[j].y - points[j].x * points[i].y;
+  }
+  return Math.abs(sum / 2);
+}
+
+/**
+ * Calculate the perimeter of a polygon
+ * @param {Array<{x:number,y:number}>} points
+ * @returns {number} perimeter length
+ */
+function calculatePerimeter(points) {
+  if (!Array.isArray(points) || points.length < 2) {
+    return 0;
+  }
+  let perim = 0;
+  for (let i = 0; i < points.length; i++) {
+    const j = (i + 1) % points.length;
+    const dx = points[i].x - points[j].x;
+    const dy = points[i].y - points[j].y;
+    perim += Math.sqrt(dx * dx + dy * dy);
+  }
+  return perim;
+}
+
+/**
+ * Convert feet and inches string to decimal feet.
+ * Accepts formats like "5' 6\"" or "5.5".
+ * @param {string|number} value
+ * @returns {number}
+ */
+function ftInToDecimal(value) {
+  if (typeof value === 'number') return value;
+  const str = String(value).trim();
+  if (/^\d+(?:\.\d+)?\s*\"$/.test(str) && !str.includes("'")) {
+    return parseFloat(str) / 12;
+  }
+  const match = str.match(/^(\d+(?:\.\d+)?)\s*(?:'|ft)?\s*(\d+(?:\.\d+)?)?\s*(?:\"|in)?$/i);
+  if (!match) return parseFloat(str) || 0;
+  const feet = parseFloat(match[1]);
+  const inches = match[2] ? parseFloat(match[2]) : 0;
+  return feet + inches / 12;
+}
+
+/**
  * Extract shape information from message
  * @param {string} message - User message
  * @returns {Object} Shape information
  */
 function shapeFromMessage(message) {
   const msg = message.toLowerCase();
-  
+
   // Look for rectangle patterns
   const rectMatch = msg.match(/rectangle|rectangular|deck/);
   if (rectMatch) {
-    const lengthMatch = msg.match(/length[:\s]*(\d+(?:\.\d+)?)/);
-    const widthMatch = msg.match(/width[:\s]*(\d+(?:\.\d+)?)/);
-    
-    if (lengthMatch && widthMatch) {
+    const dims = msg.match(/([\d'\"\.\s]+)\s*(?:x|by)\s*([\d'\"\.\s]+)/);
+    if (dims) {
       return {
         type: 'rectangle',
         dimensions: {
-          length: parseFloat(lengthMatch[1]),
-          width: parseFloat(widthMatch[1])
+          length: ftInToDecimal(dims[1]),
+          width: ftInToDecimal(dims[2])
         }
       };
     }
@@ -70,12 +122,12 @@ function shapeFromMessage(message) {
   // Look for circle patterns
   const circleMatch = msg.match(/circle|circular|round/);
   if (circleMatch) {
-    const radiusMatch = msg.match(/radius[:\s]*(\d+(?:\.\d+)?)/);
+    const radiusMatch = msg.match(/radius[:\s]*(\d+(?:\.\d+)?(?:['\"])?\s*(\d+(?:\.\d+)?)?\"?)/);
     if (radiusMatch) {
       return {
         type: 'circle',
         dimensions: {
-          radius: parseFloat(radiusMatch[1])
+          radius: ftInToDecimal(radiusMatch[1])
         }
       };
     }
@@ -177,6 +229,9 @@ module.exports = {
   rectangleArea,
   circleArea,
   triangleArea,
+  polygonArea,
+  calculatePerimeter,
+  ftInToDecimal,
   shapeFromMessage,
   deckAreaExplanation,
   calculateMaterials

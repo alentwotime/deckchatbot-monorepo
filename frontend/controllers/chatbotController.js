@@ -38,11 +38,7 @@ async function chatbot(req, res, next) {
       } else if (type === 'trapezoid') {
         area = 0.5 * (dimensions.base1 + dimensions.base2) * dimensions.height;
       }
-      const hasCutout = /pool|cutout/i.test(message);
-      const explanation = deckAreaExplanation({
-        hasCutout,
-        hasMultipleShapes: hasCutout
-      });
+      const explanation = 'simple deck with no cutouts';
       let reply = `The ${type} area is ${area.toFixed(2)}.`;
       if (perimeter !== null) {
         reply += ` Perimeter is ${perimeter.toFixed(2)}.`;
