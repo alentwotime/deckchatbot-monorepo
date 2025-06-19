@@ -2,6 +2,7 @@
 /**
  * Geometry utility functions for deck calculations
  */
+const { extractNumbers } = require('./extract');
 
 /**
  * Calculate rectangle area
@@ -129,6 +130,34 @@ function shapeFromMessage(message) {
         dimensions: {
           radius: ftInToDecimal(radiusMatch[1])
         }
+      };
+    }
+  }
+
+  // Look for L-shape patterns
+  if (/l[- ]?shape/.test(msg)) {
+    const nums = extractNumbers(msg);
+    if (nums.length >= 4) {
+      const [l1, w1, l2, w2] = nums;
+      return {
+        type: 'lshape',
+        dimensions: {
+          length1: l1,
+          width1: w1,
+          length2: l2,
+          width2: w2
+        }
+      };
+    }
+  }
+
+  // Look for octagon patterns
+  if (/octagon/.test(msg)) {
+    const nums = extractNumbers(msg);
+    if (nums.length >= 1) {
+      return {
+        type: 'octagon',
+        dimensions: { side: nums[0] }
       };
     }
   }

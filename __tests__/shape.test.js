@@ -56,6 +56,18 @@ describe('geometry utilities', () => {
     const msg = 'circle radius 18\"';
     expect(shapeFromMessage(msg)).toEqual({ type: 'circle', dimensions: { radius: 1.5 } });
   });
+  test("shapeFromMessage parses l-shape", () => {
+    const msg = "l-shape 10x20 plus 5x15";
+    expect(shapeFromMessage(msg)).toEqual({
+      type: "lshape",
+      dimensions: { length1: 10, width1: 20, length2: 5, width2: 15 }
+    });
+  });
+
+  test("shapeFromMessage parses octagon", () => {
+    const msg = "octagon side 8";
+    expect(shapeFromMessage(msg)).toEqual({ type: "octagon", dimensions: { side: 8 } });
+  });
 
   test('shapeFromMessage handles invalid input', () => {
     expect(shapeFromMessage('gibberish')).toBeNull();
