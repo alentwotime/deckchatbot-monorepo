@@ -157,6 +157,10 @@ The frontend will be available at [http://localhost:3000](http://localhost:3000)
 
 Images can be built and pushed to your Azure Container Registry and deployed to Azure Container Apps. A GitHub Actions workflow (`.github/workflows/deploy.yml`) automates this whenever `main` is pushed. It requires `AZURE_CREDENTIALS`, `ACR_NAME` and `AZURE_RG` secrets.
 
+Alternatively you can run the helper script `./azure_setup.sh` after logging in
+with `az login` and exporting `AZURE_RG`, `ACR_NAME` and `LOCATION`. It will
+build and push the Docker images and create the Container Apps for you.
+
 For manual deployment you can run:
 
 ```bash
