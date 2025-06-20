@@ -1,179 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Decking Chatbot with GPT & Photo Upload</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Decking Chatbot</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.css">
 </head>
 <body>
-  <div class="d-flex justify-content-end mb-3">
+  <div class="d-flex justify-content-end mb-3 gap-2">
     <button id="themeToggle" class="btn btn-secondary btn-sm">Toggle Theme</button>
+    <button id="styleSwitch" class="btn btn-outline-secondary btn-sm">Switch Style</button>
   </div>
 
   <p class="note" role="status" aria-live="polite">
-    To analyze deck drawings, you can either upload a general image using <strong>Upload Image</strong> or upload a specific drawing using <strong>Digitalize Drawing</strong> below.
-    Uploading images does not work through this text chat.
+    To analyze deck drawings, upload a general image with <strong>Upload Image</strong> or digitalize a specific drawing below. Image uploads do not work through chat.
   </p>
 
   <div id="chat">
     <h2>Decking Chatbot</h2>
-
-    <div id="messages" class="mb-3"></div>
-
+    <div id="chatLog" class="mb-3 border p-2 chat-log"></div>
     <form id="chatForm" autocomplete="off">
       <div id="inputArea" class="input-group">
-        <input
-          type="text"
-          id="userInput"
-          placeholder="Type your message..."
-          autocomplete="off"
-          class="form-control"
-          aria-label="Type your message"
-        />
+        <input type="text" id="messageInput" placeholder="Type your message..." class="form-control">
         <button id="sendBtn" type="submit" class="btn btn-success">Send</button>
       </div>
     </form>
-
     <div class="mt-4">
-      <label for="imageInput" class="form-label">Select image to upload:</label>
-      <input
-        type="file"
-        id="imageInput"
-        accept="image/*"
-        class="form-control w-auto d-inline"
-        title="Choose an image file to upload"
-      />
-      <button id="uploadBtn" type="button" onclick="uploadImage()" class="btn btn-primary ms-1">Upload Image</button>
+      <label for="fileInput" class="form-label">Upload a photo:</label>
+      <input type="file" id="fileInput" accept="image/*" class="form-control w-auto d-inline">
+      <button id="uploadButton" type="button" class="btn btn-primary ms-1">Upload Image</button>
     </div>
-
     <div class="mt-3">
-      <label for="drawingInput" class="form-label">Select deck drawing to digitalize:</label>
-      <input
-        type="file"
-        id="drawingInput"
-        accept="image/*"
-        class="form-control w-auto d-inline"
-        title="Choose a deck drawing image to digitalize"
-      />
-      <button
-        id="digitalizeBtn"
-        type="button"
-        onclick="uploadDrawing()"
-        class="btn btn-primary ms-1"
-        title="Upload and convert drawing to SVG"
-      >
-        Digitalize Drawing
-      </button>
+      <label for="drawingInput" class="form-label">Digitalize deck drawing:</label>
+      <input type="file" id="drawingInput" accept="image/*" class="form-control w-auto d-inline">
+      <button id="digitalizeBtn" type="button" class="btn btn-primary ms-1">Digitalize Drawing</button>
     </div>
-
-    <div id="digitalWrapper" class="mt-4 text-center">
-      <h3>Digitalized Drawing</h3>
-      <img id="digitalImage" alt="Digitalized drawing" class="img-fluid" />
+    <div id="uploadLoader" class="spinner-border text-primary d-none mt-3" role="status">
+      <span class="visually-hidden">Uploading...</span>
     </div>
-
-    <!-- Deck Calculator -->
-    <div id="deckCalc" class="mt-5">
-      <h3>Deck Layout & Material Calculator</h3>
-      <form id="deckForm" class="row gy-2 gx-3 align-items-center">
-        <div class="col-auto">
-          <label class="visually-hidden" for="shape">Shape</label>
-          <select id="shape" class="form-select">
-            <option value="rectangle" selected>Rectangle</option>
-            <option value="lshape">L-Shape</option>
-            <option value="octagon">Octagon</option>
-          </select>
-        </div>
-        <div class="col-auto shape-rect">
-          <label class="visually-hidden" for="length">Length (ft)</label>
-          <input type="number" min="1" step="0.1" id="length" class="form-control" placeholder="Length (ft)" />
-        </div>
-        <div class="col-auto shape-rect">
-          <label class="visually-hidden" for="width">Width (ft)</label>
-          <input type="number" min="1" step="0.1" id="width" class="form-control" placeholder="Width (ft)" />
-        </div>
-        <div class="col-auto shape-l">
-          <label class="visually-hidden" for="length1">Rect 1 Length (ft)</label>
-          <input type="number" min="1" step="0.1" id="length1" class="form-control" placeholder="Rect 1 Length" />
-        </div>
-        <div class="col-auto shape-l">
-          <label class="visually-hidden" for="width1">Rect 1 Width (ft)</label>
-          <input type="number" min="1" step="0.1" id="width1" class="form-control" placeholder="Rect 1 Width" />
-        </div>
-        <div class="col-auto shape-l">
-          <label class="visually-hidden" for="length2">Rect 2 Length (ft)</label>
-          <input type="number" min="1" step="0.1" id="length2" class="form-control" placeholder="Rect 2 Length" />
-        </div>
-        <div class="col-auto shape-l">
-          <label class="visually-hidden" for="width2">Rect 2 Width (ft)</label>
-          <input type="number" min="1" step="0.1" id="width2" class="form-control" placeholder="Rect 2 Width" />
-        </div>
-        <div class="col-auto shape-oct">
-          <label class="visually-hidden" for="side">Side (ft)</label>
-          <input type="number" min="1" step="0.1" id="side" class="form-control" placeholder="Side Length" />
-        </div>
-        <div class="col-auto">
-          <label class="visually-hidden" for="orientation">Board Orientation</label>
-          <select id="orientation" class="form-select">
-            <option value="horizontal" selected>Horizontal</option>
-            <option value="vertical">Vertical</option>
-          </select>
-        </div>
-        <div class="col-auto">
-          <label class="visually-hidden" for="attachment">Attachment</label>
-          <select id="attachment" class="form-select">
-            <option value="attached" selected>Attached</option>
-            <option value="freestanding">Freestanding</option>
-          </select>
-        </div>
-        <div class="col-auto">
-          <label class="visually-hidden" for="height">Height (ft)</label>
-          <input type="number" min="0" step="0.1" id="height" class="form-control" placeholder="Height" />
-        </div>
-        <div class="col-auto">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="railings" checked />
-            <label class="form-check-label" for="railings">Railings</label>
-          </div>
-        </div>
-        <div class="col-auto">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="stairs" />
-            <label class="form-check-label" for="stairs">Stairs</label>
-          </div>
-        </div>
-        <div class="col-auto">
-          <label class="visually-hidden" for="boardWidth">Board Width (in)</label>
-          <input type="number" min="1" step="0.1" id="boardWidth" class="form-control" value="5.5" />
-        </div>
-        <div class="col-auto">
-          <label class="visually-hidden" for="boardLength">Board Length (ft)</label>
-          <input type="number" min="1" step="0.1" id="boardLength" class="form-control" value="16" />
-        </div>
-        <div class="col-auto">
-          <label class="visually-hidden" for="waste">Waste %</label>
-          <input type="number" min="0" step="1" id="waste" class="form-control" value="10" />
-        </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-success">Calculate</button>
-        </div>
-        <div class="col-auto">
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="showBoards" checked />
-            <label class="form-check-label" for="showBoards">Show Boards</label>
-          </div>
-        </div>
-      </form>
-      <canvas id="deckCanvas" width="400" height="300" class="border mt-3"></canvas>
-      <div class="mt-2">
-        <button type="button" id="exportBtn" class="btn btn-secondary btn-sm">Export PNG</button>
-        <button type="button" id="printBtn" class="btn btn-secondary btn-sm ms-1">Print</button>
-      </div>
-      <div id="calcResults" class="mt-3"></div>
+    <div class="text-center mt-3">
+      <img id="preview" class="img-fluid d-none" alt="Preview">
     </div>
+    <div id="svgPreview" class="text-center my-4"></div>
   </div>
 
+  <div id="deckCalc" class="mt-5">
+    <h3>Deck Layout & Material Calculator</h3>
+    <form id="deckForm" class="row gy-2 gx-3 align-items-center">
+      <div class="col-auto">
+        <label for="shape" class="visually-hidden">Shape</label>
+        <select id="shape" class="form-select">
+          <option value="rectangle" selected>Rectangle</option>
+          <option value="lshape">L-Shape</option>
+          <option value="octagon">Octagon</option>
+        </select>
+      </div>
+      <div class="col-auto shape-field shape-rectangle">
+        <input type="number" id="length" class="form-control" placeholder="Length (ft)">
+      </div>
+      <div class="col-auto shape-field shape-rectangle">
+        <input type="number" id="width" class="form-control" placeholder="Width (ft)">
+      </div>
+      <fieldset class="col-auto border rounded p-2 lshape-dimensions hidden">
+        <legend class="float-none w-auto px-2 fs-6 mb-1">L-Shape Deck Dimensions</legend>
+        <input type="number" id="length1" class="form-control mb-1" placeholder="Section 1 Length (ft)">
+        <input type="number" id="width1" class="form-control mb-1" placeholder="Section 1 Width (ft)">
+        <input type="number" id="length2" class="form-control mb-1" placeholder="Section 2 Length (ft)">
+        <input type="number" id="width2" class="form-control" placeholder="Section 2 Width (ft)">
+      </fieldset>
+      <div class="col-auto shape-field shape-octagon">
+        <input type="number" id="side" class="form-control" placeholder="Side Length (ft)">
+      </div>
+      <div class="col-auto">
+        <label for="orientation" class="visually-hidden">Orientation</label>
+        <select id="orientation" class="form-select">
+          <option value="horizontal" selected>Horizontal</option>
+          <option value="vertical">Vertical</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <select id="attachment" class="form-select" title="Attachment Type">
+          <option value="attached" selected>Attached</option>
+          <option value="freestanding">Freestanding</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <input type="number" id="height" class="form-control" placeholder="Height (ft)">
+      </div>
+      <div class="col-auto">
+        <input class="form-check-input" type="checkbox" id="railings" checked>
+        <label class="form-check-label" for="railings">Railings</label>
+      </div>
+      <div class="col-auto">
+        <input class="form-check-input" type="checkbox" id="stairs">
+        <label class="form-check-label" for="stairs">Stairs</label>
+      </div>
+      <div class="col-auto">
+        <input type="number" id="boardWidth" class="form-control" value="5.5" placeholder="Board Width (in)">
+      </div>
+      <div class="col-auto">
+        <input type="number" id="boardLength" class="form-control" value="16" placeholder="Board Length (ft)">
+      </div>
+      <div class="col-auto">
+        <input type="number" id="waste" class="form-control" value="10" placeholder="Waste (%)">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-success">Calculate</button>
+      </div>
+      <div class="col-auto">
+        <input class="form-check-input" type="checkbox" id="showBoards" checked>
+        <label class="form-check-label" for="showBoards">Show Boards</label>
+      </div>
+    </form>
+    <canvas id="deckCanvas" width="400" height="300" class="border mt-3"></canvas>
+    <div class="mt-2">
+      <button type="button" id="exportBtn" class="btn btn-secondary btn-sm">Export PNG</button>
+      <button type="button" id="printBtn" class="btn btn-secondary btn-sm ms-1">Print</button>
+    </div>
+    <div id="calcResults" class="mt-3"></div>
+  </div>
+
+  <script>
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const savedTheme = localStorage.getItem('deckchat_theme') || systemTheme;
+    document.body.setAttribute('data-theme', savedTheme);
+
+    document.getElementById('themeToggle')?.addEventListener('click', () => {
+      const current = document.body.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', next);
+      localStorage.setItem('deckchat_theme', next);
+    });
+
+    document.getElementById('styleSwitch')?.addEventListener('click', () => {
+      const current = document.body.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', next);
+      localStorage.setItem('deckchat_theme', next);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const shapeSelect = document.getElementById('shape');
+      function updateShapeFields() {
+        const shape = shapeSelect.value;
+        document.querySelectorAll('.shape-field').forEach(div => div.style.display = 'none');
+        document.querySelectorAll('.shape-field.shape-' + shape).forEach(div => div.style.display = '');
+        // Show/hide L-Shape fieldset
+        const lshapeFieldset = document.querySelector('.lshape-dimensions');
+        if (lshapeFieldset) {
+          lshapeFieldset.style.display = (shape === 'lshape') ? '' : 'none';
+        }
+      }
+      shapeSelect.addEventListener('change', updateShapeFields);
+      updateShapeFields();
+
+      const digitalizeBtn = document.getElementById('digitalizeBtn');
+      if (digitalizeBtn && typeof uploadDrawing === 'function') {
+        digitalizeBtn.addEventListener('click', uploadDrawing);
+      }
+    });
+
+    function showSvgPreview(svgContent) {
+      const svgContainer = document.getElementById('svgPreview');
+      svgContainer.innerHTML = svgContent;
+      const svg = svgContainer.querySelector('svg');
+      if (svg) svg.classList.add('loaded');
+    }
+  </script>
   <script src="script.js" defer></script>
 </body>
 </html>

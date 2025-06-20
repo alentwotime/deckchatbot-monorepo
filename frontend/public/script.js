@@ -13,13 +13,10 @@ class DeckChatbot {
   }
 
   bindEvents() {
-    // Chat form submission
     document.getElementById('chatForm')?.addEventListener('submit', (e) => {
       e.preventDefault();
       this.sendMessage();
     });
-
-    // File upload events
     this.setupFileUpload();
   }
 
@@ -27,6 +24,7 @@ class DeckChatbot {
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const uploadButton = document.getElementById('uploadButton');
+    const loader = document.getElementById('uploadLoader');
 
     dropZone?.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -57,7 +55,8 @@ class DeckChatbot {
 
     uploadButton?.addEventListener('click', () => {
       if (this.selectedFile) {
-        this.uploadFile('/upload-image');
+        loader?.classList.remove('d-none');
+        this.uploadFile('/upload-image').finally(() => loader?.classList.add('d-none'));
       } else {
         alert('Please select a file first.');
       }
@@ -98,6 +97,51 @@ class DeckChatbot {
     } catch (error) {
       alert(error.message || 'Upload failed.');
     }
+  }
+
+  async sendMessage() {
+    const messageInput = document.getElementById('messageInput');
+    const message = messageInput?.value.trim();
+    if (!message) return;
+
+    this.appendMessage('user', message);
+    this.appendMessage('bot', 'Bot is typing...');
+
+    try {
+      const response = await fetch(`${this.baseUrl}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.apiKey}`
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+      document.querySelector('.chat-message.bot:last-child')?.remove();
+      this.appendMessage('bot', this.renderMarkdown(data.reply || 'No response'));
+    } catch (err) {
+      document.querySelector('.chat-message.bot:last-child')?.remove();
+      this.appendMessage('bot', 'Failed to send message');
+    }
+
+    messageInput.value = '';
+  }
+
+  appendMessage(sender, html) {
+    const chatLog = document.getElementById('chatLog');
+    const messageEl = document.createElement('div');
+    messageEl.className = `chat-message ${sender}`;
+    messageEl.innerHTML = `
+      <div>${html}</div>
+      <div class="timestamp">${new Date().toLocaleTimeString()}</div>
+    `;
+    chatLog?.appendChild(messageEl);
+    chatLog?.scrollTo({ top: chatLog.scrollHeight, behavior: 'smooth' });
+  }
+
+  renderMarkdown(text) {
+    return window.marked ? marked.parse(text) : text;
   }
 
   showWelcomeMessage() {

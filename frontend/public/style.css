@@ -12,8 +12,8 @@
   --text-color: #000000;
   --chat-bg: #ffffff;
   --border-color: #ccc;
-  --message-user-bg: #e1ffc7;
-  --message-bot-bg: #f1f1f1;
+--message-user-bg: #e1ffc7;
+--message-bot-bg: #f1f1f1;
 }
 
 body[data-theme='dark'] {
@@ -74,7 +74,6 @@ body {
   border-radius: 12px 12px 0 0 !important;
 }
 
-/* Messages Container */
 .messages-container {
   height: 400px;
   overflow-y: auto;
@@ -129,7 +128,6 @@ body {
   }
 }
 
-/* Drop Zone Styles */
 .drop-zone {
   border: 2px dashed var(--border-color);
   border-radius: 12px;
@@ -158,7 +156,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* Upload Progress */
 .upload-progress {
   display: none;
 }
@@ -167,7 +164,6 @@ body {
   display: block;
 }
 
-/* Button Enhancements */
 .btn {
   border-radius: 8px;
   font-weight: 500;
@@ -194,7 +190,6 @@ body {
   border: none;
 }
 
-/* Theme Toggle */
 #themeToggle {
   position: relative;
   overflow: hidden;
@@ -208,7 +203,6 @@ body {
   transform: rotate(180deg);
 }
 
-/* Input Enhancements */
 .form-control {
   border-radius: 8px;
   border-color: var(--border-color);
@@ -224,7 +218,6 @@ body {
   color: var(--text-primary);
 }
 
-/* Alert Enhancements */
 .alert {
   border-radius: 12px;
   border: none;
@@ -236,7 +229,6 @@ body {
   color: #0c5460;
 }
 
-/* Modal Enhancements */
 .modal-content {
   border-radius: 12px;
   border: none;
@@ -248,30 +240,24 @@ body {
   border-bottom-color: var(--border-color);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .container-fluid {
     padding: 0.5rem;
   }
-  
   .messages-container {
     height: 300px;
   }
-  
   .message {
     max-width: 95%;
   }
-  
   .drop-zone {
     padding: 1rem;
   }
-  
   .drop-zone-icon {
     font-size: 2rem;
   }
 }
 
-/* Loading Animation */
 .loading {
   display: inline-block;
   width: 20px;
@@ -286,7 +272,6 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Utility Classes */
 .text-truncate {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -302,7 +287,6 @@ body {
   to { opacity: 1; }
 }
 
-/* Scrollbar Styling */
 .messages-container::-webkit-scrollbar {
   width: 6px;
 }
