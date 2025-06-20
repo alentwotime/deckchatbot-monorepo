@@ -6,7 +6,7 @@ jest.mock('openai', () => {
       }
     }
   }));
-});
+}, { virtual: true });
 
 const { rectangleArea, circleArea, triangleArea, polygonArea, shapeFromMessage } = require('../utils/geometry');
 
