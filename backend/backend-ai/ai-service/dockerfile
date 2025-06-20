@@ -1,14 +1,30 @@
-# Use a Python runtime
+# Use official Python 3.11 slim image
 FROM python:3.11-slim
 
+# Set working directory
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install Poetry and project dependencies
+COPY pyproject.toml poetry.lock ./
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && curl -sSL https://install.python-poetry.org | python3 - \
+    && ln -s /root/.local/bin/poetry /usr/local/bin/poetry \
+    && poetry install --no-dev --no-root \
+    && apt-get purge -y curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy all service code
+# Create a non-root user and set permissions
+RUN addgroup --system app && adduser --system --group app && \
+    chown -R app:app /app
+
+# Copy application source code
 COPY . .
+
+# Use non-root user
+USER app
+
+# Expose port 11434
+EXPOSE 11434
 
 # Run FastAPI with Uvicorn
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "11434"]
