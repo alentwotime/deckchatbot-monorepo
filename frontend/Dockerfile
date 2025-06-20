@@ -1,14 +1,26 @@
-# Stage 1 - install dependencies
-FROM node:18-alpine AS builder
+# Use Node 18 Alpine base image
+FROM node:18-alpine
+
+# Set working directory
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci --omit=dev
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm install
+
+# Copy all frontend files
 COPY . .
 
-# Stage 2 - runtime
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app .
+# Build React/Vite frontend
+RUN npm run build
+
+# Use serve to serve production build
+RUN npm install -g serve
+
+# Expose port 3000
 EXPOSE 3000
-CMD ["node", "server.js"]
+
+# Start the frontend server
+CMD ["serve", "-s", "build", "-l", "3000"]
