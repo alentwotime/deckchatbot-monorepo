@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   backend:
     build:
@@ -7,6 +9,18 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/backend-ai:/app
+    depends_on:
+      - ai-service
+
+  ai-service:
+    build:
+      context: ./backend/backend-ai/ai-service
+      dockerfile: dockerfile  # lowercase, per your rename
+    ports:
+      - "11434:11434"  # Change or remove if it's internal only
+    volumes:
+      - ./backend/backend-ai/ai-service:/app
+    command: python main.py  # Adjust to match your ai-service entry point
 
   frontend:
     build:
