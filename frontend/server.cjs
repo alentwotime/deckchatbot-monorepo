@@ -44,7 +44,7 @@ app.use('/', routes);
 app.use(errorLogger);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
