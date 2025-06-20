@@ -1,14 +1,13 @@
 [tool.poetry]
-name = "deckbot-backend"
+name = "app2"
 version = "0.1.0"
-description = "FastAPI backend for DeckChatbot"
+description = "Application 2 for DeckChatBot"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.115.0"
-uvicorn = "^0.34.0"
-httpx = "^0.27.0"
+python = "^3.13"
+requests = "^2.26"
+lib1 = { path = "../../libs/lib1", develop = true }
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "deckchatbot-monorepo"
+version = "0.1.0"
+description = "Monorepo for DeckChatBot projects"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+requests = "^2.26"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"
+
+[tool.poetry.group.app.dependencies]
+app1 = { path = "apps/app1", develop = true }
+app2 = { path = "apps/app2", develop = true }
+
+[tool.poetry.group.lib.dependencies]
+lib1 = { path = "libs/lib1", develop = true }
+lib2 = { path = "libs/lib2", develop = true }
+
+[tool.poetry-monorepo-dependency-plugin]
+enable = true

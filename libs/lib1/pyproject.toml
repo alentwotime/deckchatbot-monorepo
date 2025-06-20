@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ai-service"
+name = "lib1"
 version = "0.1.0"
 description = "AI service for deck image processing"
 authors = ["Your Name <you@example.com>"]
