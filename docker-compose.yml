@@ -3,24 +3,10 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./backend/backend-ai
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend/backend-ai:/app
-    depends_on:
-      - ai-service
-
-  ai-service:
-    build:
-      context: ./backend/backend-ai/ai-service
-      dockerfile: Dockerfile  
-    ports:
-      - "11434:11434"
-    volumes:
-      - ./backend/backend-ai/ai-service:/app
-    command: uvicorn main:app --host 0.0.0.0 --port 11434  
 
   frontend:
     build:

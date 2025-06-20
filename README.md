@@ -87,7 +87,7 @@ npm run dev
 Backend AI Setup
 bash
 Copy
-cd backend/backend-ai
+cd apps/app1
 poetry install --no-root
 poetry run uvicorn API.api:app --reload
 Quick Local Run
@@ -188,7 +188,7 @@ export LOCATION="eastus"  # or your preferred region
 Step 3: Build and push Docker images to Azure Container Registry (ACR)
 bash
 Copy
-az acr build --registry $ACR_NAME --image deckchatbot-backend:latest -f backend/backend-ai/Dockerfile ./backend/backend-ai
+az acr build --registry $ACR_NAME --image deckchatbot-backend:latest -f Dockerfile .
 az acr build --registry $ACR_NAME --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
 These commands build your Docker images in Azure and push them to your private ACR.
 
@@ -231,39 +231,17 @@ Screenshot Example
 [Add a screenshot showing the Azure Portal Container Apps page with your deployed apps here]
 
 🐳 Dockerfile and Docker Compose Explained
-Backend Dockerfile (backend/backend-ai/Dockerfile)
-Dockerfile
-Copy
-
-## Use official Python 3.10 image
-
-FROM python:3.10-slim
-
-## Set working directory
-
+Backend Dockerfile (Dockerfile)
+```Dockerfile
+FROM python:3.11-slim
 WORKDIR /app
-
-## Copy dependencies
-
-COPY poetry.lock pyproject.toml /app/
-
-# Install Poetry and dependencies
-
-RUN pip install poetry && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-dev --no-root
-
-# Copy app source code
-
-COPY . /app
-
-# Expose port 8000
-
-EXPOSE 8000
-
-# Command to run the FastAPI app
-
-CMD ["uvicorn", "API.api:app", "--host", "0.0.0.0", "--port", "8000"]
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+ENV PORT=8000
+EXPOSE ${PORT}
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "${PORT}"]
+```
 Explanation:
 
 Uses slim Python image for smaller size
@@ -310,7 +288,7 @@ version: "3.9"
 services:
   backend:
     build:
-      context: ./backend/backend-ai
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
