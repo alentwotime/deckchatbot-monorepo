@@ -1,30 +1,18 @@
 {
   "name": "deckchatbot-monorepo",
   "version": "1.0.0",
-  "description": "The assistant starts by asking the user what type of deck job they need (new deck, resurfacing, etc.)",
+  "description": "...",
   "main": "server.cjs",
-  "directories": {
-    "doc": "docs"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.cjs",
     "dev": "nodemon"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/alentwotime/deckchatbot-monorepo.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/alentwotime/deckchatbot-monorepo/issues"
-  },
-  "homepage": "https://github.com/alentwotime/deckchatbot-monorepo#readme",
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0"
   },
   "nodemonConfig": {
     "watch": [
@@ -38,19 +26,5 @@
       "**/*.pyc",
       "**/__pycache__/**"
     ]
-  },
-  "dependencies": {
-    "add": "^2.0.6",
-    "config": "^4.0.0",
-    "express-rate-limit": "^7.5.0",
-    "fastapi": "^0.0.8",
-    "flake8": "^0.0.1",
-    "helmet": "^8.1.0",
-    "httpx": "^3.0.1",
-    "lock": "^1.1.0",
-    "poetry": "^0.6.29",
-    "pytest": "^1.0.0",
-    "shell": "^0.12.0",
-    "uvicorn": "^0.0.1-security"
   }
 }
