@@ -1,191 +1,363 @@
-# 🧠 DeckChatbot Monorepo
+# User Journey Overview
+1. Chatbot Greeting
+The assistant starts by asking the user what type of deck job they need (new deck, resurfacing, etc.)
 
-An AI-powered assistant to help salespeople analyze, measure, and visualize decks based on field drawings and customer-provided images. This tool guides users through a friendly step-by-step process that starts with chat and ends with a 3D render.
+2. Upload Phase
+Users upload:
 
----
+Photos of deck/home area
 
-📁 Monorepo Structure
+Blueprint or sketch drawings with measurements and directional markers
 
-💬 User Journey
+3. Image Naming Guide
+Use clear file names to help the AI:
 
-**Chatbot Greeting**
-The deck assistant introduces itself and asks for the type of job (e.g., resurface, new deck).
+Include terms like deck, sketch, layout, or measurements (12x16ft)
 
-**Upload Phase**
-User uploads:
+Use .png or .jpg
 
-* Photos of the deck area or home
-* Blueprint drawing with exact measurements
-* Sketch with direction markers (stairs, door, elevation arrows)
+Avoid spaces, emojis, or generic names
 
-📂 Image Naming Guide
+Example filenames:
 
-To help the AI properly process your images, use clear filenames when uploading:
+deck-sketch_L-shape_22x16ft.jpg
 
-**Use this format:**
+deck-blueprint_marked-door-stairs.png
 
-deck-sketch_graph-measurements_12x16ft.png
+4. Image + Drawing Analysis
+AI backend uses OCR and vision models to:
 
-**Tips:**
+Extract deck outline and dimensions
 
-* ✅ Include terms like `deck`, `sketch`, `layout`, or `measurements`
-* ✅ Add size if known (e.g., `12x16ft`)
-* ✅ Use `.png` or `.jpg`
-* ❌ Avoid spaces, emojis, or generic names like `image1.png`
+Identify features like doors, stairs, and elevation
 
-**Examples:**
+Normalize sketches to scale
 
-* `deck-sketch_L-shape_22x16ft.jpg`
-* `deck-blueprint_marked-door-stairs.png`
+5. 2D Deck Generation
+Creates a clean, digital 2D deck layout from the sketch.
 
-**Image + Drawing Analysis**
-The backend uses AI (OCR + Vision) to:
+6. Bot Follow-Up
+Chatbot asks any missing questions, like deck height or preferred materials.
 
-* Extract outline dimensions
-* Identify doors, stairs, and elevation
-* Normalize the layout to scale
+7. 3D Visualization
+Generates a 3D deck model overlayed on the house photo for client presentation.
 
-**2D Deck Generation**
-A clean, digital 2D drawing is created from the sketch.
+📸 DeckChatbot Vision Input Guide
+Required Uploads
+Graph Paper Sketch (Mandatory):
 
-**Bot Follow-Up**
-Chatbot asks any missing questions (e.g., deck height, material choice).
+Drawn to scale with all outer measurements labeled
 
-**3D Visualization**
-Final output is a 3D deck image **pasted over the house photo** for visual presentation.
+Mark stairs, doors, deck height clearly
 
-![Sample layout](layout.png)
+Photos of Area (Optional but Recommended):
 
----
+Back of house or current deck condition
 
-## 📸 DeckChatbot Vision Input Guide
+Taken from slight angle for 3D effect
 
-To ensure accurate AI measurement and rendering, please follow these guidelines when uploading drawings or photos.
+Format & Size
+Type	Format	Max Size
+Drawings	JPG, PNG, PDF	15MB
+Real Photos	JPG, PNG	15MB
 
-### 1️⃣ Required Uploads
+Tips for Best Results
+Use natural daylight, avoid shadows
 
-#### ✅ A. Graph Paper Sketch (Mandatory)
+Ensure graph paper edges visible and flat
 
-* Drawn **to scale** using graph paper
-* All **outer measurements** labeled (in feet and inches)
-* **Mark** the following clearly:
+Use dark ink or pencil, avoid faint markers
 
-* **Stairs** → arrow labeled "stairs"
-* **House Door** → box or line labeled "door"
-* **Deck Height** → upward arrow with height (e.g., 3' 6")
+🚀 Getting Started
+Prerequisites
+Node.js 18+
 
-#### 🔧 Example Markup
+Python 3.10+
 
-* 12' 3" x 14' 6"
-* ↕️ 3' 6" (deck height)
-* ↗️ (stairs)
-* 📦 (door)
+Poetry package manager
 
-#### ✅ B. Real Photos of Area (Optional but Recommended)
-
-* Photo of the **back of the house** (where the deck is going)
-* Any current deck condition (if resurfacing)
-* Photos should:
-
-* Show the full **area or wall**
-* Be taken from a slight angle (for 3D overlay realism)
-* Avoid obstructions (cars, people, dogs, etc.)
-
-### 2️⃣ Formats
-
-| Type        | Format           | Max Size |
-| ----------- | ---------------- | -------- |
-| Drawings    | .JPG, .PNG, .PDF | 15MB     |
-| Real Photos | .JPG, .PNG       | 15MB     |
-
-### 3️⃣ Tips for Accuracy
-
-* Use natural daylight (avoid harsh shadows)
-* Ensure graph paper edges are **fully visible**
-* Avoid folds or tilted angles when photographing sketches
-* Use black ink or dark pencil — no neon or faint markers
-
-### 🧠 AI Process
-
-1. **OCR** reads measurement labels
-2. **Edge detection** outlines perimeter
-3. **Classification** identifies features (stairs, doors, height)
-4. **2D to 3D model conversion**
-5. **Image overlay** (your photo + 3D render)
-
----
-
-## 🚀 Getting Started
-
-### Frontend Setup
-
-```bash
+Frontend Setup
+bash
+Copy
 cd frontend
 npm install
 npm run dev
-```
-
-### Backend Setup
-
-```bash
+Backend AI Setup
+bash
+Copy
 cd backend/backend-ai
 poetry install --no-root
 poetry run uvicorn API.api:app --reload
-```
+Quick Local Run
+From repo root:
 
-> Requires Node.js 18+ and Python 3.10+
-
-### Quick Local Run
-
-From the repository root:
-
-```bash
+bash
+Copy
 ./run.sh
-```
+Docker Compose
+Build and run all services locally:
 
-### Docker Quick Start
-
-Build and run both services with Docker Compose:
-
-```bash
+bash
+Copy
 docker compose up --build
-```
+Access:
 
-The frontend will be available at [http://localhost:3000](http://localhost:3000) and the backend at [http://localhost:8000](http://localhost:8000).
+Frontend → http://localhost:3000
 
-### Deploying to Azure
+Backend → http://localhost:8000
 
-Images can be built and pushed to your Azure Container Registry and deployed to Azure Container Apps. A GitHub Actions workflow (`.github/workflows/deploy.yml`) automates this whenever `main` is pushed. It requires `AZURE_CREDENTIALS`, `ACR_NAME` and `AZURE_RG` secrets.
+☁️ Deploying to Azure
+Using Azure Container Registry & Container Apps
+Ensure you have environment variables:
 
-Alternatively you can run the helper script `./azure_setup.sh` after logging in
-with `az login` and exporting `AZURE_RG`, `ACR_NAME` and `LOCATION`. It will
-build and push the Docker images and create the Container Apps for you.
+bash
+Copy
+export AZURE_RG=<your-resource-group>
+export ACR_NAME=<your-acr-name>
+export LOCATION=<azure-region>
+Build and push images:
 
-For manual deployment you can run:
+bash
+Copy
+az acr build --registry $ACR_NAME --image deckchatbot-backend:latest -f backend/backend-ai/Dockerfile ./backend/backend-ai
+az acr build --registry $ACR_NAME --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
+Create or update container apps:
 
-```bash
-# Build images
-az acr build --registry <ACR_NAME> --image deckchatbot-backend:latest -f backend/backend-ai/Dockerfile ./backend/backend-ai
-az acr build --registry <ACR_NAME> --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
+bash
+Copy
+az containerapp create --name deckchatbot-backend-app --resource-group $AZURE_RG --image $ACR_NAME.azurecr.io/deckchatbot-backend:latest --target-port 8000
+az containerapp create --name deckchatbot-frontend-app --resource-group $AZURE_RG --image $ACR_NAME.azurecr.io/deckchatbot-frontend:latest --target-port 3000
+Automation
+GitHub Actions deploys on push to main branch (requires Azure secrets: AZURE_CREDENTIALS, ACR_NAME, AZURE_RG).
 
-# Create or update Container Apps
-az containerapp create --name deckchatbot-backend-app --resource-group <RG> --image <ACR_NAME>.azurecr.io/deckchatbot-backend:latest --target-port 8000
-az containerapp create --name deckchatbot-frontend-app --resource-group <RG> --image <ACR_NAME>.azurecr.io/deckchatbot-frontend:latest --target-port 3000
-```
+Use the helper script ./azure_setup.sh to automate build and deploy.
 
-## 🔭 Future Features
+🔑 Environment Variables
+Variable	Description
+OPENAI_API_KEY	Your OpenAI API key for AI services
+NODE_ENV	Set to production in production
+PORT	Port for backend or frontend server
 
-* [ ] AI-assisted sketch correction
-* [ ] Auto-detect stair orientation from arrows
-* [ ] Multiple deck shapes (L, octagon, etc.)
-* [ ] Photo background blending for 3D renders
+🔧 Useful Commands
+Command	Description
+npm run dev	Start frontend in dev mode
+poetry run uvicorn ...	Start backend AI FastAPI server
+docker compose up --build	Build & run all services in Docker
+az acr build ...	Build Docker images in Azure ACR
+az containerapp create ...	Deploy container app to Azure
+
+💡 Troubleshooting & Notes
+After upgrading to Windows 11 Pro, ensure Node, Python, and Docker are updated and compatible.
+
+If dependencies fail to install, try clearing caches (npm cache clean --force, poetry cache clear).
+
+When running in Azure Cloud Shell, verify your subscription and tenant are correctly set (az account list, az account set).
+
+For Docker issues, ensure Docker Desktop has sufficient resources allocated and uses WSL 2 backend.
+
+If environment variables are missing, the app will not start—double-check .env files or Azure app settings.
+
+🔭 Future Features
+AI-assisted sketch correction
+
+Auto-detect stair orientation from arrows
+
+Support multiple deck shapes (L-shape, octagon, etc.)
+
+Photo background blending in 3D renders
+
+☁️ Detailed Azure Deployment Guide
+Prerequisites
+Azure CLI installed and logged in (az login)
+
+Azure subscription with permission to create resources
+
+Azure Container Registry (ACR) created
+
+Azure Resource Group created
+
+Docker Desktop installed and running
+
+Step 1: Log in to Azure
+bash
+Copy
+az login
+This opens a browser window to authenticate your account.
+
+Step 2: Set your Azure subscription and resource group
+bash
+Copy
+az account list --output table
+az account set --subscription "<your-subscription-name>"
+export AZURE_RG="<your-resource-group>"
+export ACR_NAME="<your-acr-name>"
+export LOCATION="eastus"  # or your preferred region
+Step 3: Build and push Docker images to Azure Container Registry (ACR)
+bash
+Copy
+az acr build --registry $ACR_NAME --image deckchatbot-backend:latest -f backend/backend-ai/Dockerfile ./backend/backend-ai
+az acr build --registry $ACR_NAME --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
+These commands build your Docker images in Azure and push them to your private ACR.
+
+Step 4: Create Azure Container Apps for backend and frontend
+bash
+Copy
+az containerapp create \
+  --name deckchatbot-backend-app \
+  --resource-group $AZURE_RG \
+  --image $ACR_NAME.azurecr.io/deckchatbot-backend:latest \
+  --target-port 8000
+
+az containerapp create \
+  --name deckchatbot-frontend-app \
+  --resource-group $AZURE_RG \
+  --image $ACR_NAME.azurecr.io/deckchatbot-frontend:latest \
+  --target-port 3000
+Step 5: Configure environment variables
+You can set environment variables in Azure Container Apps via the portal or CLI:
+
+bash
+Copy
+az containerapp env var set \
+  --name deckchatbot-backend-app \
+  --resource-group $AZURE_RG \
+  --env-vars OPENAI_API_KEY="your_openai_api_key"
+Step 6: Verify deployment and access your apps
+Frontend app URL: https://deckchatbot-frontend-app.<region>.azurecontainerapps.io
+
+Backend app URL: https://deckchatbot-backend-app.<region>.azurecontainerapps.io
+
+Screenshot Example
+[Add a screenshot showing the Azure Portal Container Apps page with your deployed apps here]
+
+🐳 Dockerfile and Docker Compose Explained
+Backend Dockerfile (backend/backend-ai/Dockerfile)
+Dockerfile
+Copy
+# Use official Python 3.10 image
+FROM python:3.10-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy dependencies
+COPY poetry.lock pyproject.toml /app/
+
+# Install Poetry and dependencies
+RUN pip install poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-dev --no-root
+
+# Copy app source code
+COPY . /app
+
+# Expose port 8000
+EXPOSE 8000
+
+# Command to run the FastAPI app
+CMD ["uvicorn", "API.api:app", "--host", "0.0.0.0", "--port", "8000"]
+Explanation:
+
+Uses slim Python image for smaller size
+
+Installs Poetry to manage Python dependencies
+
+Copies app code into container
+
+Exposes port 8000 where FastAPI runs
+
+Runs Uvicorn to serve the backend
+
+Frontend Dockerfile (frontend/Dockerfile)
+Dockerfile
+Copy
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
+Explanation:
+
+Uses lightweight Node.js 18 image
+
+Installs npm dependencies
+
+Copies frontend source code
+
+Runs development server on port 3000
+
+Docker Compose (docker-compose.yml)
+yaml
+Copy
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend/backend-ai
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+Explanation:
+
+Defines two services: backend and frontend
+
+Builds each from their respective Dockerfiles
+
+Maps local ports 8000 and 3000 to container ports
+
+Passes environment variables (e.g., OPENAI_API_KEY) to backend
+
+🔑 Environment Variable Management Tips
+1. Local Development
+Create .env files in root or in each service folder
+
+Add sensitive keys like OPENAI_API_KEY=your_key_here
+
+Use tools like dotenv in Node.js or python-dotenv in Python to load .env
+
+2. Docker Environment Variables
+Pass .env values to Docker Compose using env_file or environment sections
+
+Example in docker-compose.yml:
+
+yaml
+Copy
+services:
+  backend:
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+Then run export OPENAI_API_KEY=your_key before starting containers
+
+3. Azure Environment Variables
+Set environment variables in Azure portal or CLI for Container Apps and Web Apps
+
+They become available to your app’s runtime environment just like .env
 
 
-## 👨‍💻 Built By
 
-**AlenTwoTime**
-GitHub: [@alentwotime](https://github.com/alentwotime)
 
-## 📄 License
 
+👨‍💻 Built By
+AlenTwoTime
+GitHub: @alentwotime
+
+📄 License
 MIT License
