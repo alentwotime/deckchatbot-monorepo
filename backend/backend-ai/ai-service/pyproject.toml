@@ -1,19 +1,17 @@
 [tool.poetry]
-name = "deckbot-ai-service"
+name = "ai-service"
 version = "0.1.0"
-description = "AI image processing service for DeckChatbot"
-authors = ["DeckChatbot Team <none@example.com>"]
-package-mode = false
+description = "AI service for deck image processing"
+authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "*"
-uvicorn = {extras = ["standard"], version = "*"}
-pillow = "*"
-pytesseract = "*"
-python-multipart = "*"
-requests = "*"
-pydantic = "*"
+fastapi = "^0.115.0"
+uvicorn = "^0.34.0"
+pillow = "^11.0.0"
+pytesseract = "^0.3.13"
+requests = "^2.31.0"
+python-multipart = "^0.0.6"
 
 [build-system]
 requires = ["poetry-core"]
