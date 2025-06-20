@@ -1,17 +1,25 @@
+import requests
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from llava_handler import process_image
+from pydantic import BaseModel
 
 app = FastAPI()
 
 @app.get("/")
 def root():
-    return {"message": "AI service is running"}
+    return {"message": "Deckbot AI backend is alive!"}
 
-@app.post("/process")
-async def process(file: UploadFile = File(...)):
+class AnalyzeImageResponse(BaseModel):
+    result: str
+
+@app.post("/analyze-image", response_model=AnalyzeImageResponse)
+async def analyze_image(file: UploadFile = File(...)):
     try:
-        contents = await file.read()
-        result = process_image(contents)
-        return {"result": result}
+        image_bytes = await file.read()
+        response = requests.post(
+            "http://ai-service:11434/process",
+            files={"file": ("image.jpg", image_bytes, file.content_type)}
+        )
+        response.raise_for_status()
+        return response.json()
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
