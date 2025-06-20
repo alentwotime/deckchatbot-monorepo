@@ -1,21 +1,22 @@
-version: '3.9'
-
 services:
   backend:
-    build: ./backend/backend-ai
+    build:
+      context: ./backend/backend-ai
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      # Add backend env vars here, or better, use env_file:
-      # - ENV_VAR=value
     volumes:
-      - ./backend/backend-ai:/app  # Optional: live code reload
+      - ./backend/backend-ai:/app
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    environment:
-      - REACT_APP_API_URL=http://localhost:8000
     volumes:
-      - ./frontend:/app             # Optional: live reload
+      - ./frontend:/app
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+    depends_on:
+      - backend
