@@ -1,11 +1,10 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
-import sys
-import os
 import logging
 
+# ✅ Use absolute import inside Docker
 try:
-    from ..ai_service.llava_handler import process_image
+    from ai_service.llava_handler import process_image
 except (ImportError, ModuleNotFoundError) as e:
     raise ImportError(
         "The 'llava_handler' module could not be found. Ensure 'ai_service/llava_handler.py' exists and has __init__.py"
