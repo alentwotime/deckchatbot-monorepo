@@ -1,10 +1,14 @@
 FROM python:3.10-slim
+
 WORKDIR /app
 
 COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app.py /app/
-COPY . /app/       # Copy all source files to /app/
+COPY . /app/
+
 EXPOSE 8000
+
 CMD ["uvicorn", "API.api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
