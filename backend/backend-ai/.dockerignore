@@ -1,9 +1,12 @@
-# Ignore Python cache and dev files
-__pycache__/
+node_modules
+__pycache__
 *.pyc
 *.pyo
 .git
-*.md
-Dockerfile*
-.dockerignore
+.gitignore
+.vscode
+.env
+.DS_Store
+*.log
 tests/
+docs/
