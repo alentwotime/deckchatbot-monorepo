@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BACKEND_DIR="backend/backend-ai"
+BACKEND_DIR="."
 FRONTEND_DIR="frontend"
 
 if [ ! -d "$BACKEND_DIR" ] || [ ! -d "$FRONTEND_DIR" ]; then
@@ -9,7 +9,7 @@ if [ ! -d "$BACKEND_DIR" ] || [ ! -d "$FRONTEND_DIR" ]; then
   exit 1
 fi
 
-command -v poetry >/dev/null 2>&1 || { echo "poetry is not installed." >&2; exit 1; }
+command -v python >/dev/null 2>&1 || { echo "python is not installed." >&2; exit 1; }
 command -v npm >/dev/null 2>&1 || { echo "npm is not installed." >&2; exit 1; }
 
 trap 'echo "\nStopping servers..."; kill "$BACKEND_PID" "$FRONTEND_PID" 2>/dev/null' SIGINT SIGTERM
@@ -17,7 +17,7 @@ trap 'echo "\nStopping servers..."; kill "$BACKEND_PID" "$FRONTEND_PID" 2>/dev/n
 echo "Starting FastAPI backend..."
 (
   cd "$BACKEND_DIR"
-  poetry run uvicorn API.api:app --reload
+  uvicorn app:app --reload
 ) &
 BACKEND_PID=$!
 
