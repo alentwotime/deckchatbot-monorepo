@@ -1,64 +1,22 @@
-# Node & Python
-node_modules/
-__pycache__/
-*.py[cod]
-*.sqlite3
-*.db
+# Node dependencies
+**/node_modules/
 
-# VSCode & IDEs
-.vscode/
-*.code-workspace
+# Python cache
+**/__pycache__/
+**/*.py[cod]
 
-# Logs & Temp
+# Logs
 *.log
-*.tmp
-*.bak
-*.swp
-*.env
-*.env.*
+logs/
 
-# OS-specific
+# Environment files
+.env
+*.env
+
+# Build artifacts
+frontend/build/
+backend/dist/
+
+# OS generated files
 .DS_Store
 Thumbs.db
-
-# Ignore .env files
-*.env
-!.env.example
-
-# Root ignore rule: ignore everything...
-/*
-
-# ...except these project folders & files:
-!backend-ai/
-!backend/
-!frontend/
-!ai-service/
-!config/
-!controllers/
-!routes/
-!services/
-!utils/
-!middleware/
-!memory/
-!scripts/
-!public/
-!docs/
-!__tests__/
-!.vscode/
-!.gitignore
-!README.md
-!PROMPT.md
-!LICENSE
-!run.sh
-!run.bat
-!azure_setup.sh
-!jest.config.js
-!Azureworkspaces.csv
-!Deckchatbot_Deployment_Guide.md
-!deck-vision.md
-!server.cjs
-!memory.js
-!.conaarc
-!docker-compose.yml
-!/.github/
-frontend/memory.sqlite
