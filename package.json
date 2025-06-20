@@ -11,8 +11,25 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
+    "better-sqlite3": "^9.6.0",
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
+    "dependencies": "^0.0.1",
+    "dotenv": "^16.5.0",
     "express-rate-limit": "^7.5.0",
-    "helmet": "^8.1.0"
+    "get": "^1.4.0",
+    "helmet": "^8.1.0",
+    "http-proxy": "^1.18.1",
+    "mocked": "^0.0.4",
+    "openai": "^5.5.1",
+    "path": "^0.12.7",
+    "sharp": "^0.34.2",
+    "supertest": "^7.1.1",
+    "tesseract.js": "^6.0.1",
+    "test": "^3.3.0",
+    "uuid": "^11.1.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "nodemonConfig": {
     "watch": [
