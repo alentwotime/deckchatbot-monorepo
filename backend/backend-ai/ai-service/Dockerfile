@@ -4,29 +4,23 @@ FROM python:3.11-slim
 # Set working directory
 WORKDIR /app
 
-# Install Poetry and dependencies
+# Install Poetry and project dependencies
 COPY pyproject.toml poetry.lock ./
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl build-essential && \
     curl -sSL https://install.python-poetry.org | python3 - && \
     ln -s /root/.local/bin/poetry /usr/local/bin/poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --without dev --no-root && \
+    poetry install --no-root && \
     apt-get purge -y curl && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy the rest of the application
+# Copy application source code
 COPY . .
 
-# Create and switch to non-root user
-RUN addgroup --system app && adduser --system --group app && \
-    chown -R app:app /app
-USER app
-
-# Expose API port
+# Expose port
 EXPOSE 11434
 
-# Start the app
+# Run app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "11434"]
