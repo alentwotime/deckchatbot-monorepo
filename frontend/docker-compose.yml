@@ -11,16 +11,18 @@ services:
       - ./backend/backend-ai:/app
     depends_on:
       - ai-service
+    environment:
+      - AI_SERVICE_URL=http://ai-service:11434
 
   ai-service:
     build:
       context: ./backend/backend-ai/ai-service
-      dockerfile: Dockerfile  
+      dockerfile: Dockerfile  # Capitalized if your file is actually named "Dockerfile"
     ports:
       - "11434:11434"
     volumes:
       - ./backend/backend-ai/ai-service:/app
-    command: uvicorn main:app --host 0.0.0.0 --port 11434  
+    command: uvicorn main:app --host 0.0.0.0 --port 11434
 
   frontend:
     build:
