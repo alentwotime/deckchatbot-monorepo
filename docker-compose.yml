@@ -1,16 +1,21 @@
-version: "3.9"
+version: '3.9'
+
 services:
   backend:
     build: ./backend/backend-ai
     ports:
       - "8000:8000"
+    environment:
+      # Add backend env vars here, or better, use env_file:
+      # - ENV_VAR=value
+    volumes:
+      - ./backend/backend-ai:/app  # Optional: live code reload
+
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
     environment:
-      API_KEY: ${API_KEY:-revamp123secure}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-changeme}
-    depends_on:
-      - backend
-
+      - REACT_APP_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app             # Optional: live reload

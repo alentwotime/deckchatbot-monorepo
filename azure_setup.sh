@@ -6,7 +6,8 @@ set -euo pipefail
 # Required environment variables
 : "${AZURE_RG?Need AZURE_RG}"       # Resource group
 : "${ACR_NAME?Need ACR_NAME}"       # Azure Container Registry name
-: "${LOCATION?Need LOCATION}"       # Deployment location, e.g. "Central US"
+# Default location to Central US if not provided
+LOCATION="${LOCATION:-Central US}"
 
 BACKEND_APP=deckchatbot-backend-app
 FRONTEND_APP=deckchatbot-frontend-app
@@ -21,6 +22,12 @@ fi
 if ! az account show >/dev/null 2>&1; then
   echo "Please run 'az login' before executing this script." >&2
   exit 1
+fi
+
+# Create resource group if it doesn't exist
+if ! az group show --name "$AZURE_RG" >/dev/null 2>&1; then
+  echo "Creating resource group $AZURE_RG in $LOCATION"
+  az group create --name "$AZURE_RG" --location "$LOCATION" >/dev/null
 fi
 
 # Build and push Docker images to ACR
