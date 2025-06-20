@@ -6,7 +6,7 @@ jest.mock('openai', () => {
       }
     }
   }));
-});
+}, { virtual: true });
 
 const { extractNumbers } = require('../utils/extract');
 

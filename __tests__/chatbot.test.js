@@ -9,7 +9,19 @@ jest.mock('openai', () => {
   }));
   MockOpenAI.__createMock = createMock;
   return MockOpenAI;
-});
+}, { virtual: true });
+jest.mock('tesseract.js', () => ({ recognize: jest.fn() }), { virtual: true });
+jest.mock('uuid', () => ({ v4: jest.fn(() => 'uuid') }), { virtual: true });
+jest.mock('potrace', () => ({ trace: jest.fn() }), { virtual: true });
+jest.mock('sqlite3', () => ({
+  verbose: () => ({
+    Database: jest.fn().mockImplementation(() => ({
+      serialize: jest.fn(fn => fn && fn()),
+      run: jest.fn(),
+      close: jest.fn()
+    }))
+  })
+}), { virtual: true });
 
 jest.mock('sharp', () => {
   const mockImage = {
@@ -22,7 +34,7 @@ jest.mock('sharp', () => {
   const sharpMock = jest.fn(() => mockImage);
   sharpMock.__mockImage = mockImage;
   return sharpMock;
-});
+}, { virtual: true });
 const OpenAI = require('openai');
 const createMock = OpenAI.__createMock;
 const fs = require('fs');
