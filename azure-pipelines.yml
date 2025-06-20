@@ -1,0 +1,22 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - script: |
+        cd backend && npm install && npm test
+        cd ../frontend && npm install && npm test
+      displayName: 'Install and test'
+
+- stage: Deploy
+  jobs:
+  - job: Deploy
+    steps:
+    - script: echo "Add deployment steps here"
+      displayName: 'Deploy'
