@@ -1,0 +1,40 @@
+#! ai-service-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: ai-service
+    namespace: deckchatbot-monorepo
+    labels:
+        com.docker.compose.project: deckchatbot-monorepo
+        com.docker.compose.service: ai-service
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: deckchatbot-monorepo
+            com.docker.compose.service: ai-service
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: deckchatbot-monorepo
+                com.docker.compose.service: ai-service
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: ai-service
+                  image: deckchatbot-monorepo-ai-service
+                  imagePullPolicy: IfNotPresent
+                  command: [python main.py]
+                  ports:
+                    - name: ai-servic-11434
+                      containerPort: 11434
+                  volumeMounts:
+                    - name: app
+                      mountPath: /app
+            volumes:
+                - name: app
+                  hostPath:
+                    path: C:\Users\aklin\deckchatbot-monorepo\backend\backend-ai\ai-service
