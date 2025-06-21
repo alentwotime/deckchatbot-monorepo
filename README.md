@@ -207,6 +207,7 @@ az containerapp create \
   --image $ACR_NAME.azurecr.io/deckchatbot-frontend:latest \
   --target-port 3000
 Step 5: Configure environment variables
+The provided `azure_setup.sh` script automatically loads variables from a `.env` file or key=value arguments and applies them using `az containerapp update`.
 Frontend app URL: <https://deckchatbot-frontend-app>.<region>.azurecontainerapps.io  
 Backend app URL: <https://deckchatbot-backend-app>.<region>.azurecontainerapps.io
 
