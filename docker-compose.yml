@@ -25,7 +25,7 @@ services:
   app1:
     build:
       context: ./apps/app1
-      dockerfile: ./apps/app1/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8010:8000"
     restart: unless-stopped
@@ -33,7 +33,7 @@ services:
   app2:
     build:
       context: ./apps/app2
-      dockerfile: ./apps/app2/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8020:8000"
     restart: unless-stopped
