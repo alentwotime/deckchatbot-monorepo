@@ -14,10 +14,10 @@
 
 ## ✅ Testing
 
-* Run backend tests locally with:
+* Run backend tests locally without Docker:
 
   ```bash
-  docker-compose run backend pytest
+  npm test
   ```
 * Run linters before pushing:
 
