@@ -14,14 +14,15 @@
     "supertest": "^6.3.3"
   },
   "dependencies": {
+    "@openai/codex": "^0.1.2505291658",
     "axios": "^1.6.7",
     "better-sqlite3": "^9.4.0",
     "compression": "^1.8.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "express-validator": "^7.2.1",
     "express-rate-limit": "^6.7.0",
+    "express-validator": "^7.2.1",
     "helmet": "^8.1.0",
     "http-proxy": "^1.18.1",
     "multer": "^2.0.1",
