@@ -3,10 +3,11 @@ version: '3.8'
 services:
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    restart: unless-stopped
 
   frontend:
     build:
@@ -20,3 +21,19 @@ services:
       - REACT_APP_API_URL=http://backend:8000
     depends_on:
       - backend
+
+  app1:
+    build:
+      context: ./apps/app1
+      dockerfile: Dockerfile
+    ports:
+      - "8010:8000"
+    restart: unless-stopped
+
+  app2:
+    build:
+      context: ./apps/app2
+      dockerfile: Dockerfile
+    ports:
+      - "8020:8000"
+    restart: unless-stopped
