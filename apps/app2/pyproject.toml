@@ -7,7 +7,7 @@ authors = ["Your Name <you@example.com>"]
 [tool.poetry.dependencies]
 python = "^3.11"
 requests = "^2.26"
-lib1 = { path = "../../libs/lib1", develop = true }
+lib1 = { path = "../../backend/backend-ai/ai-service", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
