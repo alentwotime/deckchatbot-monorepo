@@ -9,3 +9,5 @@ __pycache__
 .vscode
 .idea
 *.md
+node_modules/
+.venv/
