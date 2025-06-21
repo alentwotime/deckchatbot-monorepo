@@ -27,6 +27,7 @@ files = [
 [package.dependencies]
 idna = ">=2.8"
 sniffio = ">=1.1"
+typing_extensions = {version = ">=4.5", markers = "python_version < \"3.13\""}
 
 [package.extras]
 doc = ["Sphinx (>=8.2,<9.0)", "packaging", "sphinx-autodoc-typehints (>=1.2.0)", "sphinx_rtd_theme"]
@@ -46,25 +47,26 @@ develop = true
 [package.dependencies]
 fastapi = "^0.115.0"
 httpx = "^0.27.0"
-lib1 = {path = "../../libs/lib1", develop = true}
+lib1 = {path = "ai-service", develop = true}
+python-multipart = "^0.0.6"
 uvicorn = "^0.34.0"
 
 [package.source]
 type = "directory"
-url = "apps/app1"
+url = "backend/backend-ai"
 
 [[package]]
 name = "app2"
 version = "0.1.0"
 description = "Application 2 for DeckChatBot"
 optional = false
-python-versions = "^3.13"
+python-versions = "^3.11"
 groups = ["app"]
 files = []
 develop = true
 
 [package.dependencies]
-lib1 = {path = "../../libs/lib1", develop = true}
+lib1 = {path = "../../backend/backend-ai/ai-service", develop = true}
 requests = "^2.26"
 
 [package.source]
@@ -373,14 +375,14 @@ uvicorn = "^0.34.0"
 
 [package.source]
 type = "directory"
-url = "libs/lib1"
+url = "backend/backend-ai/ai-service"
 
 [[package]]
 name = "lib2"
 version = "0.1.0"
 description = "Library 2 for DeckChatBot"
 optional = false
-python-versions = "^3.13"
+python-versions = "^3.11"
 groups = ["lib"]
 files = []
 develop = true
@@ -849,5 +851,5 @@ standard = ["colorama (>=0.4) ; sys_platform == \"win32\"", "httptools (>=0.6.3)
 
 [metadata]
 lock-version = "2.1"
-python-versions = "^3.13"
-content-hash = "2fc7e6b1b5ad0f0564fc0aabdc7b2f6f5e3e5163c9002da758e3d314956a747d"
+python-versions = "^3.11"
+content-hash = "3ef8557c63c36f2200f28ef5335038e7dcbd42f87da383d934293eadfb3df429"
