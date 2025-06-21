@@ -42,3 +42,8 @@ root.render(
     <Enhanced />
   </>
 );
+
+// Example API call to test proxy
+fetch('/api/health')
+  .then((res) => res.json())
+  .then((data) => console.log('Backend says:', data));
