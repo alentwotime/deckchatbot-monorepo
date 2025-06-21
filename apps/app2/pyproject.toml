@@ -5,7 +5,7 @@ description = "Application 2 for DeckChatBot"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.11"
 requests = "^2.26"
 lib1 = { path = "../../libs/lib1", develop = true }
 
