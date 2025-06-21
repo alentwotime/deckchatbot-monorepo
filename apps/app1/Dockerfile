@@ -19,7 +19,6 @@ RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
 
 # Copy code
 COPY API /app/API
-COPY ai-service /app/ai-service
 COPY requirements.txt .
 
 # Security: Use a non-root user
