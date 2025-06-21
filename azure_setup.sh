@@ -12,6 +12,23 @@ LOCATION="${LOCATION:-Central US}"
 BACKEND_APP=deckchatbot-backend-app
 FRONTEND_APP=deckchatbot-frontend-app
 
+# Optional .env file containing environment variables to pass to the container apps
+ENV_FILE=".env"
+
+# Load variables from .env if it exists
+if [[ -f "$ENV_FILE" ]]; then
+  export $(grep -v '^#' "$ENV_FILE" | xargs)
+fi
+
+# Collect VAR=value pairs passed as arguments
+ENV_VARS=()
+for arg in "$@"; do
+  if [[ "$arg" == *=* ]]; then
+    ENV_VARS+=("$arg")
+    export "$arg"
+  fi
+done
+
 # Ensure Azure CLI is installed
 if ! command -v az >/dev/null; then
   echo "Azure CLI not found. Please install it first." >&2
@@ -41,8 +58,10 @@ az containerapp create --name "$BACKEND_APP" --resource-group "$AZURE_RG" \
 az containerapp create --name "$FRONTEND_APP" --resource-group "$AZURE_RG" \
   --image "$ACR_NAME.azurecr.io/deckchatbot-frontend:latest" --target-port 3000
 
-# Example of setting backend environment variables
-# az containerapp update --name "$BACKEND_APP" --resource-group "$AZURE_RG" \
-#   --set-env-vars OPENAI_API_KEY=your-key STORAGE_ACCOUNT=deckbotuploads
+# Apply environment variables to the backend container app if any were provided
+if [[ ${#ENV_VARS[@]} -gt 0 ]]; then
+  az containerapp update --name "$BACKEND_APP" --resource-group "$AZURE_RG" \
+    --set-env-vars "${ENV_VARS[@]}"
+fi
 
 echo "Deployment complete."

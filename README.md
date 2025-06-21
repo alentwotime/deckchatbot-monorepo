@@ -206,7 +206,13 @@ az containerapp create \
   --resource-group $AZURE_RG \
   --image $ACR_NAME.azurecr.io/deckchatbot-frontend:latest \
   --target-port 3000
-Step 5: Set environment variables
+ codex/expand-readme-deployment-section-for-azure
+
+
+Step 5: Configure environment variables
+The provided `azure_setup.sh` script automatically loads variables from a `.env` file or key=value arguments and applies them using `az containerapp update`.
+Frontend app URL: <https://deckchatbot-frontend-app>.<region>.azurecontainerapps.io  
+Backend app URL: <https://deckchatbot-backend-app>.<region>.azurecontainerapps.io
 
 After your Container Apps are running, configure any required environment variables. For example, set your OpenAI key for the backend app:
 
