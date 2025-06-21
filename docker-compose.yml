@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: ./backend/backend-ai
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/backend-ai:/app
+    depends_on:
+      - ai-service
+
+  ai-service:
+    build:
+      context: ./backend/backend-ai/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./backend/backend-ai/ai-service:/app
+    command: python main.py
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+    depends_on:
+      - backend

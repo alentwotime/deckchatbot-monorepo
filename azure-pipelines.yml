@@ -1,0 +1,52 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - script: |
+        cd backend && npm install && npm test
+        cd ../frontend && npm install && npm test
+      displayName: 'Install and test'
+
+- stage: Deploy
+  jobs:
+  - job: Deploy
+    steps:
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: $(AZURE_SERVICE_CONNECTION)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -e
+          echo "Building and pushing Docker images to ACR"
+          az acr build --registry "$ACR_NAME" --image deckchatbot-backend:latest -f Dockerfile .
+          az acr build --registry "$ACR_NAME" --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
+
+          echo "Deploying backend container app"
+          if az containerapp show --name deckchatbot-backend-app --resource-group "$AZURE_RG" >/dev/null 2>&1; then
+            az containerapp update --name deckchatbot-backend-app --resource-group "$AZURE_RG" \
+              --image "$ACR_NAME.azurecr.io/deckchatbot-backend:latest" --target-port 8000
+          else
+            az containerapp create --name deckchatbot-backend-app --resource-group "$AZURE_RG" \
+              --image "$ACR_NAME.azurecr.io/deckchatbot-backend:latest" --target-port 8000
+          fi
+
+          echo "Deploying frontend container app"
+          if az containerapp show --name deckchatbot-frontend-app --resource-group "$AZURE_RG" >/dev/null 2>&1; then
+            az containerapp update --name deckchatbot-frontend-app --resource-group "$AZURE_RG" \
+              --image "$ACR_NAME.azurecr.io/deckchatbot-frontend:latest" --target-port 3000
+          else
+            az containerapp create --name deckchatbot-frontend-app --resource-group "$AZURE_RG" \
+              --image "$ACR_NAME.azurecr.io/deckchatbot-frontend:latest" --target-port 3000
+          fi
+      env:
+        AZURE_RG: $(AZURE_RG)
+        ACR_NAME: $(ACR_NAME)
+      displayName: 'Deploy'

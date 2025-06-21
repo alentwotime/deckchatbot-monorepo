@@ -1,0 +1,23 @@
+# check if there is at least one published port
+
+#! ai-service-service.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Service
+metadata:
+    name: ai-service-published
+    namespace: deckchatbot-monorepo
+    labels:
+        com.docker.compose.project: deckchatbot-monorepo
+        com.docker.compose.service: ai-service
+spec:
+    selector:
+        com.docker.compose.project: deckchatbot-monorepo
+        com.docker.compose.service: ai-service
+    ports:
+        - name: ai-servic-11434
+          port: 11434
+          protocol: TCP
+          targetPort: ai-servic-11434
+
+# check if there is at least one published port

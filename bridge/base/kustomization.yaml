@@ -1,0 +1,19 @@
+#! kustomization.yaml
+# Generated code, do not edit
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+    - 0-deckchatbot-monorepo-namespace.yaml
+    - ai-service-C:\Users\aklin\deckchatbot-monorepo\backend\backend-ai\ai-service-persistentVolumeClaim.yaml
+    - ai-service-deployment.yaml
+    - ai-service-expose.yaml
+    - ai-service-service.yaml
+    - backend-C:\Users\aklin\deckchatbot-monorepo\backend\backend-ai-persistentVolumeClaim.yaml
+    - backend-deployment.yaml
+    - backend-expose.yaml
+    - backend-service.yaml
+    - default-network-policy.yaml
+    - frontend-C:\Users\aklin\deckchatbot-monorepo\frontend-persistentVolumeClaim.yaml
+    - frontend-deployment.yaml
+    - frontend-expose.yaml
+    - frontend-service.yaml

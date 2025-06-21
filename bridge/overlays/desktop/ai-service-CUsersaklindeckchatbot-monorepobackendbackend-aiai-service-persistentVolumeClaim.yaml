@@ -1,0 +1,9 @@
+#! ai-service-C:\Users\aklin\deckchatbot-monorepo\backend\backend-ai\ai-service-persistentVolumeClaim.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: ai-service-c--users-aklin-deckchatbot-monorepo-backend-backend-ai-ai-service
+    namespace: deckchatbot-monorepo
+spec:
+    storageClassName: "hostpath" # see docker/desktop-storage-provisioner

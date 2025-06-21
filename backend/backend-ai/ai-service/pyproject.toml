@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "lib1"
+version = "0.1.0"
+description = "AI service for deck image processing"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.0"
+uvicorn = "^0.34.0"
+pillow = "^11.0.0"
+pytesseract = "^0.3.13"
+requests = "^2.31.0"
+python-multipart = "^0.0.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

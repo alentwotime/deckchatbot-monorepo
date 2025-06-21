@@ -31,7 +31,6 @@ app.use(requestLogger);
 
 // Rate limiting
 app.use(rateLimiter);
-module.exports = app;
 // Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -45,14 +44,17 @@ app.use('/', routes);
 app.use(errorLogger);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Start server
-const server = app.listen(PORT, () => {
-  logger.info(`🚀 Deck Chatbot Server running on http://localhost:${PORT}`);
-});
+// Start server only when run directly
+let server;
+if (require.main === module) {
+  server = app.listen(PORT, () => {
+    logger.info(`🚀 Deck Chatbot Server running on http://localhost:${PORT}`);
+  });
+}
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

@@ -1,0 +1,13 @@
+__pycache__
+*.py[cod]
+*~.nib
+*.swp
+*.bak
+*.tmp
+*.git
+*.gitignore
+.vscode
+.idea
+*.md
+node_modules/
+.venv/

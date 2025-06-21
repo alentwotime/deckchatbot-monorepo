@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "lib2"
+version = "0.1.0"
+description = "Library 2 for DeckChatBot"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
