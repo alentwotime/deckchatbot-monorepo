@@ -206,23 +206,27 @@ az containerapp create \
   --resource-group $AZURE_RG \
   --image $ACR_NAME.azurecr.io/deckchatbot-frontend:latest \
   --target-port 3000
-Step 5: Configure environment variables
-Frontend app URL: <https://deckchatbot-frontend-app>.<region>.azurecontainerapps.io  
-Backend app URL: <https://deckchatbot-backend-app>.<region>.azurecontainerapps.io
+Step 5: Set environment variables
 
-> Replace `<region>` with the Azure region where your Container App is deployed (e.g., `eastus`).  
-> For example:  
-> Frontend app URL: <https://deckchatbot-frontend-app.eastus.azurecontainerapps.io>
-Copy
+After your Container Apps are running, configure any required environment variables. For example, set your OpenAI key for the backend app:
+
+```bash
 az containerapp env var set \
   --name deckchatbot-backend-app \
   --resource-group $AZURE_RG \
-  --env-vars OPENAI_API_KEY="your_openai_api_key"
-Backend app URL: <https://deckchatbot-backend-app>.<region>.azurecontainerapps.io
+  --env-vars OPENAI_API_KEY=$OPENAI_API_KEY
+```
 
-Replace `<region>` with the Azure region where your Container App is deployed (e.g., `eastus`), so the URL might look like:  
-`https://deckchatbot-backend-app.eastus.azurecontainerapps.io`
-Frontend app URL: <https://deckchatbot-frontend-app>.<region>.azurecontainerapps.io
+For sensitive data consider storing it securely. You can create a secret for the app:
+
+```bash
+az containerapp secret set \
+  --name deckchatbot-backend-app \
+  --resource-group $AZURE_RG \
+  --secrets OPENAI_API_KEY=$OPENAI_API_KEY
+```
+
+Then reference the secret as an environment variable, or manage secrets centrally with **Azure Key Vault**.
 Screenshot Example
 > **Note:** Replace this placeholder with an actual screenshot of your Azure Portal Container Apps page before releasing this documentation.
 [Add a screenshot showing the Azure Portal Container Apps page with your deployed apps here]
