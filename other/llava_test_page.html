@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Ollama LLaVA API</title>
+</head>
+
+<body>
+  <h2>LLaVA Prompt Tester</h2>
+  <input type="text" id="prompt" placeholder="Enter a prompt..." size="50" />
+  <button onclick="sendPrompt()">Send</button>
+  <pre id="response"></pre>
+
+  <script>
+    async function sendPrompt() {
+      const prompt = document.getElementById('prompt').value;
+      const responseArea = document.getElementById('response');
+      responseArea.textContent = "Loading...";
+      try {
+        const res = await fetch('http://40.69.129.115:11434/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'llava',
+            prompt: prompt,
+            images: []
+          })
+        });
+        const data = await res.json();
+        responseArea.textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        responseArea.textContent = 'Error: ' + e.message;
+      }
+    }
+  </script>
+</body>
+
+</html>

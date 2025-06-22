@@ -1,0 +1,186 @@
+Folder PATH listing
+Volume serial number is 9C07-632C
+C:.
+|   .conaarc
+|   .gitignore
+|   azure-pipelines.yml
+|   Azureworkspaces.csv
+|   azure_setup.sh
+|   cloud-init.yaml
+|   deck-vision.md
+|   Deckchatbot_Deployment_Guide.md
+|   deckchatbot_schema.sql
+|   docker-compose.yml
+|   Dockerfile
+|   jest.config.js
+|   llava_test_page.html
+|   memory.js
+|   PROMPT.md
+|   README.md
+|   run.bat
+|   run.sh
+|   server.cjs
+|   SQL2022-SSEI-Dev.exe
+|   SQL2022-SSEI-Expr.exe
+|   structure.txt
+|   
++---.github
+|   \---workflows
+|           deploy.yml
+|           
++---.vscode
+|       extensions.json
+|       launch.json
+|       settings.json
+|       
++---backend
+|   |   package.json
+|   |   server.js
+|   |   
+|   +---backend-ai
+|   |   |   .dockerignore
+|   |   |   .gitignore
+|   |   |   Dockerfile
+|   |   |   pyproject.toml
+|   |   |   README.md
+|   |   |   visionRouter.js
+|   |   |   
+|   |   +---ai-service
+|   |   |   |   ai-serviceDockerfile
+|   |   |   |   llava_handler.py
+|   |   |   |   main.py
+|   |   |   |   requirements.txt
+|   |   |   |   
+|   |   |   \---.qodo
+|   |   +---API
+|   |   |       api.py
+|   |   |       
+|   |   +---fine_tuning
+|   |   |       README.md
+|   |   |       
+|   |   \---llama_integration
+|   |           llava_runner.py
+|   |           predict.py
+|   |           __init__.py
+|   |           
+|   +---controllers
+|   |       helloController.js
+|   |       
+|   \---routes
+|           index.js
+|           
++---backend-ai
+|       app.py
+|       cloud-init.yaml
+|       Dockerfile
+|       requirements.txt
+|       
++---docs
+|       layout.png
+|       REALTIME_3D_DECK_DESIGN_BLUEPRINT.md
+|       
++---frontend
+|   |   # Code Citations.md
+|   |   .babelrc
+|   |   .dockerignore
+|   |   .gitignore
+|   |   check-setup.js
+|   |   config.js
+|   |   curl
+|   |   Dockerfile
+|   |   index.js
+|   |   memory.js
+|   |   package-lock.json
+|   |   package.json
+|   |   README.md
+|   |   requirements.txt
+|   |   server.cjs
+|   |   server.js
+|   |   setup.sh
+|   |   start.deckchatbot.bat
+|   |   test-config.js
+|   |   upload.html
+|   |   upload.js
+|   |   webpack.config.js
+|   |   yarn.lock
+|   |   
+|   +---config
+|   |       index.js
+|   |       
+|   +---controllers
+|   |       chatbotController.js
+|   |       deckCalcController.js
+|   |       digitalizeController.js
+|   |       drawingUploadController.js
+|   |       measurementController.js
+|   |       shapeController.js
+|   |       skirtingController.js
+|   |       
+|   +---docs
+|   |       deck-vision.md
+|   |       Deckchatbot_Deployment_Guide.md
+|   |       FILE_UPLOAD_TROUBLESHOOTING.md
+|   |       layout.png
+|   |       MASTER_PROMPT.md
+|   |       MEASUREMENT_EXTRACTION.md
+|   |       REALTIME_3D_DECK_DESIGN_BLUEPRINT.md
+|   |       SETUP_TROUBLESHOOTING.md
+|   |       
+|   +---memory
+|   |       index.js
+|   |       
+|   +---middleware
+|   |       auth.js
+|   |       errorLogger.js
+|   |       rateLimiter.js
+|   |       requestLogger.js
+|   |       
+|   +---public
+|   |       index.html
+|   |       multishape.html
+|   |       script.js
+|   |       style.css
+|   |       
+|   +---routes
+|   |       chatbot.js
+|   |       deckCalc.js
+|   |       digitalize.js
+|   |       index.js
+|   |       measurements.js
+|   |       multishape.js
+|   |       skirting.js
+|   |       uploadDrawing.js
+|   |       
+|   +---scripts
+|   |       backupMeasurements.js
+|   |       setup.js
+|   |       start.deckchatbot.bat
+|   |       
+|   +---services
+|   |       openai.service.js
+|   |       
+|   +---src
+|   |       App.js
+|   |       index.js
+|   |       
+|   \---utils
+|           db.js
+|           extract.js
+|           geometry.js
+|           logger.js
+|           skirting.js
+|           tmp-cleaner.js
+|           
++---utils
+|       extract.js
+|       geometry.js
+|       
+\---__tests__
+        chatbot.test.js
+        extractNumbers.test.js
+        measurements.test.js
+        memory_edge.sqlite
+        memory_test.sqlite
+        shape.test.js
+        skirting.test.js
+        

@@ -1,5 +1,6 @@
 const path = require('path');
 const Dotenv = require('dotenv-webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin'); // 🆕 ADD THIS
 
 module.exports = {
   entry: './src/index.js',
@@ -7,8 +8,9 @@ module.exports = {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
+    clean: true, // 🧹 optional: cleans dist folder
   },
-  mode: 'development',
+  mode: 'production', // ⬅ switch from 'development'
   devtool: 'source-map',
   devServer: {
     static: {
@@ -41,5 +43,10 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
   },
-  plugins: [new Dotenv()],
+  plugins: [
+    new Dotenv(),
+    new HtmlWebpackPlugin({               // 🆕 ADD THIS
+      template: './public/index.html',    // must exist
+    }),
+  ],
 };
