@@ -21,3 +21,4 @@ backend/dist/
 .DS_Store
 Thumbs.db
 venv/ 
+frontend/dist/
