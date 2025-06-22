@@ -17,7 +17,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy application source code
-COPY backend/ai-service /app
+COPY backend/backend-ai/ai-service /app
 
 # Expose port
 EXPOSE 11434
