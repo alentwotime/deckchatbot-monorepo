@@ -1,24 +1,23 @@
-# Use official Python 3.11 slim image
 FROM python:3.11-slim
 
-# Set working directory
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
-# Copy and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml poetry.lock ./
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl build-essential && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    ln -s /root/.local/bin/poetry /usr/local/bin/poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-root && \
+    apt-get purge -y curl && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Copy application source code
-COPY . .
+COPY . /app
 
-# Expose port 8000 for Azure App Service
-RUN adduser --system appuser
-USER appuser
-ENV PORT=8000
-EXPOSE ${PORT}
+EXPOSE 11434
 
-# Start FastAPI app with uvicorn on container start
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "${PORT}"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]

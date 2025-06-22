@@ -3,23 +3,23 @@ version: "3.9"
 services:
   backend:
     build:
-      context: ./backend/backend-ai
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./backend/backend-ai:/app
+      - ./backend:/app
     depends_on:
       - ai-service
 
   ai-service:
     build:
       context: .
-      dockerfile: backend/backend-ai/ai-service/Dockerfile
+      dockerfile: backend-ai/ai-service/Dockerfile
     ports:
       - "11434:11434"
     volumes:
-      - ./backend/backend-ai/ai-service:/app
+      - ./backend-ai/ai-service:/app
     command: python main.py
 
   frontend:
