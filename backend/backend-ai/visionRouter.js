@@ -7,6 +7,7 @@ const FormData = require('form-data');
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
+const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -14,8 +15,14 @@ const upload = multer({ dest: 'uploads/' });
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
 const LLAVA_MODEL_NAME = process.env.LLAVA_MODEL_NAME || 'llava-llama3';
 
+// Define rate limiter: maximum of 100 requests per 15 minutes
+const analyzeRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // max 100 requests per windowMs
+});
+
 // POST /vision/analyze - Upload image and get vision result from LLaVA
-router.post('/analyze', upload.single('image'), async (req, res) => {
+router.post('/analyze', analyzeRateLimiter, upload.single('image'), async (req, res) => {
   const imagePath = path.join(__dirname, '..', req.file.path);
 
   try {
