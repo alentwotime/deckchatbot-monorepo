@@ -1,0 +1,35 @@
+.app {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+.tabs button {
+  margin-right: 8px;
+}
+.tabs .active {
+  font-weight: bold;
+}
+.chat-section {
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+}
+.chat-log {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+.msg {
+  margin: 4px 0;
+}
+.msg.user {
+  text-align: right;
+}
+.chat-input {
+  display: flex;
+}
+.chat-input input {
+  flex: 1;
+  padding: 4px;
+}
