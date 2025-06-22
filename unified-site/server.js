@@ -5,21 +5,22 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Proxy API
+// ✅ Proxy AI API requests to backend
 app.use(
   "/analyze-image",
   createProxyMiddleware({
     target: "https://deckchatbot-backend.onrender.com",
     changeOrigin: true,
-  }),
+  })
 );
 
-// Serve frontend
+// ✅ Serve frontend
 app.use(express.static(path.join(__dirname, "client")));
+
 app.get("*", (_, res) => {
   res.sendFile(path.join(__dirname, "client", "index.html"));
 });
 
 app.listen(PORT, () => {
-  console.log();
+  console.log(`🚀 Unified site running at http://localhost:${PORT}`);
 });

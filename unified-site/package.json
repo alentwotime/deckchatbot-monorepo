@@ -4,7 +4,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "build": "cd ../frontend && npm install && npm run build && cp -r dist ../unified-site/client",
+    "build": "cd ../frontend && npm install && npm run build && node ../unified-site/copy-dist.js",
     "postinstall": "npm run build"
   },
   "dependencies": {
