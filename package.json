@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.cjs",
     "dev": "nodemon",
-    "test": "jest"
+    "test": "npx jest"
   },
   "devDependencies": {
     "@azure/static-web-apps-cli": "^2.0.6",
