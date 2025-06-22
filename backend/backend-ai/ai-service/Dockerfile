@@ -5,7 +5,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install Poetry and project dependencies
-COPY backend/backend-ai/ai-service/pyproject.toml backend/backend-ai/ai-service/poetry.lock ./
+COPY backend/ai-service/pyproject.toml backend/ai-service/poetry.lock ./
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl build-essential && \
     curl -sSL https://install.python-poetry.org | python3 - && \
@@ -17,7 +17,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy application source code
-COPY backend/backend-ai/ai-service /app
+COPY backend/ai-service /app
 
 # Expose port
 EXPOSE 11434
