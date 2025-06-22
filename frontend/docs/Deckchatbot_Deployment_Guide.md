@@ -113,7 +113,7 @@ az webapp restart \
 ### Test Endpoint
 
 ```
-https://deckchatbot-api-backend.azurewebsites.net
+https://deckbot-backend.onrender.com
 ```
 
 ---
@@ -165,7 +165,7 @@ Place this in `client/public/`.
 In your React app:
 
 ```js
-const API_BASE = "https://deckchatbot-api-backend.azurewebsites.net";
+const API_BASE = "https://deckbot-backend.onrender.com";
 axios.get(`${API_BASE}/api/ping`);
 ```
 
@@ -220,8 +220,8 @@ You can also manually trigger deploys or customize the workflow.
 ## 🚀 Success Checklist
 
 * [x] Logged in with `az login`
-* [x] Backend live at `deckchatbot-api-backend.azurewebsites.net`
-* [x] Frontend live at `deckchatbot-frontend.azurestaticapps.net`
+* [x] Backend live at `deckbot-backend.onrender.com`
+* [x] Frontend live at `your-render-site.onrender.com`
 * [x] API connected via environment-based URL
 * [x] GitHub pushes deploy automatically
 * [x] Docker and WSL2 verified (if used locally)
