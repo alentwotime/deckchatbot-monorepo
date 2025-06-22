@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   backend:
     build:
@@ -12,8 +14,8 @@ services:
 
   ai-service:
     build:
-      context: ./backend/backend-ai/ai-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/backend-ai/ai-service/Dockerfile
     ports:
       - "11434:11434"
     volumes:
@@ -29,6 +31,6 @@ services:
     volumes:
       - ./frontend:/app
     environment:
-      - REACT_APP_API_URL=http://backend:8000
+      - VITE_API_URL=http://backend:8000
     depends_on:
       - backend
