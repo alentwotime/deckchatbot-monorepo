@@ -22,3 +22,4 @@ backend/dist/
 Thumbs.db
 venv/ 
 frontend/dist/
+frontend/memory.sqlite
