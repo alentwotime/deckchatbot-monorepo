@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: deckchatbot-backend
+    env: docker
+    plan: free
+    repo: https://github.com/your-username/deckchatbot-monorepo
+    dockerfilePath: backend/deckchatbot_backend/Dockerfile
+    envVars:
+      - key: AZURE_STORAGE_CONNECTION_STRING
+        value: your_value_here
+      - key: OPENAI_API_KEY
+        value: your_value_here
+      - key: REDIS_URL
+        value: redis://...
