@@ -5,7 +5,7 @@
   "scripts": {
     "start": "webpack serve --mode development",
     "build": "webpack --mode production",
-    "test": "jest"
+    "test": "npx jest"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -31,11 +31,6 @@
     "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^4.15.2"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    }
   }
+
 }
