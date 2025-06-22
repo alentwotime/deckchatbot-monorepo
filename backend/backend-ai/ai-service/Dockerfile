@@ -1,11 +1,9 @@
-# Use official Python 3.11 slim image
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install Poetry and project dependencies
-COPY backend/ai-service/pyproject.toml backend/ai-service/poetry.lock ./
+# Install Poetry and dependencies
+COPY pyproject.toml poetry.lock ./
 RUN apt-get update && \
     apt-get install -y --no-install-recommends curl build-essential && \
     curl -sSL https://install.python-poetry.org | python3 - && \
@@ -16,11 +14,8 @@ RUN apt-get update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy application source code
-COPY backend/backend-ai/ai-service /app
+# ✅ Correct path
+COPY . /app
 
-# Expose port
 EXPOSE 11434
-
-# Run app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "11434"]
