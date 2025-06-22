@@ -1,48 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+
+// Dynamically load all files inside ../routes except index.js
+const routeContext = require.context(
+  "../routes",
+  false,
+  /^(?!\.\/index).*\.js$/,
+);
+
+const routes = routeContext.keys().reduce((acc, file) => {
+  const name = file.replace("./", "").replace(".js", "");
+  const mod = routeContext(file);
+  const Component = mod.default
+    ? mod.default
+    : () => <div>Component Not Ready</div>;
+  acc[name] = Component;
+  return acc;
+}, {});
+
+const tabs = Object.keys(routes);
+
+const Home = () => <div>Welcome to DeckChatbot!</div>;
 
 const App = () => {
-  const [response, setResponse] = useState(null);
-  const [file, setFile] = useState(null);
+  const [selectedTab, setSelectedTab] = useState("");
 
-  const handleUpload = async () => {
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await fetch('/analyze-image', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      setResponse(data);
-    } catch (err) {
-      console.error('Upload failed', err);
-      setResponse({ error: 'Failed to process image' });
-    }
-  };
+  const SelectedComponent = selectedTab ? routes[selectedTab] : Home;
 
   return (
     <div style={{ padding: 20 }}>
       <h1>DeckChatbot</h1>
-      <p>Upload a sketch or deck photo to get started:</p>
-
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-      <button onClick={handleUpload} disabled={!file}>
-        Analyze Image
-      </button>
-
-      {response && (
-        <div style={{ marginTop: 20 }}>
-          <h3>AI Response:</h3>
-          <pre>{JSON.stringify(response, null, 2)}</pre>
-        </div>
-      )}
+      <nav
+        style={{
+          display: "flex",
+          gap: 8,
+          borderBottom: "1px solid #ccc",
+          marginBottom: 20,
+        }}
+      >
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setSelectedTab(tab)}
+            style={{
+              background: "none",
+              border: "none",
+              padding: "6px 12px",
+              borderBottom:
+                selectedTab === tab
+                  ? "2px solid #000"
+                  : "2px solid transparent",
+              cursor: "pointer",
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </nav>
+      <div style={{ marginTop: 20 }}>
+        <SelectedComponent />
+      </div>
     </div>
   );
 };
