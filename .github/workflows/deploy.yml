@@ -1,0 +1,8 @@
+name: Auto Deploy to Render
+on: [push]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: echo "Render handles deployment. Optionally ping /health"

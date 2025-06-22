@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pillow
+python-multipart
+pytesseract
+openai
+redis
+azure-storage-blob
+python-dotenv
+sqlite3
