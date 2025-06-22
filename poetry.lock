@@ -66,12 +66,12 @@ files = []
 develop = true
 
 [package.dependencies]
-lib1 = {path = "../../backend/backend-ai/ai-service", develop = true}
+lib1 = {path = "../backend-ai/ai-service", develop = true}
 requests = "^2.26"
 
 [package.source]
 type = "directory"
-url = "apps/app2"
+url = "backend/app2"
 
 [[package]]
 name = "atomicwrites"
