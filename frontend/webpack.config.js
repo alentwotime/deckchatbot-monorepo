@@ -5,10 +5,17 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: './src/index.js',
   output: {
-    filename: 'bundle.js',
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].[contenthash].chunk.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: 'auto',
     clean: true,
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+    runtimeChunk: 'single',
   },
   mode: 'production',
   devtool: 'source-map',
