@@ -1,15 +1,13 @@
- from fastapi import FastAPI, UploadFile, File
- from pydantic import BaseModel
+from fastapi import FastAPI, UploadFile, File
 
- app = FastAPI()
+app = FastAPI()
 
- @app.get("/")
- def root():
-     return {"message": "AI service is running."}
+@app.get("/")
+def root():
+    return {"message": "AI service is running."}
 
--@app.post("/process")
-+@app.post("/analyze-image")  
- async def analyze_image(file: UploadFile = File(...)):
-     contents = await file.read()
-     # TODO: Add LLaVA/Ollama logic here
-     return {"result": "AI processed image successfully"}
+@app.post("/analyze-image")
+async def analyze_image(file: UploadFile = File(...)):
+    contents = await file.read()
+    # TODO: Add LLaVA/Ollama logic here
+    return {"result": "AI processed image successfully"}
