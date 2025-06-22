@@ -1,23 +1,10 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from pydantic import BaseModel
-import httpx
-
-app = FastAPI()
-
-@app.get("/")
-def root():
-    return {"message": "Deckbot AI backend is alive!"}
-
-class AnalyzeImageResponse(BaseModel):
-    result: str
-
 @app.post("/analyze-image", response_model=AnalyzeImageResponse)
 async def analyze_image(file: UploadFile = File(...)):
     try:
         image_bytes = await file.read()
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "http://ai-service:11434/process",  # 🔗 Call the AI container
+                "http://ai-service:11434/process",  # 🔐 Docker internal call
                 files={"file": ("image.png", image_bytes, file.content_type)},
                 timeout=30.0
             )
