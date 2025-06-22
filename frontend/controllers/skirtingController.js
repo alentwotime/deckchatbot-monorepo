@@ -34,6 +34,25 @@ function calculateSkirting(req, res) {
     material
   } = req.body;
 
+  // Validate parameter types
+  if (
+    (length != null && typeof length !== 'string') ||
+    (lengthFt != null && typeof lengthFt !== 'string') ||
+    (lengthIn != null && typeof lengthIn !== 'number') ||
+    (width != null && typeof width !== 'string') ||
+    (widthFt != null && typeof widthFt !== 'string') ||
+    (widthIn != null && typeof widthIn !== 'number') ||
+    (height != null && typeof height !== 'string') ||
+    (heightFt != null && typeof heightFt !== 'string') ||
+    (heightIn != null && typeof heightIn !== 'number') ||
+    (typeof sides !== 'number' || ![3, 4].includes(sides)) ||
+    (material == null || typeof material !== 'string')
+  ) {
+    return res.status(400).json({
+      errors: [{ msg: 'Invalid parameter types. Ensure all inputs are correctly formatted.' }]
+    });
+  }
+
   const lengthVal = normalizeMeasurement(lengthFt, lengthIn, length);
   const widthVal = normalizeMeasurement(widthFt, widthIn, width);
   const heightVal = normalizeMeasurement(heightFt, heightIn, height);
