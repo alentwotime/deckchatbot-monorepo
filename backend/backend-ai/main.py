@@ -13,9 +13,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def root():
     return {"message": "AI service is running."}
+
 
 @app.post("/analyze-image")
 async def analyze_image(file: UploadFile = File(...)):

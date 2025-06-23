@@ -3,6 +3,7 @@
 import base64
 import requests
 
+
 def run_model(image_bytes: bytes, prompt: str = "What shape is this deck?") -> str:
     # Convert raw image bytes to base64
     encoded_image = base64.b64encode(image_bytes).decode("utf-8")

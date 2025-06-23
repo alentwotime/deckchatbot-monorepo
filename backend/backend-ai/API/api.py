@@ -4,12 +4,15 @@ import httpx
 
 app = FastAPI()
 
+
 @app.get("/")
 def root():
     return {"message": "Deckbot AI backend is alive!"}
 
+
 class AnalyzeImageResponse(BaseModel):
     result: str
+
 
 @app.post("/analyze-image", response_model=AnalyzeImageResponse)
 async def analyze_image(file: UploadFile = File(...)):
@@ -24,4 +27,5 @@ async def analyze_image(file: UploadFile = File(...)):
         response.raise_for_status()
         return {"result": response.json()["result"]}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"AI Service error: {str(e)}")
+        raise HTTPException(
+            status_code=400, detail=f"AI Service error: {str(e)}")

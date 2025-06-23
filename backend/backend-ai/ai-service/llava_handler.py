@@ -1,6 +1,7 @@
 from PIL import Image, UnidentifiedImageError
 import io
 
+
 def process_image(image_bytes):
     """
     Process an uploaded image and return a simple description.
