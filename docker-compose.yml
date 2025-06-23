@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   backend:
     build:
@@ -9,6 +10,9 @@ services:
       - ./backend/backend-ai:/app
     environment:
       - PORT=11434
+
+    depends_on:
+      - ai-service
 
   ai-service:
     build:
@@ -31,3 +35,5 @@ services:
       - ./frontend:/app
     environment:
       - REACT_APP_API_URL=http://localhost:11434
+    depends_on:
+      - backend
