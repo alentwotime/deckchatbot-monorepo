@@ -56,7 +56,7 @@ const memoryDb = path.join(__dirname, 'memory_edge.sqlite');
 process.env.MEM_DB = memoryDb;
 
 const { app } = require('../server.cjs');
-const memory = require('../memory');
+const memory = require('../frontend/memory');
 
 beforeEach(() => {
   memory.clearMemory();

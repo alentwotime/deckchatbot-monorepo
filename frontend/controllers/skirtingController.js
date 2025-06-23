@@ -37,13 +37,13 @@ function calculateSkirting(req, res) {
   // Validate parameter types
   if (
     (length != null && typeof length !== 'string') ||
-    (lengthFt != null && typeof lengthFt !== 'string') ||
+    (lengthFt != null && typeof lengthFt !== 'string' && typeof lengthFt !== 'number') ||
     (lengthIn != null && typeof lengthIn !== 'number') ||
     (width != null && typeof width !== 'string') ||
-    (widthFt != null && typeof widthFt !== 'string') ||
+    (widthFt != null && typeof widthFt !== 'string' && typeof widthFt !== 'number') ||
     (widthIn != null && typeof widthIn !== 'number') ||
     (height != null && typeof height !== 'string') ||
-    (heightFt != null && typeof heightFt !== 'string') ||
+    (heightFt != null && typeof heightFt !== 'string' && typeof heightFt !== 'number') ||
     (heightIn != null && typeof heightIn !== 'number') ||
     (typeof sides !== 'number' || ![3, 4].includes(sides)) ||
     (material == null || typeof material !== 'string')
