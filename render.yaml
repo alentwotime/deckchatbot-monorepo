@@ -4,8 +4,8 @@ services:
     env: docker
     plan: free
     repo: https://github.com/alentwotime/deckchatbot-monorepo
-    dockerfilePath: backend/deckchatbot_backend/Dockerfile
-    rootDir: backend/deckchatbot_backend
+    dockerfilePath: backend/app2/Dockerfile
+    rootDir: backend/app2
     envVars:
       - key: YOUR_ENV_VAR_NAME
         value: your_value_here
@@ -29,8 +29,8 @@ services:
     env: docker
     plan: free
     repo: https://github.com/alentwotime/deckchatbot-monorepo
-    dockerfilePath: backend/ai-service/Dockerfile
-    rootDir: backend/ai-service
+    dockerfilePath: backend/backend-ai/ai-service/Dockerfile
+    rootDir: backend/backend-ai/ai-service
     envVars:
       - key: OLLAMA_API_BASE
         value: http://localhost:11434  # or whatever it's using
