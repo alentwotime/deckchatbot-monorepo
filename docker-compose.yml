@@ -7,9 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: deckbot-ai-service
     ports:
-      - "8001:8000"    
-      - "11435:11434"  
-      - "3001:3000"   
+      - "8002:8000"
     volumes:
       - ./backend/backend-ai/ai-service:/app
     env_file:
@@ -18,11 +16,15 @@ services:
 
   backend:
     build:
-      context: ./backend/backend-ai
+      context: ./backend/app2
       dockerfile: Dockerfile
     container_name: deckbot-backend
+    ports:
+      - "8000:8000"
     volumes:
-      - ./backend/backend-ai:/app
+      - ./backend/app2:/app
+    environment:
+      - AI_SERVICE_URL=http://ai-service:8000/analyze-image
     env_file:
       - .env
     depends_on:
@@ -34,8 +36,10 @@ services:
       context: ./frontend
     container_name: deckchatbot-frontend
     ports:
-      - "8080:8000"
-      - "11437:11434"
-      - "3003:3000"
+      - "3000:3000"
     command: npx serve -s dist
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+    depends_on:
+      - backend
     restart: unless-stopped

@@ -15,15 +15,15 @@ services:
     name: deckbot-backend
     env: docker
     repo: https://github.com/alentwotime/deckchatbot-monorepo
-    dockerContext: ./backend/backend-ai
-    dockerfilePath: ./backend/backend-ai/Dockerfile
+    dockerContext: ./backend/app2
+    dockerfilePath: ./backend/app2/Dockerfile
     branch: main
     plan: free
     envVars:
       - key: PORT
-        value: 11434
+        value: 8000
       - key: AI_SERVICE_URL
-        value: https://deckbot-ai-service.onrender.com
+        value: http://ai-service:8000/analyze-image
 
   - type: web
     name: deckbot-ai-service
