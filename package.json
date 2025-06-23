@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "...",
   "main": "server.cjs",
+  "engines": {
+    "node": "22.x",
+    "npm": "11.x"
+  },
   "scripts": {
     "start": "node server.cjs",
     "dev": "nodemon",
