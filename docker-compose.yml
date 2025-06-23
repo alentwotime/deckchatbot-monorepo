@@ -1,45 +1,30 @@
-version: '3.9'
+version: '3.8'
 
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend/backend-ai
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ai-service
+    entrypoint: /entrypoint.sh
+
   ai-service:
     build:
       context: ./backend/backend-ai/ai-service
       dockerfile: Dockerfile
-    container_name: deckbot-ai-service
     ports:
-      - "8002:8000"
-    volumes:
-      - ./backend/backend-ai/ai-service:/app
-    env_file:
-      - .env
-    restart: unless-stopped
-
-  backend:
-    build:
-      context: ./backend/app2
-      dockerfile: Dockerfile
-    container_name: deckbot-backend
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend/app2:/app
-    environment:
-      - AI_SERVICE_URL=http://ai-service:8000/analyze-image
-    env_file:
-      - .env
-    depends_on:
-      - ai-service
-    restart: unless-stopped
-
-  frontend:
-    build:
-      context: ./frontend
-    container_name: deckchatbot-frontend
-    ports:
-      - "3000:3000"
-    command: npx serve -s dist
-    environment:
-      - REACT_APP_API_URL=http://backend:8000
-    depends_on:
-      - backend
-    restart: unless-stopped
+      - "11434:11434"
