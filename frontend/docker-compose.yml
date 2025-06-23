@@ -3,10 +3,12 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ..
+      context: ./backend/backend-ai  # Adjusted to real backend path
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend/backend-ai:/app
 
   frontend:
     build:

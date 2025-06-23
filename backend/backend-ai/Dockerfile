@@ -1,29 +1,37 @@
 # syntax=docker/dockerfile:1
 
-# 🔧 Build stage
-FROM python:3.11-slim AS builder
+### 🧱 Stage 1: Build
+FROM node:18-alpine AS builder
+
 WORKDIR /app
 
-# Install build tools and deps
-RUN apt-get update && apt-get install -y --no-install-recommends gcc && rm -rf /var/lib/apt/lists/*
-COPY requirements.txt .
-RUN pip wheel --no-cache-dir --no-deps --wheel-dir /app/wheels -r requirements.txt
+# Optional: copy .npmrc to lock registry and avoid hanging installs
+COPY .npmrc ./
 
-# 🏁 Runtime stage
-FROM python:3.11-slim
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy app code and build it
+COPY . .
+RUN npm run build
+
+---
+
+### 🚀 Stage 2: Serve the built static files
+FROM node:18-alpine
+
 WORKDIR /app
 
-# Install wheels and clean up
-COPY --from=builder /app/wheels /wheels
-RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
+# Optional: use the same registry in runtime
+COPY .npmrc ./
 
-# Copy code
-COPY API /app/API
-COPY requirements.txt .
+# Install static server
+RUN npm install -g serve
 
-# Security: Use a non-root user
-RUN adduser --system appuser
-USER appuser
+# Copy the built assets from previous stage
+COPY --from=builder /app/dist ./dist
 
-ENV PORT=8000
-CMD ["sh", "-c", "uvicorn API.api:app --host 0.0.0.0 --port ${PORT}"]
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]

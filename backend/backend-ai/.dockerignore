@@ -1,12 +1,6 @@
 node_modules
-__pycache__
-*.pyc
-*.pyo
-.git
-.gitignore
-.vscode
+dist
+*.log
 .env
 .DS_Store
-*.log
-tests/
-docs/
+.vscode

@@ -26,19 +26,19 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env','@babel/preset-react']
+            presets: ['@babel/preset-env', '@babel/preset-react']
           }
         }
       },
       {
         test: /\.css$/,
-        use: ['style-loader','css-loader']
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
 
   resolve: {
-    extensions: ['.js','.jsx'],
+    extensions: ['.js', '.jsx'],
     fallback: {
       crypto: require.resolve('crypto-browserify'),
       stream: require.resolve('stream-browserify'),
