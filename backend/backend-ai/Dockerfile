@@ -5,31 +5,26 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Optional: copy .npmrc to lock registry and avoid hanging installs
-COPY .npmrc ./
+# Optional: use custom registry
+COPY .npmrc ./  # ✅ only if needed
 
-# Install dependencies
+# Install deps and build
 COPY package*.json ./
 RUN npm install
 
-# Copy app code and build it
 COPY . .
 RUN npm run build
 
----
-
-### 🚀 Stage 2: Serve the built static files
+### 🚀 Stage 2: Serve static files
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Optional: use the same registry in runtime
-COPY .npmrc ./
+# Optional: same registry config (optional)
+COPY .npmrc ./  # ✅ only if needed
 
-# Install static server
 RUN npm install -g serve
 
-# Copy the built assets from previous stage
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
