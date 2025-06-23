@@ -11,7 +11,7 @@ uvicorn = "^0.34.0"
 httpx = "^0.27.0"
 python-multipart = "^0.0.6"
 lib1 = { path = "./ai-service", develop = true }
-lib2 = { path = "../../libs/lib2", develop = true }
+lib2 = { path = "../../lib2", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
