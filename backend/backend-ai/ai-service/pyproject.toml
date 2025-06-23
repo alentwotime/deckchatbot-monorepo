@@ -12,6 +12,7 @@ pillow = "^11.0.0"
 pytesseract = "^0.3.13"
 requests = "^2.31.0"
 python-multipart = "^0.0.6"
+httpx = "^0.28.1"
 
 [build-system]
 requires = ["poetry-core"]

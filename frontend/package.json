@@ -11,8 +11,8 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "ollama": "^0.5.16",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "three": "^0.164.1"
   },
   "devDependencies": {
@@ -45,7 +45,6 @@
     "webpack": "^5.99.9",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^4.15.2"
+    "webpack-dev-server": "^5.2.2"
   }
-
 }

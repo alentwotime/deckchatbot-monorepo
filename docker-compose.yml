@@ -7,7 +7,9 @@ services:
       dockerfile: Dockerfile
     container_name: deckbot-ai-service
     ports:
-      - "${AI_PORT:-8000}:8000"
+      - "8001:8000"    
+      - "11435:11434"  
+      - "3001:3000"   
     volumes:
       - ./backend/backend-ai/ai-service:/app
     env_file:
@@ -19,8 +21,6 @@ services:
       context: ./backend/backend-ai
       dockerfile: Dockerfile
     container_name: deckbot-backend
-    ports:
-      - "${PORT:-11434}:11434"
     volumes:
       - ./backend/backend-ai:/app
     env_file:
@@ -32,14 +32,11 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    container_name: deckbot-frontend
+    container_name: deckchatbot-frontend
     ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-    env_file:
-      - .env
-    depends_on:
-      - backend
-    restart: unless-stopped
+      - "8080:8000"
+      - "11437:11434"
+      - "3003:3000"
+    command: npx serve -s dist
+      - "11437:11434"  
+      - "3004:3000"   
