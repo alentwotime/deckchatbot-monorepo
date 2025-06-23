@@ -1,9 +1,21 @@
-# Node dependencies
-**/node_modules/
+# Node/npm dependencies
+node_modules/
+npm/
+node/
+npm-cache/
+node-gyp/
+frontend/.npm-cache/
+frontend/${HOME}/
+Package Cache/
+gitextensions-*/
 
 # Python cache
+__pycache__/
 **/__pycache__/
-**/*.py[cod]
+*.py[cod]
+venv/
+backend/venv/
+frontend/venv/
 
 # Logs
 *.log
@@ -13,14 +25,12 @@ logs/
 .env
 *.env
 
-# Build artifacts
+# Build & compiled output
 frontend/build/
-backend/dist/
-
-# OS generated files
-.DS_Store
-Thumbs.db
-venv/ 
 frontend/dist/
 frontend/memory.sqlite
-frontend/$HOME/
+backend/dist/
+
+# OS/system files
+.DS_Store
+Thumbs.db
