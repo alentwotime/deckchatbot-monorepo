@@ -1,50 +1,77 @@
-import React, { useState } from 'react';
+import './App.css';
 
-const App = () => {
-  const [response, setResponse] = useState(null);
-  const [file, setFile] = useState(null);
+const API_BASE = 'https://deckchatbot-backend.onrender.com';
 
-  const handleUpload = async () => {
-    if (!file) return;
+function App() {
+  const [blueprint, setBlueprint] = useState(null);
+  const [areaPhoto, setAreaPhoto] = useState(null);
+  const [preview1, setPreview1] = useState(null);
+  const [preview2, setPreview2] = useState(null);
+  const [input, setInput] = useState('');
+  const [chat, setChat] = useState([]);
+  const sessionId = 'front-session';
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await fetch('/analyze-image', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      setResponse(data);
-    } catch (err) {
-      console.error('Upload failed', err);
-      setResponse({ error: 'Failed to process image' });
+  const handleFile = (e, setter, setPreview) => {
+    const file = e.target.files[0];
+    if (file) {
+      setter(file);
+      setPreview(URL.createObjectURL(file));
     }
   };
 
+  const sendMessage = async () => {
+    if (!input) return;
+    setChat([...chat, { self: true, text: input }]);
+
+    const res = await fetch(`${API_BASE}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: input, session_id: sessionId }),
+    });
+
+    const reader = res.body.getReader();
+    let reply = '';
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      reply += new TextDecoder().decode(value);
+      setChat((c) => [...c.slice(0, -1), { self: true, text: input }, { self: false, text: reply }]);
+    }
+    setInput('');
+  };
+
   return (
-    <div style={{ padding: 20 }}>
-      <h1>DeckChatbot</h1>
-      <p>Upload a sketch or deck photo to get started:</p>
-
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-      <button onClick={handleUpload} disabled={!file}>
-        Analyze Image
-      </button>
-
-      {response && (
-        <div style={{ marginTop: 20 }}>
-          <h3>AI Response:</h3>
-          <pre>{JSON.stringify(response, null, 2)}</pre>
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold">DeckChatbot</h1>
+      <div className="flex space-x-4">
+        <div>
+          <input type="file" onChange={(e) => handleFile(e, setBlueprint, setPreview1)} />
+          {preview1 && <img src={preview1} alt="Blueprint" className="h-32 mt-2" />}
         </div>
-      )}
+        <div>
+          <input type="file" onChange={(e) => handleFile(e, setAreaPhoto, setPreview2)} />
+          {preview2 && <img src={preview2} alt="Area" className="h-32 mt-2" />}
+        </div>
+      </div>
+      <div className="border p-2 h-64 overflow-y-auto bg-white" id="chat-box">
+        {chat.map((msg, idx) => (
+          <div key={idx} className={msg.self ? 'text-right' : 'text-left'}>
+            <span className="px-2 py-1 inline-block bg-gray-200 rounded m-1">{msg.text}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="flex-grow border p-2"
+        />
+        <button onClick={sendMessage} className="bg-blue-500 text-white px-4">
+          Send
+        </button>
+      </div>
     </div>
   );
-};
+}
 
 export default App;
