@@ -2,24 +2,26 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install Poetry and build dependencies
-COPY pyproject.toml poetry.lock ./
+# Install tesseract OCR engine
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl build-essential && \
-    curl -sSL https://install.python-poetry.org | python3 - && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        build-essential \
+        tesseract-ocr \
+        libtesseract-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+COPY pyproject.toml poetry.lock ./
+RUN curl -sSL https://install.python-poetry.org | python3 - && \
     ln -s /root/.local/bin/poetry /usr/local/bin/poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --no-root --no-dev && \
-    apt-get purge -y curl && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    poetry install --no-root
 
-
-# Add your app code
+# Copy the rest of your app
 COPY . /app
 
-# Expose the API port
 EXPOSE 11434
 
-# Start the app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "11434"]
