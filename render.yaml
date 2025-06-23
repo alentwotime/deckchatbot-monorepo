@@ -1,36 +1,38 @@
 services:
   - type: web
-    name: deckchatbot-backend
+    name: deckbot-frontend
     env: docker
-    plan: free
     repo: https://github.com/alentwotime/deckchatbot-monorepo
-    dockerfilePath: backend/app2/Dockerfile
-    rootDir: backend/app2
+    dockerContext: ./frontend
+    dockerfilePath: ./frontend/Dockerfile
+    branch: main
+    plan: free
     envVars:
-      - key: YOUR_ENV_VAR_NAME
-        value: your_value_here
-      - key: OPENAI_API_KEY
-        value: your_value_here
-      - key: REDIS_URL
-        value: redis://...
+      - key: REACT_APP_API_URL
+        value: https://deckchatbot-backend.onrender.com
 
   - type: web
-    name: deckchatbot-frontend
-    env: node
-    plan: free
-    repo: https://github.com/alentwotime/deckchatbot-monorepo
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: npx serve -s dist
-    envVars: []
- 
-  - type: web
-    name: deckchatbot-ai-service
+    name: deckbot-backend
     env: docker
-    plan: free
     repo: https://github.com/alentwotime/deckchatbot-monorepo
-    dockerfilePath: backend/backend-ai/ai-service/Dockerfile
-    rootDir: backend/backend-ai/ai-service
+    dockerContext: ./backend/backend-ai
+    dockerfilePath: ./backend/backend-ai/Dockerfile
+    branch: main
+    plan: free
     envVars:
-      - key: OLLAMA_API_BASE
-        value: http://localhost:11434  # or whatever it's using
+      - key: PORT
+        value: 11434
+      - key: AI_SERVICE_URL
+        value: https://deckbot-ai-service.onrender.com
+
+  - type: web
+    name: deckbot-ai-service
+    env: docker
+    repo: https://github.com/alentwotime/deckchatbot-monorepo
+    dockerContext: ./backend/backend-ai/ai-service
+    dockerfilePath: ./backend/backend-ai/ai-service/Dockerfile
+    branch: main
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8000
