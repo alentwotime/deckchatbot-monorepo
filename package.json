@@ -17,7 +17,9 @@
     "jest": "^30.0.2",
     "nodemon": "^3.1.10",
     "supertest": "^6.3.3",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "eslint": "^9.0.0",
+    "eslint-plugin-react": "^7.33.2"
   },
   "dependencies": {
     "@openai/codex": "^0.1.2505291658",
