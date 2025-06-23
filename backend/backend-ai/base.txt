@@ -1,5 +1,6 @@
 fastapi
-uvicorn[standard]
-pydantic
-httpx
+uvicorn
+pytesseract
+pillow
 python-multipart
+requests
