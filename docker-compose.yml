@@ -38,5 +38,4 @@ services:
       - "11437:11434"
       - "3003:3000"
     command: npx serve -s dist
-      - "11437:11434"  
-      - "3004:3000"   
+    restart: unless-stopped
