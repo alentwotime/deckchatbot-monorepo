@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from lib2 import my_helper
 
 app = FastAPI()
 
@@ -17,7 +18,7 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    return {"message": "AI service is running."}
+    return {"message": "AI service is running.", "helper": my_helper(2)}
 
 
 @app.post("/analyze-image")

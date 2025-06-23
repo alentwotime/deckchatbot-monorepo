@@ -12,6 +12,7 @@ pillow = "^11.0.0"
 pytesseract = "^0.3.13"
 httpx = "^0.28.1"
 python-multipart = "^0.0.6"
+lib2 = { path = "../../../libs/lib2", develop = true }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
