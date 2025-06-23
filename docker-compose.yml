@@ -1,34 +1,45 @@
+version: '3.9'
+
 services:
   backend:
     build:
       context: ./backend/backend-ai
       dockerfile: Dockerfile
+    container_name: deckchatbot-backend
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend/backend-ai:/app
     depends_on:
       - ai-service
+    environment:
+      - OPENAI_API_KEY=your_openai_key_here
+      - REDIS_URL=redis://redis:6379
+      - MODEL_ENDPOINT=http://ai-service:11434
+    restart: always
 
   ai-service:
     build:
       context: ./backend/backend-ai/ai-service
       dockerfile: Dockerfile
+    container_name: deckchatbot-ai
     ports:
       - "11434:11434"
-    volumes:
-      - ./backend/backend-ai/ai-service:/app
-    command: python main.py
+    environment:
+      - PORT=11434
+    restart: always
+
+  redis:
+    image: redis:7
+    container_name: deckchatbot-redis
+    ports:
+      - "6379:6379"
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+    container_name: deckchatbot-frontend
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
+    stdin_open: true
+    tty: true
     environment:
-      - VITE_API_URL=http://backend:8000
-    depends_on:
-      - backend
+      - REACT_APP_API_BASE=http://localhost:8000

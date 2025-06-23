@@ -3,12 +3,34 @@ services:
     name: deckchatbot-backend
     env: docker
     plan: free
-    repo: https://github.com/your-username/deckchatbot-monorepo
+    repo: https://github.com/alentwotime/deckchatbot-monorepo
     dockerfilePath: backend/deckchatbot_backend/Dockerfile
+    rootDir: backend/deckchatbot_backend
     envVars:
-      - key: AZURE_STORAGE_CONNECTION_STRING
+      - key: YOUR_ENV_VAR_NAME
         value: your_value_here
       - key: OPENAI_API_KEY
         value: your_value_here
       - key: REDIS_URL
         value: redis://...
+
+  - type: web
+    name: deckchatbot-frontend
+    env: node
+    plan: free
+    repo: https://github.com/alentwotime/deckchatbot-monorepo
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npx serve -s dist
+    envVars: []
+ 
+  - type: web
+    name: deckchatbot-ai-service
+    env: docker
+    plan: free
+    repo: https://github.com/alentwotime/deckchatbot-monorepo
+    dockerfilePath: backend/ai-service/Dockerfile
+    rootDir: backend/ai-service
+    envVars:
+      - key: OLLAMA_API_BASE
+        value: http://localhost:11434  # or whatever it's using
