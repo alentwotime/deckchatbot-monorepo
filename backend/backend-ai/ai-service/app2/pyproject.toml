@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "app2"
+version = "0.1.0"
+description = "Application 2 for DeckChatBot"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.26"
+lib1 = { path = "../backend-ai/ai-service", develop = true }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "lib2"
 version = "0.1.0"
-description = "Library 2 for DeckChatBot"
+description = "Shared utilities for DeckChatbot"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]

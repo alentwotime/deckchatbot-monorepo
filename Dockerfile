@@ -13,7 +13,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
     ln -s /root/.local/bin/poetry /usr/local/bin/poetry
 
 # Set Poetry config + install dependencies
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml ./
 COPY backend/backend-ai ./backend/backend-ai
 COPY backend/app2 ./backend/app2
 COPY backend/backend-ai/ai-service ./backend/backend-ai/ai-service

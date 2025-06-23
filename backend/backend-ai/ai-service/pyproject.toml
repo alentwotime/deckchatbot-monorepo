@@ -6,17 +6,7 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.115.0"
-uvicorn = "^0.34.0"
-pillow = "^11.0.0"
-pytesseract = "^0.3.13"
-httpx = "^0.28.1"
-python-multipart = "^0.0.6"
 lib2 = { path = "../../../libs/lib2", develop = true }
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.2.1"
-black = "^24.4.2"
 
 [build-system]
 requires = ["poetry-core"]
