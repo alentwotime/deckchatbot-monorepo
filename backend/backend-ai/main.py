@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -31,3 +32,18 @@ async def analyze_image(file: UploadFile = File(...)):
         "filename": file.filename,
         "size_bytes": len(contents)
     }
+
+
+class ChatRequest(BaseModel):
+    message: str
+    session_id: str | None = None
+
+
+@app.post("/chat")
+async def chat_handler(req: ChatRequest):
+    """Simple echo-style chat endpoint."""
+
+    async def chat_stream():
+        yield f"You said: {req.message}"
+
+    return StreamingResponse(chat_stream(), media_type="text/plain")

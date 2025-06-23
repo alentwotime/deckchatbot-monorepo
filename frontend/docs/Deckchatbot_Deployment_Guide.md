@@ -165,7 +165,9 @@ Place this in `client/public/`.
 In your React app:
 
 ```js
-const API_BASE = "https://deckbot-backend.onrender.com";
+const API_BASE =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://deckchatbot-backend.onrender.com";
 axios.get(`${API_BASE}/api/ping`);
 ```
 

@@ -1,4 +1,6 @@
-const API_BASE = 'https://deckchatbot-backend.onrender.com';
+const API_BASE =
+  process.env.REACT_APP_API_BASE_URL ||
+  'https://deckchatbot-backend.onrender.com';
 
 function App() {
   const [blueprint, setBlueprint] = React.useState(null);
