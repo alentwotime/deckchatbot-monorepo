@@ -22,6 +22,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 # Copy the rest of your app
 COPY . /app
 
-EXPOSE 11434
+ENV PORT=8000
+EXPOSE ${PORT}
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "11434"]
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]

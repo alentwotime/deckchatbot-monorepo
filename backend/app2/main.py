@@ -1,4 +1,5 @@
 import httpx
+import os
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,7 +15,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-AI_SERVICE_URL = "https://deckbot-ai-service.onrender.com/analyze-image"
+AI_SERVICE_URL = os.getenv("AI_SERVICE_URL", "http://ai-service:8000/analyze-image")
+
+@app.get("/")
+async def health():
+    return {"status": "ok"}
 
 @app.post("/analyze-image")
 async def proxy_to_ai_service(file: UploadFile = File(...)):
