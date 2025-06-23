@@ -1,8 +1,7 @@
-
 /**
  * Geometry utility functions for deck calculations
  */
-const { extractNumbers } = require('./extract');
+const { extractNumbers } = require("./extract");
 
 /**
  * Calculate rectangle area
@@ -12,7 +11,7 @@ const { extractNumbers } = require('./extract');
  */
 function rectangleArea(length, width) {
   if (length <= 0 || width <= 0) {
-    throw new Error('Length and width must be positive numbers');
+    throw new Error("Length and width must be positive numbers");
   }
   return length * width;
 }
@@ -24,7 +23,7 @@ function rectangleArea(length, width) {
  */
 function circleArea(radius) {
   if (radius <= 0) {
-    throw new Error('Radius must be a positive number');
+    throw new Error("Radius must be a positive number");
   }
   return Math.PI * Math.pow(radius, 2);
 }
@@ -37,7 +36,7 @@ function circleArea(radius) {
  */
 function triangleArea(base, height) {
   if (base <= 0 || height <= 0) {
-    throw new Error('Base and height must be positive numbers');
+    throw new Error("Base and height must be positive numbers");
   }
   return 0.5 * base * height;
 }
@@ -49,7 +48,7 @@ function triangleArea(base, height) {
  */
 function polygonArea(points) {
   if (!Array.isArray(points) || points.length < 3) {
-    throw new Error('Polygon must have at least 3 points');
+    throw new Error("Polygon must have at least 3 points");
   }
   let sum = 0;
   for (let i = 0; i < points.length; i++) {
@@ -85,12 +84,14 @@ function calculatePerimeter(points) {
  * @returns {number}
  */
 function ftInToDecimal(value) {
-  if (typeof value === 'number') return value;
+  if (typeof value === "number") return value;
   const str = String(value).trim();
   if (/^\d+(?:\.\d+)?\s*\"$/.test(str) && !str.includes("'")) {
     return parseFloat(str) / 12;
   }
-  const match = str.match(/^(\d+(?:\.\d+)?)\s*(?:'|ft)?\s*(\d+(?:\.\d+)?)?\s*(?:\"|in)?$/i);
+  const match = str.match(
+    /^(\d+(?:\.\d+)?)\s*(?:'|ft)?\s*(\d+(?:\.\d+)?)?\s*(?:\"|in)?$/i,
+  );
   if (!match) return parseFloat(str) || 0;
   const feet = parseFloat(match[1]);
   const inches = match[2] ? parseFloat(match[2]) : 0;
@@ -111,11 +112,11 @@ function shapeFromMessage(message) {
     const dims = msg.match(/([\d'\"\.\s]+)\s*(?:x|by)\s*([\d'\"\.\s]+)/);
     if (dims) {
       return {
-        type: 'rectangle',
+        type: "rectangle",
         dimensions: {
           length: ftInToDecimal(dims[1]),
-          width: ftInToDecimal(dims[2])
-        }
+          width: ftInToDecimal(dims[2]),
+        },
       };
     }
   }
@@ -123,13 +124,15 @@ function shapeFromMessage(message) {
   // Look for circle patterns
   const circleMatch = msg.match(/circle|circular|round/);
   if (circleMatch) {
-    const radiusMatch = msg.match(/radius[:\s]*(\d+(?:\.\d+)?(?:['\"])?\s*(\d+(?:\.\d+)?)?\"?)/);
+    const radiusMatch = msg.match(
+      /radius[:\s]*(\d+(?:\.\d+)?(?:['\"])?\s*(\d+(?:\.\d+)?)?\"?)/,
+    );
     if (radiusMatch) {
       return {
-        type: 'circle',
+        type: "circle",
         dimensions: {
-          radius: ftInToDecimal(radiusMatch[1])
-        }
+          radius: ftInToDecimal(radiusMatch[1]),
+        },
       };
     }
   }
@@ -140,13 +143,13 @@ function shapeFromMessage(message) {
     if (nums.length >= 4) {
       const [l1, w1, l2, w2] = nums;
       return {
-        type: 'lshape',
+        type: "lshape",
         dimensions: {
           length1: l1,
           width1: w1,
           length2: l2,
-          width2: w2
-        }
+          width2: w2,
+        },
       };
     }
   }
@@ -156,8 +159,8 @@ function shapeFromMessage(message) {
     const nums = extractNumbers(msg);
     if (nums.length >= 1) {
       return {
-        type: 'octagon',
-        dimensions: { side: nums[0] }
+        type: "octagon",
+        dimensions: { side: nums[0] },
       };
     }
   }
@@ -167,14 +170,14 @@ function shapeFromMessage(message) {
   if (triangleMatch) {
     const baseMatch = msg.match(/base[:\s]*(\d+(?:\.\d+)?)/);
     const heightMatch = msg.match(/height[:\s]*(\d+(?:\.\d+)?)/);
-    
+
     if (baseMatch && heightMatch) {
       return {
-        type: 'triangle',
+        type: "triangle",
         dimensions: {
           base: parseFloat(baseMatch[1]),
-          height: parseFloat(heightMatch[1])
-        }
+          height: parseFloat(heightMatch[1]),
+        },
       };
     }
   }
@@ -189,36 +192,42 @@ function shapeFromMessage(message) {
  */
 function deckAreaExplanation(shape) {
   if (!shape) {
-    return 'I couldn\'t identify specific dimensions in your message.';
+    return "I couldn't identify specific dimensions in your message.";
   }
 
   const { type, dimensions } = shape;
   let area, explanation;
 
   switch (type) {
-    case 'rectangle':
+    case "rectangle":
       area = rectangleArea(dimensions.length, dimensions.width);
-      explanation = `For a rectangular deck ${dimensions.length} × ${dimensions.width} feet:\n` +
-                   `Area = Length × Width = ${dimensions.length} × ${dimensions.width} = ${area.toFixed(2)} square feet`;
+      explanation =
+        `For a rectangular deck ${dimensions.length} × ${dimensions.width} feet:\n` +
+        `Area = Length × Width = ${dimensions.length} × ${dimensions.width} = ${area.toFixed(2)} square feet`;
       break;
-    
-    case 'circle':
+
+    case "circle":
       area = circleArea(dimensions.radius);
-      explanation = `For a circular deck with radius ${dimensions.radius} feet:\n` +
-                   `Area = π × r² = π × ${dimensions.radius}² = ${area.toFixed(2)} square feet`;
+      explanation =
+        `For a circular deck with radius ${dimensions.radius} feet:\n` +
+        `Area = π × r² = π × ${dimensions.radius}² = ${area.toFixed(2)} square feet`;
       break;
-    
-    case 'triangle':
+
+    case "triangle":
       area = triangleArea(dimensions.base, dimensions.height);
-      explanation = `For a triangular deck with base ${dimensions.base} and height ${dimensions.height} feet:\n` +
-                   `Area = ½ × Base × Height = ½ × ${dimensions.base} × ${dimensions.height} = ${area.toFixed(2)} square feet`;
+      explanation =
+        `For a triangular deck with base ${dimensions.base} and height ${dimensions.height} feet:\n` +
+        `Area = ½ × Base × Height = ½ × ${dimensions.base} × ${dimensions.height} = ${area.toFixed(2)} square feet`;
       break;
-    
+
     default:
-      return 'Unknown shape type.';
+      return "Unknown shape type.";
   }
 
-  return explanation + `\n\nThis would require approximately ${Math.ceil(area / 100)} deck boards (assuming 100 sq ft coverage per board with waste factor).`;
+  return (
+    explanation +
+    `\n\nThis would require approximately ${Math.ceil(area / 100)} deck boards (assuming 100 sq ft coverage per board with waste factor).`
+  );
 }
 
 /**
@@ -233,16 +242,18 @@ function calculateMaterials(area, options = {}) {
     boardLength = 16, // feet
     wastePercentage = 10,
     joistsSpacing = 16, // inches on center
-    beamSpacing = 8 // feet on center
+    beamSpacing = 8, // feet on center
   } = options;
 
   // Calculate board coverage area (accounting for actual vs nominal dimensions)
   const boardCoverage = (boardWidth / 12) * boardLength; // Convert width to feet
-  const boardsNeeded = Math.ceil((area * (1 + wastePercentage / 100)) / boardCoverage);
+  const boardsNeeded = Math.ceil(
+    (area * (1 + wastePercentage / 100)) / boardCoverage,
+  );
 
   // Calculate structural materials (simplified)
   const perimeterEstimate = 2 * Math.sqrt(area * 2); // Rough perimeter estimate
-  const joistsNeeded = Math.ceil(perimeterEstimate * 12 / joistsSpacing);
+  const joistsNeeded = Math.ceil((perimeterEstimate * 12) / joistsSpacing);
   const beamsNeeded = Math.ceil(Math.sqrt(area) / beamSpacing);
 
   return {
@@ -250,8 +261,20 @@ function calculateMaterials(area, options = {}) {
     joists: joistsNeeded,
     beams: beamsNeeded,
     area: area,
-    wastePercentage: wastePercentage
+    wastePercentage: wastePercentage,
   };
+}
+
+/**
+ * Calculate stair count from total rise in inches using 7.25" rise.
+ * @param {number|string} heightInches - Total rise in inches
+ * @returns {number} Number of steps
+ */
+function calculateSteps(heightInches) {
+  const val =
+    typeof heightInches === "string" ? parseFloat(heightInches) : heightInches;
+  if (!val || isNaN(val) || val <= 0) return 0;
+  return Math.ceil(val / 7.25);
 }
 
 module.exports = {
@@ -263,5 +286,6 @@ module.exports = {
   ftInToDecimal,
   shapeFromMessage,
   deckAreaExplanation,
-  calculateMaterials
+  calculateMaterials,
+  calculateSteps,
 };
