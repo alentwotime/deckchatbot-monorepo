@@ -2,12 +2,13 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-import os
 import sys
+import os
 
-# Add monorepo libs directory so Python can find local packages
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(os.path.join(ROOT_DIR, "libs"))
+# Add the monorepo root to the path so 'lib2' can be imported
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+)
 
 from lib2 import my_helper
 
