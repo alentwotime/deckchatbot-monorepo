@@ -31,7 +31,8 @@ export default function DeckBuilderUI() {
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
-      const API_URL = process.env.REACT_APP_API_URL || "";
+      const API_URL =
+        process.env.REACT_APP_API_BASE_URL || "https://deckchatbot-backend.onrender.com";
       try {
         await axios.post(`${API_URL}/analyze-image`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
@@ -53,7 +54,8 @@ export default function DeckBuilderUI() {
     setNewMessage("");
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL || "";
+      const API_URL =
+        process.env.REACT_APP_API_BASE_URL || "https://deckchatbot-backend.onrender.com";
       const res = await axios.post(`${API_URL}/chat`, { message: newMessage });
       const botReply = res.data.reply || "Okay!";
       setChatMessages((prev) => [...prev, { role: "bot", text: botReply }]);

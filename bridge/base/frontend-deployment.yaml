@@ -28,7 +28,7 @@ spec:
                   image: deckchatbot-monorepo-frontend
                   imagePullPolicy: IfNotPresent
                   env:
-                    - name: REACT_APP_API_URL
+                    - name: REACT_APP_API_BASE_URL
                       value: "http://backend:8000"
                   ports:
                     - name: frontend-3000
