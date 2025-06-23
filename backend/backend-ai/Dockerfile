@@ -1,12 +1,12 @@
 # syntax=docker/dockerfile:1
 
-### 🧱 Stage 1: Build
+# Stage 1: Build
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 # Optional: use custom registry
-COPY .npmrc ./  # ✅ only if needed
+COPY .npmrc ./ 
 
 # Install deps and build
 COPY package*.json ./
@@ -21,7 +21,7 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Optional: same registry config (optional)
-COPY .npmrc ./  # ✅ only if needed
+COPY .npmrc ./ 
 
 RUN npm install -g serve
 
