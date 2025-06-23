@@ -8,22 +8,11 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 module.exports = {
   entry: './src/index.js',
   output: {
-<<<<<<< HEAD
-=======
-    filename: '[name].[contenthash].js',
-    chunkFilename: '[name].[contenthash].chunk.js',
->>>>>>> f87a08f824d9a582d8ec59f8979c4b6d018ccdc6
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[contenthash:8].js',
     chunkFilename: '[name].[contenthash:8].js',
     publicPath: 'auto',
     clean: true,
-  },
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-    },
-    runtimeChunk: 'single',
   },
   mode: 'production',
   devtool: 'source-map',
@@ -74,12 +63,9 @@ module.exports = {
     new webpack.IgnorePlugin({ resourceRegExp: /potrace|sqlite3/ }),
     new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false })
   ],
-<<<<<<< HEAD
 
   optimization: {
     splitChunks: { chunks: 'all' },
     runtimeChunk: 'single'
   }
-=======
->>>>>>> f87a08f824d9a582d8ec59f8979c4b6d018ccdc6
 };
