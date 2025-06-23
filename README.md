@@ -17,8 +17,15 @@ This repository contains the frontend React application, FastAPI backend, and su
 
 ## Repository structure
 
-- `frontend/` – React client and Express API
+- `frontend/` – Node.js Express API with a React frontend
+- `frontend/src/` – the actual React application served on Render
 - `backend/backend-ai/` – FastAPI service
 - `backend/backend-ai/ai-service/` – secondary AI service
 
 See `frontend/README.md` for application details.
+
+## Deployment
+
+The production website at [alensdeckbot.onrender.com](https://alensdeckbot.onrender.com)
+is built from the code in `frontend/src`. Changes to that directory will be
+reflected on the main site after deployment.
