@@ -9,10 +9,11 @@ RUN apt-get update && \
     curl -sSL https://install.python-poetry.org | python3 - && \
     ln -s /root/.local/bin/poetry /usr/local/bin/poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --no-root --no-dev && \   # ⬅️ optional: skip dev deps
+    poetry install --no-root --no-dev && \
     apt-get purge -y curl && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 
 # Add your app code
 COPY . /app
