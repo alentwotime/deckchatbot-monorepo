@@ -238,7 +238,7 @@ develop = true
 
 [package.source]
 type = "directory"
-url = "../../../libs/lib2"
+url = "libs/lib2"
 
 [[package]]
 name = "numpy"
