@@ -1,5 +1,3 @@
-# backend/backend-ai/Dockerfile
-
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -20,23 +18,21 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 # Copy dependency files
 COPY pyproject.toml poetry.lock ./
 
-# ⛓️ Copy local monorepo dependencies used in pyproject.toml
-COPY backend/backend-ai ./backend/backend-ai
-COPY backend/app2 ./backend/app2
-COPY backend/backend-ai/ai-service ./backend/backend-ai/ai-service
-COPY libs/lib2 ./libs/lib2
+# ⛓️ Copy only local packages referenced by pyproject.toml before install
+COPY ../ai-service ./ai-service
+COPY ../../libs/lib2 ./libs/lib2
 
-# Install dependencies via Poetry
+# Install dependencies
 RUN poetry config virtualenvs.create false && \
     poetry install --no-root --only main
 
-# Copy application files (FastAPI app + extras)
+# 🔄 Copy actual backend-ai app contents (now safe to copy everything)
 COPY . .
 
-# Ensure lib2 and others can be imported correctly
-ENV PYTHONPATH="${PYTHONPATH}:/app:/app/backend:/app/libs"
+# Set monorepo-aware import path
+ENV PYTHONPATH="${PYTHONPATH}:/app:/app/libs"
 
-# Add and prepare entrypoint script
+# Entrypoint setup
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
