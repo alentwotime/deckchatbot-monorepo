@@ -36,16 +36,6 @@
   ```
 * Confirm all containers run correctly before committing changes
 
-## ☁️ Azure Deployment
-
-* Push verified images to ACR:
-
-  ```bash
-  docker tag backend youracr.azurecr.io/backend
-  docker push youracr.azurecr.io/backend
-  ```
-* Update `azure-pipelines.yml` **only after** passing local builds, lint, and test
-* Ensure CI uses correct `DOCKER_BUILDKIT=1` and Azure login context
 
 ## 🔐 Environment Variables
 
@@ -57,7 +47,6 @@
 * [ ] All tests pass via Docker
 * [ ] ESLint and Flake8 pass clean
 * [ ] Branch is rebased and named correctly
-* [ ] Azure build tested if Docker changes affect deployment
 
 ---
 
