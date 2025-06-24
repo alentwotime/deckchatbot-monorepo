@@ -17,7 +17,11 @@ RUN apt-get update && \
 COPY pyproject.toml poetry.lock ./
 
 # Include shared libraries for path dependencies
-COPY libs/lib2 libs/lib2
+# The ai_service build context is the repository root, so the shared
+# library lives in backend/backend-ai/libs. Explicitly copy it from
+# that location so it is available for path dependencies defined in
+# pyproject.toml.
+COPY backend/backend-ai/libs/lib2 libs/lib2
 
 # Install Poetry and Python deps
 RUN pip install --no-cache-dir --upgrade pip && \
