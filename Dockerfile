@@ -30,7 +30,8 @@ RUN poetry config virtualenvs.create false && \
 COPY . .
 
 # Set PYTHONPATH so app can import lib2 etc.
-ENV PYTHONPATH="${PYTHONPATH}:/app:/app/libs"
+ARG PYTHONPATH=""
+ENV PYTHONPATH=${PYTHONPATH}:/app:/app/libs
 
 # Entry script
 COPY entrypoint.sh /entrypoint.sh
