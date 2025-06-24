@@ -3,19 +3,28 @@ services:
     name: deckchatbot-backend
     env: docker
     plan: free
-    repo: https://github.com/YOUR_USERNAME/deckchatbot-monorepo
     dockerfilePath: backend/backend-ai/Dockerfile
     buildCommand: ""
     startCommand: "/entrypoint.sh"
     envVars:
       - key: AI_SERVICE_URL
-        value: http://ai-service:11434
+        value: https://deckchatbot-ai-service.onrender.com
+
+  - type: web
+    name: deckchatbot-ai-service
+    env: docker
+    plan: free
+    dockerfilePath: backend/backend-ai/ai-service/Dockerfile
+    buildCommand: ""
+    startCommand: ""
 
   - type: web
     name: deckchatbot-frontend
     env: docker
     plan: free
-    repo: https://github.com/YOUR_USERNAME/deckchatbot-monorepo
     dockerfilePath: frontend/Dockerfile
     buildCommand: ""
     startCommand: ""
+    envVars:
+      - key: REACT_APP_API_BASE_URL
+        value: https://deckchatbot-backend.onrender.com
