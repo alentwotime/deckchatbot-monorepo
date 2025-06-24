@@ -7,9 +7,9 @@ WORKDIR /app
 # Install essential system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        curl \
-        build-essential \
-        git && \
+    curl \
+    build-essential \
+    git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -41,4 +41,5 @@ RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["/entrypoint.sh"]
+CMD ["poetry", "run", "uvicorn", "ai_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
