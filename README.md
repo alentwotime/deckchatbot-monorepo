@@ -17,6 +17,14 @@ This repository contains the frontend React application, FastAPI backend, and su
 
 See `docs/docker_healthcheck.md` for troubleshooting container health checks and log inspection tips.
 
+### Windows line ending fix
+If Docker fails with `/usr/bin/env: bash\r`, ensure shell scripts use LF line endings. Configure Git on Windows:
+```bash
+ git config --global core.autocrlf input
+```
+This prevents CRLF errors when running containers.
+
+
 ## Repository structure
 
 - `frontend/` – Node.js Express API with a React frontend
