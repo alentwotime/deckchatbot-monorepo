@@ -17,7 +17,7 @@ services:
 
   backend:
     build:
-      context: .
+      context: ./backend/backend-ai
       dockerfile: backend/backend-ai/Dockerfile
     env_file:
       - .env
@@ -39,8 +39,8 @@ services:
 
   ai-service:
     build:
-      context: .
-      dockerfile: backend/backend-ai/ai_service/Dockerfile
+    context: ./backend/backend-ai/ai_service
+    dockerfile: backend/backend-ai/ai_service/Dockerfile
     ports:
       - "8001:8000"
     restart: unless-stopped
