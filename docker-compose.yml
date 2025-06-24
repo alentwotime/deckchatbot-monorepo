@@ -32,9 +32,10 @@ services:
     entrypoint: /entrypoint.sh
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 5
 
   ai-service:
     build:
@@ -45,6 +46,7 @@ services:
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 5
