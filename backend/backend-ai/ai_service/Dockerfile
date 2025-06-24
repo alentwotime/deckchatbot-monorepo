@@ -17,8 +17,8 @@ RUN apt-get update && \
 COPY backend/backend-ai/ai_service/pyproject.toml backend/backend-ai/ai_service/poetry.lock ./
 # Include shared libraries for path dependencies before installing
 COPY libs/lib2 libs/lib2
-RUN curl -sSL https://install.python-poetry.org | python3 - && \
-    ln -s /root/.local/bin/poetry /usr/local/bin/poetry && \
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-root --only main
 

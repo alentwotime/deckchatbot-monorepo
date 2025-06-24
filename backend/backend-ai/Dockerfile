@@ -11,9 +11,9 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Poetry globally
-RUN curl -sSL https://install.python-poetry.org | python3 - && \
-    ln -s /root/.local/bin/poetry /usr/local/bin/poetry
+# Install Poetry via pip
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir poetry
 
 # Copy dependency files
 COPY pyproject.toml poetry.lock ./
