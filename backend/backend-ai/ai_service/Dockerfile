@@ -1,4 +1,4 @@
-# backend/backend-ai/ai-service/Dockerfile (or wherever it's located)
+# backend/backend-ai/ai_service/Dockerfile
 
 FROM python:3.11-slim
 
@@ -13,26 +13,27 @@ RUN apt-get update && \
         libtesseract-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry and set up environment
-COPY backend/backend-ai/ai_service/pyproject.toml backend/backend-ai/ai_service/poetry.lock ./
-# Include shared libraries for path dependencies before installing
+# Copy pyproject.toml and poetry.lock directly from current dir
+COPY pyproject.toml poetry.lock ./
+
+# Include shared libraries for path dependencies
 COPY libs/lib2 libs/lib2
+
+# Install Poetry and Python deps
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-root --only main
 
-# Copy your app code
+# Copy service code
 COPY . .
 
-# Optional: if you use monorepo imports
-# Add the ai_service source directory and libs so uvicorn can locate the module
+# Optional monorepo path setup
 ARG PYTHONPATH=""
-ENV PYTHONPATH=${PYTHONPATH}:/app:/app/backend/backend-ai/ai_service:/app/libs
+ENV PYTHONPATH=${PYTHONPATH}:/app:/app/ai_service:/app/libs
 
-# Set port and start
+# Expose and run
 ENV PORT=8000
 EXPOSE ${PORT}
 
-# Safer CMD for Render
 CMD ["uvicorn", "ai_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
