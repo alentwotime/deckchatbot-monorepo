@@ -21,7 +21,7 @@ uvicorn API.api:app --reload
 
 ## Test health endpoint
 
-[Check health endpoint](http://localhost:8000/)
+[Check health endpoint](http://localhost:8000/health)
 That clarity helps the AI parse the flow precisely .
 
 📦 3. Show core concepts/code signature blocks
