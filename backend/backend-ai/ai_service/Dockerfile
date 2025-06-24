@@ -26,7 +26,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . .
 
 # Optional: if you use monorepo imports
-ENV PYTHONPATH="${PYTHONPATH}:/app:/app/../.."
+# Add the ai_service source directory and libs so uvicorn can locate the module
+ENV PYTHONPATH="${PYTHONPATH}:/app:/app/backend/backend-ai/ai_service:/app/libs"
 
 # Set port and start
 ENV PORT=8000
