@@ -25,7 +25,7 @@ docker logs <container_name>
 If the health check uses `curl`, you can run the same command manually inside the container:
 
 ```bash
-docker exec <container_name> curl -v http://localhost:8000
+docker exec <container_name> curl -v http://localhost:8000/health
 ```
 
 ## Compose dependency management

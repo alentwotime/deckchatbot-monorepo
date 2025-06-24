@@ -18,7 +18,14 @@ import base64
 app = FastAPI()
 
 @app.get("/")
+async def health_root():
+    """Basic health endpoint for backward compatibility."""
+    return {"status": "ai-service OK"}
+
+
+@app.get("/health")
 async def health():
+    """Dedicated health endpoint used by Docker."""
     return {"status": "ai-service OK"}
 
 @app.post("/analyze-image")
