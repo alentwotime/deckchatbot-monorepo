@@ -1,3 +1,5 @@
+# backend/backend-ai/Dockerfile
+
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -5,9 +7,9 @@ WORKDIR /app
 # Install essential system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-    curl \
-    build-essential \
-    git && \
+        curl \
+        build-essential \
+        git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -19,7 +21,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY pyproject.toml poetry.lock ./
 
 # ⛓️ Copy only local packages referenced by pyproject.toml before install
-COPY backend/backend-ai/ai_service ./ai_service
+COPY ai_service ./ai_service
 COPY libs/lib2 ./libs/lib2
 
 # Install dependencies
