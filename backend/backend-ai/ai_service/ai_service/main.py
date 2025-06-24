@@ -3,12 +3,12 @@ import os
 import sys
 
 # Ensure local lib2 package can be imported when running outside Docker
-sys.path.append(
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../../../..", "libs")
-    )
-)
-from lib2.lib2.square_footage import (
+# sys.path.append(
+#     os.path.abspath(
+#         os.path.join(os.path.dirname(__file__), "../../../..", "libs")
+#     )
+# )
+from lib2.square_footage import (
     extract_text_from_image,
     parse_dimensions_from_text,
     calculate_square_footage,
