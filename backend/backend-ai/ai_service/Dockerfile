@@ -31,4 +31,4 @@ ENV PORT=8000
 EXPOSE ${PORT}
 
 # Safer CMD for Render
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "ai_service.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -12,7 +12,7 @@ This repository permits full access to automation agents (e.g., GitHub Copilot W
 - ✅ Full access to **read**, **modify**, and **rewrite** any file in:
   - `frontend/`
   - `backend/backend-ai/`
-  - `backend/backend-ai/ai-service/`
+  - `backend/backend-ai/ai_service/`
   - `deckchatbot-monorepo/`
   - `libs/`, `utils/`, or other helper directories
 
@@ -60,7 +60,7 @@ deckchatbot-monorepo/
 ├── frontend/ # React frontend
 ├── backend/
 │ └── backend-ai/ # FastAPI backend
-│ └── ai-service/ # AI OCR microservice
+│ └── ai_service/ # AI OCR microservice
 ├── libs/ # Shared Python libs
 ├── docker-compose.yml
 ├── .render.yaml # One per service if needed
