@@ -15,6 +15,8 @@ This repository contains the frontend React application, FastAPI backend, and su
    docker compose up --build
    ```
 
+See `docs/docker_healthcheck.md` for troubleshooting container health checks and log inspection tips.
+
 ## Repository structure
 
 - `frontend/` – Node.js Express API with a React frontend
