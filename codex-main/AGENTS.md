@@ -9,7 +9,7 @@ This repository permits full access to automation agents (e.g., GitHub Copilot W
 ## ✅ Permissions Granted
 
 ### 1. **Code Read/Write Access**
-- ✅ Full access to **read**, **modify**, and **rewrite** any file in:
+- ✅ Full access to **read**, **modify**, and **rewrite** **move** **remove** **adjust** any file in:
   - `frontend/`
   - `backend/backend-ai/`
   - `backend/backend-ai/ai_service/`
