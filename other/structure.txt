@@ -3,9 +3,6 @@ Volume serial number is 9C07-632C
 C:.
 |   .conaarc
 |   .gitignore
-|   azure-pipelines.yml
-|   Azureworkspaces.csv
-|   azure_setup.sh
 |   cloud-init.yaml
 |   deck-vision.md
 |   Deckchatbot_Deployment_Guide.md
