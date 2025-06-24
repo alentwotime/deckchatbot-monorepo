@@ -28,5 +28,5 @@ jobs:
           containerAppName: deckchatbot-backend-app
           resourceGroup: ${{ secrets.AZURE_RG }}
           imageToBuild: ${{ secrets.ACR_NAME }}.azurecr.io/deckchatbot-backend:${{ github.sha }}
-          dockerfilePath: ./Dockerfile
+          dockerfilePath: ./backend/backend-ai/Dockerfile
           targetPort: 8000
