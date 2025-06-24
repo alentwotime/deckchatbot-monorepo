@@ -1,7 +1,8 @@
 /**
  * Geometry utility functions for deck calculations
  */
-const { extractNumbers } = require("./extract");
+// Use shared extract helper from repo root utils
+const { extractNumbers } = require("../../../utils/extract");
 
 /**
  * Calculate rectangle area

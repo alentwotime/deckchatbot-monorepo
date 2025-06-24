@@ -2,7 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
-const config = require('../config');
+// Adjust path to shared config at frontend/config.js
+const config = require('../../config');
 
 // Custom log format
 const logFormat = winston.format.combine(
