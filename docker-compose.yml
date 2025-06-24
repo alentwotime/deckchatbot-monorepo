@@ -5,18 +5,19 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:80"
+    restart: unless-stopped
     depends_on:
       backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
       interval: 10s
       timeout: 5s
       retries: 3
 
   backend:
     build:
-      context: .  # allow access to full monorepo (so COPY libs/lib2 works)
+      context: .
       dockerfile: backend/backend-ai/Dockerfile
     env_file:
       - .env
@@ -24,25 +25,26 @@ services:
       - AI_SERVICE_URL=http://ai-service:8000
     ports:
       - "8000:8000"
+    restart: unless-stopped
     depends_on:
       ai-service:
         condition: service_healthy
     entrypoint: /entrypoint.sh
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
       interval: 10s
       timeout: 5s
       retries: 3
 
   ai-service:
     build:
-      # Use repo root as context so local path dependencies can be copied
       context: .
       dockerfile: backend/backend-ai/ai_service/Dockerfile
     ports:
-      - "8001:8000"  # backend talks to 8000 inside container, 8001 is host-visible
+      - "8001:8000"
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000" ]
       interval: 10s
       timeout: 5s
       retries: 3
