@@ -36,7 +36,7 @@ services:
 
   ai-service:
     build:
-      context: ./backend/backend-ai/ai-service
+      context: ./backend/backend-ai/ai_service
       dockerfile: Dockerfile
     ports:
       - "8001:8000"  # backend talks to 8000 inside container, 8001 is host-visible

@@ -14,7 +14,7 @@ services:
     name: deckchatbot-ai-service
     env: docker
     plan: free
-    dockerfilePath: backend/backend-ai/ai-service/Dockerfile
+    dockerfilePath: backend/backend-ai/ai_service/Dockerfile
     buildCommand: ""
     startCommand: ""
 

@@ -1,5 +1,6 @@
 [tool.poetry]
 name = "ai-service"
+packages = [{include = "ai_service"}]
 version = "0.1.0"
 description = "AI service for deck image processing"
 authors = ["Your Name <you@example.com>"]

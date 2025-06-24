@@ -3,6 +3,7 @@ name = "backend-ai"
 version = "0.1.0"
 description = "FastAPI proxy backend for DeckChatbot"
 authors = ["Your Name <you@example.com>"]
+packages = [{include = "backend_ai"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
