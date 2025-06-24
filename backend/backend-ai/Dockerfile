@@ -19,7 +19,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 COPY pyproject.toml poetry.lock ./
 
 # ⛓️ Copy only local packages referenced by pyproject.toml before install
-COPY ../ai-service ./ai-service
+COPY ./ai-service ./ai-service
 COPY ../../libs/lib2 ./libs/lib2
 
 # Install dependencies

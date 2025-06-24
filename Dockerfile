@@ -19,8 +19,8 @@ RUN curl -sSL https://install.python-poetry.org | python3 - && \
 COPY pyproject.toml poetry.lock ./
 
 # Add referenced monorepo packages before install
-COPY ../ai-service ./ai-service
-COPY ../../libs/lib2 ./libs/lib2
+COPY backend/backend-ai/ai-service backend/backend-ai/ai-service
+COPY libs/lib2 libs/lib2
 
 # Install Python dependencies (no dev)
 RUN poetry config virtualenvs.create false && \

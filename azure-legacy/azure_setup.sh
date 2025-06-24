@@ -48,7 +48,7 @@ if ! az group show --name "$AZURE_RG" >/dev/null 2>&1; then
 fi
 
 # Build and push Docker images to ACR
-az acr build --registry "$ACR_NAME" --image deckchatbot-backend:latest -f Dockerfile .
+az acr build --registry "$ACR_NAME" --image deckchatbot-backend:latest -f backend/backend-ai/Dockerfile .
 az acr build --registry "$ACR_NAME" --image deckchatbot-frontend:latest -f frontend/Dockerfile ./frontend
 
 # Deploy container apps
