@@ -1,1 +1,1 @@
-module.exports = require('../frontend/utils/geometry');
+module.exports = require('../frontend/src/utils/geometry');

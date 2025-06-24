@@ -11,7 +11,7 @@ const auth = require('./middleware/auth');
 const rateLimiter = require('./middleware/rateLimiter');
 const errorLogger = require('./middleware/errorLogger');
 const requestLogger = require('./middleware/requestLogger');
-const logger = require('./utils/logger');
+const logger = require('./src/utils/logger');
 
 // Route imports
 const routes = require('./routes');

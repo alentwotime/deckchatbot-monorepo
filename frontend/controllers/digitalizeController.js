@@ -1,6 +1,6 @@
 const potrace = require('potrace');
 const { validationResult } = require('express-validator');
-const logger = require('../utils/logger');
+const logger = require('../src/utils/logger');
 
 const POTRACE_THRESHOLD = 180;
 
