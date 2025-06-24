@@ -36,8 +36,9 @@ services:
 
   ai-service:
     build:
-      context: ./backend/backend-ai/ai_service
-      dockerfile: Dockerfile
+      # Use repo root as context so local path dependencies can be copied
+      context: .
+      dockerfile: backend/backend-ai/ai_service/Dockerfile
     ports:
       - "8001:8000"  # backend talks to 8000 inside container, 8001 is host-visible
     healthcheck:

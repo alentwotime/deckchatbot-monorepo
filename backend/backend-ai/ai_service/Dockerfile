@@ -14,11 +14,13 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Poetry and set up environment
-COPY pyproject.toml poetry.lock ./
+COPY backend/backend-ai/ai_service/pyproject.toml backend/backend-ai/ai_service/poetry.lock ./
+# Include shared libraries for path dependencies before installing
+COPY libs/lib2 libs/lib2
 RUN curl -sSL https://install.python-poetry.org | python3 - && \
     ln -s /root/.local/bin/poetry /usr/local/bin/poetry && \
     poetry config virtualenvs.create false && \
-    poetry install --no-root
+    poetry install --no-root --only main
 
 # Copy your app code
 COPY . .

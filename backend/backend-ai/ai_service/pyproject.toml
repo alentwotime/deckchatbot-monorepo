@@ -7,7 +7,9 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-lib2 = { path = "../../../libs/lib2", develop = true }
+# When packaged in Docker the libs directory is copied adjacent to this
+# pyproject, so we reference it relative to the working directory.
+lib2 = { path = "libs/lib2", develop = true }
 
 [build-system]
 requires = ["poetry-core"]
