@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { drawPreviewImage } from "./utils/canvasHelpers"; 
 
 export default function App() {
   const [file, setFile] = useState(null);
