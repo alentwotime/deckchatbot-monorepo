@@ -17,4 +17,4 @@ url = "../../../libs/lib2"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "7197f85c2eaa13879ecf26a11117bc6f978b24ad4dc0aaf0dbbb99849fe0bcf5"
+content-hash = "5d761ee4af0a51ac6d6e50f96942ee30c2db620eafa600627e1b872fce30b03d"
