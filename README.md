@@ -43,11 +43,11 @@ reflected on the main site after deployment.
 ## Local library path fix
 
 The backend and AI service both depend on the shared `lib2` package found in
-`libs/lib2`. When building Docker images make sure this directory is included in
+`backend/backend-ai/libs/lib2`. When building Docker images make sure this directory is included in
 the build context. The provided Dockerfiles copy it explicitly:
 
 ```Dockerfile
-COPY libs/lib2 ./libs/lib2
+COPY backend/backend-ai/libs/lib2 libs/lib2
 ```
 
 If you see `ModuleNotFoundError: No module named 'lib2.lib2'` during a Docker

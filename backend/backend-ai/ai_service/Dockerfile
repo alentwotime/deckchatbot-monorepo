@@ -13,8 +13,9 @@ RUN apt-get update && \
     libtesseract-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy pyproject.toml and poetry.lock
-COPY pyproject.toml poetry.lock ./
+# Copy ai-service's pyproject and lockfile
+COPY backend/backend-ai/ai_service/pyproject.toml ./pyproject.toml
+COPY backend/backend-ai/ai_service/poetry.lock ./poetry.lock
 
 # Copy shared libs needed for install
 COPY backend/backend-ai/libs/lib2 libs/lib2
@@ -26,7 +27,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     poetry install --no-root --only main
 
 # Copy app code
-COPY . .
+COPY backend/backend-ai/ai_service/ai_service ./ai_service
 
 # Optional: set PYTHONPATH
 ARG PYTHONPATH=""
@@ -35,7 +36,7 @@ ENV PYTHONPATH=${PYTHONPATH}:/app:/app/ai_service:/app/libs
 ENV PORT=8000
 EXPOSE ${PORT}
 
-COPY entrypoint.sh /entrypoint.sh
+COPY backend/backend-ai/ai_service/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 CMD ["/entrypoint.sh"]
 
