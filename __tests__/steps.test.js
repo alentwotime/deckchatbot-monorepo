@@ -16,7 +16,7 @@ jest.mock(
   { virtual: true },
 );
 
-const { calculateSteps } = require("../utils/geometry");
+const { calculateSteps } = require("../frontend/src/utils/geometry");
 
 describe("calculateSteps", () => {
   test("calculates step count from inches", () => {

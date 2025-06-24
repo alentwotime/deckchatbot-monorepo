@@ -1,5 +1,5 @@
-const { parseMeasurement } = require('../utils/extract');
-const { calculateSkirtingMetrics, ftIn } = require('../utils/skirting');
+const { parseMeasurement } = require('../../backend/backend-ai/utils/extract');
+const { calculateSkirtingMetrics, ftIn } = require('../src/utils/skirting');
 
 function toFeetDecimal(feet, inches) {
   return parseFloat(feet) + parseFloat(inches || 0) / 12;

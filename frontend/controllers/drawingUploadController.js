@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-const db = require('../utils/db');
-const logger = require('../utils/logger');
+const db = require('../../backend/backend-ai/utils/db');
+const logger = require('../src/utils/logger');
 
 async function uploadDrawing(req, res) {
   try {

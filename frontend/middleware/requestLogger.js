@@ -1,4 +1,4 @@
-const logger = require('../utils/logger');
+const logger = require('../src/utils/logger');
 const config = require('../config');
 
 /**

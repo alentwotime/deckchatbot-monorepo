@@ -11,7 +11,7 @@ const rateLimiter = require('./middleware/rateLimiter');
 const errorLogger = require('./middleware/errorLogger');
 const requestLogger = require('./middleware/requestLogger');
 const routes = require('./routes');
-const logger = require('./utils/logger');
+const logger = require('./src/utils/logger');
 
 const app = express();
 const PORT = process.env.PORT || 3000;

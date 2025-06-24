@@ -1,1 +1,1 @@
-module.exports = require('../frontend/utils/extract');
+module.exports = require('../backend/backend-ai/utils/extract');

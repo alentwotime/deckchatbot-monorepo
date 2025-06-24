@@ -6,9 +6,9 @@ const {
   triangleArea,
   shapeFromMessage,
   deckAreaExplanation
-} = require('../utils/geometry');
+} = require('../src/utils/geometry');
 const config = require('../config');
-const logger = require('../utils/logger');
+const logger = require('../src/utils/logger');
 const { askChat } = require('../services/openai.service');
 
 const validate = [body('message').exists({ checkFalsy: true }).withMessage('message is required')];

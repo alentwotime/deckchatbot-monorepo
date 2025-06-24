@@ -1,8 +1,8 @@
 const Tesseract = require('tesseract.js');
 const { addMeasurement } = require('../memory');
-const { polygonArea, calculatePerimeter, ftInToDecimal } = require('../utils/geometry');
-const { ftIn } = require('../utils/skirting');
-const logger = require('../utils/logger');
+const { polygonArea, calculatePerimeter, ftInToDecimal } = require('../src/utils/geometry');
+const { ftIn } = require('../src/utils/skirting');
+const logger = require('../src/utils/logger');
 
 /**
  * Extract measurements from uploaded images using OCR

@@ -1,4 +1,4 @@
-const { deckAreaExplanation } = require('../utils/geometry');
+const { deckAreaExplanation } = require('../src/utils/geometry');
 
 exports.calculateMultiShape = (req, res) => {
   const { shapes, wastagePercent = 0, label } = req.body;
