@@ -35,3 +35,4 @@ backend/dist/
 .DS_Store
 Thumbs.db
 PowerShell-7.5.1-win-x64.msi
+.npm-cache/
