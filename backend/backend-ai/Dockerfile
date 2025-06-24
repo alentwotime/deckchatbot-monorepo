@@ -30,7 +30,8 @@ RUN poetry config virtualenvs.create false && \
 COPY . .
 
 # Set monorepo-aware import path
-ENV PYTHONPATH="${PYTHONPATH}:/app:/app/libs"
+ARG PYTHONPATH=""
+ENV PYTHONPATH=${PYTHONPATH}:/app:/app/libs
 
 # Entrypoint setup
 COPY entrypoint.sh /entrypoint.sh

@@ -27,7 +27,8 @@ COPY . .
 
 # Optional: if you use monorepo imports
 # Add the ai_service source directory and libs so uvicorn can locate the module
-ENV PYTHONPATH="${PYTHONPATH}:/app:/app/backend/backend-ai/ai_service:/app/libs"
+ARG PYTHONPATH=""
+ENV PYTHONPATH=${PYTHONPATH}:/app:/app/backend/backend-ai/ai_service:/app/libs
 
 # Set port and start
 ENV PORT=8000
