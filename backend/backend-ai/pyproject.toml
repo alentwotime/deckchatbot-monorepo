@@ -12,7 +12,7 @@ python = "^3.11"
 fastapi = "^0.115.0"
 uvicorn = "^0.34.0"
 httpx = "^0.27.0"
-python-multipart = "^0.0.6"
+python-multipart = "^0.0.18"
 
 # Local monorepo packages
 lib2 = { path = "libs/lib2", develop = true }
