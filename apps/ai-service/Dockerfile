@@ -14,7 +14,7 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy ai-service's pyproject and lockfile
-COPY apps/ai-service/pyproject.toml apps/ai-service/poetry.lock ./
+COPY apps/ai-service/pyproject.toml ./
 
 # Copy shared libs needed for install
 COPY shared/libs/lib2 ./libs/lib2
@@ -26,6 +26,7 @@ RUN ls -R
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
+    poetry lock && \
     poetry install --no-root --only main
 
 # Copy app code

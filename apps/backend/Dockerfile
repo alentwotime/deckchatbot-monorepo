@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
 # Copy dependency files
-COPY apps/backend/pyproject.toml apps/backend/poetry.lock ./
+COPY apps/backend/pyproject.toml ./
 
 # ⛓️ Copy only local packages referenced by pyproject.toml before install
 COPY shared/libs/lib2 ./libs/lib2
@@ -28,6 +28,7 @@ RUN ls -R
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
+    poetry lock && \
     poetry install --no-root --only main
 
 # 🔄 Copy actual backend-ai app contents (now safe to copy everything)
