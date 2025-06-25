@@ -12,6 +12,7 @@ app = FastAPI()
 UPLOAD_DIR = "uploads"
 AI_PROVIDER = os.getenv("AI_PROVIDER", "openai")  # Default to openai
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OLLAMA_MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME", "llava-deckbot")
 
 # --- Startup ---
 @app.on_event("startup")
@@ -64,7 +65,7 @@ async def analyze_image(request: ImageAnalysisRequest):
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     "http://host.docker.internal:11434/api/generate",
-                    json={"model": "llava", "prompt": request.prompt, "images": [request.imageBase64]},
+                    json={"model": OLLAMA_MODEL_NAME, "prompt": request.prompt, "images": [request.imageBase64]},
                     timeout=60.0,
                 )
             response.raise_for_status()
