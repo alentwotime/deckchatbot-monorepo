@@ -1,10 +1,20 @@
 services:
   - type: web
+    name: deckchatbot-frontend
+    env: docker
+    plan: free
+    rootDir: ./apps/frontend
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: REACT_APP_API_BASE_URL
+        value: https://deckchatbot-backend.onrender.com
+
+  - type: web
     name: deckchatbot-backend
     env: docker
     plan: free
-    dockerfilePath: backend/backend-ai/Dockerfile
-    buildCommand: ""
+    rootDir: ./apps/backend
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: AI_SERVICE_URL
         value: https://deckchatbot-ai-service.onrender.com
@@ -13,15 +23,5 @@ services:
     name: deckchatbot-ai-service
     env: docker
     plan: free
-    dockerfilePath: backend/backend-ai/ai_service/Dockerfile
-    buildCommand: ""
-
-  - type: web
-    name: deckchatbot-frontend
-    env: docker
-    plan: free
-    dockerfilePath: frontend/Dockerfile
-    buildCommand: ""
-    envVars:
-      - key: REACT_APP_API_BASE_URL
-        value: https://deckchatbot-backend.onrender.com
+    rootDir: ./apps/ai-service
+    dockerfilePath: ./Dockerfile
