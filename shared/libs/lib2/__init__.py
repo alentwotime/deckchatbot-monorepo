@@ -1,7 +1,1 @@
-from .square_footage import get_square_footage
-
-__all__ = ["get_square_footage", "my_helper"]
-
-def my_helper(x: int) -> int:
-    """Sample helper that doubles the input."""
-    return x * 2
+# This file makes this directory a Python package.
