@@ -18,9 +18,6 @@ opencv-python-headless = "^4.9.0.80"
 numpy = "^1.26.4"
 tqdm = "^4.66.4"
 pytesseract = "^0.3.10"
-# When packaged in Docker the libs directory is copied adjacent to this
-# pyproject, so we reference it relative to the working directory.
-lib2 = { path = "./libs/lib2", develop = false }
 
 [build-system]
 requires = ["poetry-core"]

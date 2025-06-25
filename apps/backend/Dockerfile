@@ -18,17 +18,13 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
 # Copy dependency files
-COPY apps/backend/pyproject.toml ./
+COPY apps/backend/pyproject.toml apps/backend/poetry.lock ./
 
-# ⛓️ Copy only local packages referenced by pyproject.toml before install
-COPY shared/libs/lib2 ./libs/lib2
-
-# Debugging: List files to check context
-RUN ls -R
+# Copy the shared library
+COPY shared/libs/lib2 ./lib2
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
-    poetry lock && \
     poetry install --no-root --only main
 
 # 🔄 Copy actual backend-ai app contents (now safe to copy everything)
@@ -36,7 +32,7 @@ COPY apps/backend/ .
 
 # Set monorepo-aware import path
 ARG PYTHONPATH=""
-ENV PYTHONPATH=${PYTHONPATH}:/app:/app/libs
+ENV PYTHONPATH=${PYTHONPATH}:/app
 
 # Entrypoint setup
 COPY apps/backend/entrypoint.sh /entrypoint.sh
