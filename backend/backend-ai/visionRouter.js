@@ -13,7 +13,7 @@ const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
-const LLAVA_MODEL_NAME = process.env.LLAVA_MODEL_NAME || 'llava-llama3';
+const LLAVA_MODEL_NAME = process.env.LLAVA_MODEL_NAME || 'llava-deckbot';
 
 // Define rate limiter: maximum of 100 requests per 15 minutes
 const analyzeRateLimiter = rateLimit({

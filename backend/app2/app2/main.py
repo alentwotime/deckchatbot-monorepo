@@ -15,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-AI_SERVICE_URL = os.getenv("AI_SERVICE_URL", "http://ai-service:8000/analyze-image")
+AI_SERVICE_URL = os.getenv("AI_SERVICE_URL", "http://ai-service:8000/vision-query")
 
 @app.get("/")
 async def health():

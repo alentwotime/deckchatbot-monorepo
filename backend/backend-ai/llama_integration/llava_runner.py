@@ -9,7 +9,7 @@ def run_llava(image_bytes: bytes, prompt: str = "Describe this image") -> str:
         resp = requests.post(
             "http://localhost:11434/api/generate",
             json={
-                "model": "llava-llama3",
+                "model": "llava-deckbot",
                 "prompt": prompt,
                 "images": [encoded],
                 "stream": False,

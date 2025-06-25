@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 // ✅ Proxy AI API requests to backend
 app.use(
-  "/analyze-image",
+  "/vision-query",
   createProxyMiddleware({
     target: "https://deckchatbot-backend.onrender.com",
     changeOrigin: true,
