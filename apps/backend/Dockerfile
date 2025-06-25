@@ -23,6 +23,9 @@ COPY apps/backend/pyproject.toml apps/backend/poetry.lock ./
 # ⛓️ Copy only local packages referenced by pyproject.toml before install
 COPY shared/libs/lib2 ./libs/lib2
 
+# Debugging: List files to check context
+RUN ls -R
+
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
     poetry install --no-root --only main

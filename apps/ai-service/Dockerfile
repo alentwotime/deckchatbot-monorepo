@@ -19,6 +19,9 @@ COPY apps/ai-service/pyproject.toml apps/ai-service/poetry.lock ./
 # Copy shared libs needed for install
 COPY shared/libs/lib2 ./libs/lib2
 
+# Debugging: List files to check context
+RUN ls -R
+
 # Install poetry + deps
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry && \
