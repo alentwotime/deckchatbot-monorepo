@@ -7,9 +7,6 @@ const requiredModules = [
   'cors',
   'helmet',
   'compression',
-  'morgan',
-  'better-sqlite3',
-  'winston',
   'express-validator',
   'multer',
   'express-rate-limit'
@@ -27,7 +24,8 @@ requiredModules.forEach(module => {
   try {
     const resolvedPath = require.resolve(module);
     if (
-      !resolvedPath.includes(`${require.main.path}\\node_modules\\`) &&
+      !resolvedPath.includes(`${require.main.path}
+ode_modules\`) &&
       !resolvedPath.includes(`${require.main.path}/node_modules/`)
     ) {
       throw new Error('Module not found locally');
@@ -39,8 +37,9 @@ requiredModules.forEach(module => {
   }
 });
 
-console.log('\n📁 Checking directory structure...');
-const requiredDirs = ['middleware', 'routes', 'services', 'utils', 'controllers', 'public', 'logs', 'uploads'];
+console.log('
+📁 Checking directory structure...');
+const requiredDirs = ['middleware', 'routes', 'services', 'utils', 'controllers', 'public'];
 
 requiredDirs.forEach(dir => {
   if (fs.existsSync(dir)) {
@@ -56,7 +55,8 @@ requiredDirs.forEach(dir => {
   }
 });
 
-console.log('\n📄 Checking required files...');
+console.log('
+📄 Checking required files...');
 const requiredFiles = [
   'config.js',
   'middleware/auth.js',
@@ -65,7 +65,7 @@ const requiredFiles = [
   'middleware/requestLogger.js',
   'routes/index.js',
   'utils/logger.js',
-  'services/openai.service.js'
+  'services/backend.service.js'
 ];
 
 requiredFiles.forEach(file => {
@@ -88,11 +88,14 @@ requiredFiles.forEach(file => {
 });
 
 if (missingModules.length > 0) {
-  console.log('\n🚨 Missing modules detected! Run one of the following commands:');
+  console.log('
+🚨 Missing modules detected! Run one of the following commands:');
   console.log(`npm install ${missingModules.join(' ')}`);
   console.log(`yarn add ${missingModules.join(' ')}`);
 } else {
-  console.log('\n🎉 All modules are installed!');
+  console.log('
+🎉 All modules are installed!');
 }
 
-console.log('\n🔍 Setup check complete!');
+console.log('
+🔍 Setup check complete!');
