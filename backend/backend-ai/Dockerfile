@@ -41,5 +41,5 @@ RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["poetry", "run", "uvicorn", "ai_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["poetry", "run", "uvicorn", "backend_ai.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
