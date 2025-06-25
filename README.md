@@ -1,73 +1,65 @@
-# Project Restructuring and Service Wiring Updates
+# DeckChatbot: AI-Powered Deck Design Assistant
 
-This document summarizes the significant structural changes and service wiring updates applied to the monorepo to improve organization and ensure correct inter-service communication.
+Welcome to DeckChatbot, a smart, single-page application designed to streamline the deck design and quoting process for sales professionals. By leveraging AI, this tool assists in converting customer sketches into interactive 2D blueprints and 3D models, calculating materials, and providing real-time guidance.
 
-## Running locally
+## User Journey: The 5 Stages of Deck Design
 
-1. Install Node.js and Python 3.11.
-2. Install dependencies:
-   ```bash
-   npm install
-   pip install -r requirements.txt
-   ```
-3. Build and start services with Docker Compose:
-   ```bash
-   docker compose -f docker/docker-compose.yml up --build
-   ```
-   Docker Compose creates a custom `decknet` network with the subnet
-   `192.168.65.0/24`. Ensure this range does not conflict with existing
-   networks on your machine or adjust the subnet in `docker-compose.yml`.
+The website guides the user through a seamless, five-stage process on a single scrolling page. A persistent chatbot, acting as an assistant to the salesperson, is available at every stage to provide contextual tips and support.
 
-## I. Project Structure Reorganization
+### Stage 1: Introduction & Chatbot
+The user is greeted with a full-screen interactive chatbot that introduces the deck design process. As the user scrolls, the chatbox elegantly shrinks to the corner, remaining accessible throughout the journey.
 
-The monorepo has been reorganized into a more modular and logical structure:
+### Stage 2: Upload Your Deck Plans
+Users can upload customer-provided files:
+*   **Drawings/Blueprints**: Sketches or professional blueprints with measurements (PDF, PNG, JPEG).
+*   **Photos of the Area**: Pictures of the installation site for accurate 3D modeling (JPEG, PNG).
 
-```
-.
-├── apps/                 # Contains individual applications (frontend, backend, ai-service)
-│   ├── frontend/         # React/Node.js frontend application
-│   ├── backend/          # Primary FastAPI backend service
-│   └── ai-service/       # Dedicated AI-specific service
-├── config/               # Project-level configuration files (e.g., eslint, jest, package.json)
-├── docker/               # Centralized Docker-related files (e.g., docker-compose.yml)
-├── docs/                 # Project documentation
-├── scripts/              # General utility and automation scripts
-├── shared/               # Reusable code, libraries, and schemas shared across applications
-│   └── libs/lib2/        # Shared Python library
-├── tests/                # Monorepo-level test files
-├── .idx/                 # IDX-specific configurations
-├── .vscode/              # VSCode editor configurations
-└── _archived_unused_code/ # Archive for old, unused, or deprecated code
-```
+The system features drag-and-drop functionality and performs real-time validation on file types and sizes.
 
-**Key Changes:**
+### Stage 3: Analysis & Calculation
+The AI backend analyzes the uploaded sketches to automatically extract and display key metrics:
+*   Gross Living Area (sq ft)
+*   Net Square Footage (sq ft)
+*   Linear Railing Footage (ft)
+*   Stair Cutouts
 
-*   **Application Separation**: `frontend`, `backend`, and `ai-service` are now distinct applications under the `apps/` directory.
-*   **Centralized Configurations**: Common configuration files are consolidated in `config/`.
-*   **Unified Docker Setup**: `docker-compose.yml` is moved to `docker/` for easier management.
-*   **Shared Components**: `libs/lib2` and other utilities are placed in `shared/` to promote reusability and avoid duplication.
-*   **Dedicated Archive**: A clear `_archived_unused_code/` directory has been created to store legacy or irrelevant code, keeping the main codebase clean.
+An overlay on the sketch visualizes the calculated dimensions, with options for manual adjustments to ensure accuracy.
 
-## II. Service Wiring Updates
+### Stage 4: Your Digital Blueprint
+A clean, digital 2D blueprint is generated from the analyzed sketch. This interactive canvas allows for edits, such as adding or modifying deck elements like railings and stairs. The blueprint can be downloaded in PDF, JPEG, or SVG formats.
 
-The communication pathways between the `frontend`, `backend`, and `ai-service` have been reviewed and updated to ensure correct routing and adherence to a microservices pattern.
+### Stage 5: 3D Deck Preview
+A real-time 3D model of the deck is rendered using Three.js/Babylon.js. Key features include:
+*   **Interactive Viewer**: Rotate, zoom, and pan the model.
+*   **Photo Superimposition**: Overlay the 3D model onto the customer's site photos.
+*   **Material Selection**: Change decking and railing materials and colors.
+*   **Download Options**: Export the model as an OBJ/GLB file or take a PNG screenshot.
 
-**Specific Updates:**
+## Core Features
 
-1.  **`docker/docker-compose.yml`**: Updated `build contexts` and `dockerfile` paths to reflect the new locations of `apps/frontend`, `apps/backend`, and `apps/ai-service`.
+*   **AI-Powered Chatbot**: An intelligent assistant (powered by OpenAI GPT) that guides the salesperson through the quoting and design process.
+*   **Automated Measurement Extraction**: AI-driven analysis of uploaded drawings to detect dimensions and features.
+*   **Sketch-to-Blueprint Conversion**: Generates clean, editable 2D blueprints from user sketches.
+*   **Real-time 3D Modeling**: Instantly visualizes the deck design in an interactive 3D environment.
+*   **Secure File Handling**: Ensures all customer uploads are handled securely, with encryption in transit and at rest.
+*   **Modular & Scalable**: Built with a modern microservices architecture for reliability and performance.
 
-2.  **`apps/backend/Dockerfile`**: Modified `COPY` commands to correctly reference the shared `libs/lib2` from the `shared/` directory. The `CMD` instruction was updated to run `backend_ai.main:app`, ensuring the primary backend application is started.
+## Technical Stack
 
-3.  **`apps/backend/entrypoint.sh`**: Adjusted to execute `backend_ai.main:app` using `uvicorn` and `poetry`.
+*   **Frontend**: React.js/Vue.js, HTML5, CSS3, JavaScript (ES6+), Three.js/Babylon.js
+*   **Backend**: Node.js (Express) / Python (FastAPI, Django)
+*   **AI & Machine Learning**: OCR and computer vision models for image analysis.
+*   **Database**: SQLite for storing conversation history and measurements.
 
-4.  **`apps/ai-service/Dockerfile`**: Updated `COPY` commands to correctly reference its own `pyproject.toml`, `poetry.lock`, and the shared `libs/lib2` from the `shared/` directory. The `CMD` instruction remained focused on running the AI service itself.
+## Running the Project Locally
 
-5.  **`apps/frontend/controllers/chatbotController.js`**: Changed to import `backend.service.js` and now routes chat requests to the backend service, preventing direct calls to external AI APIs from the frontend.
-
-6.  **`apps/frontend/controllers/drawingUploadController.js`**: Reworked to encode uploaded images to Base64 and send them to the backend's `/analyze-image` endpoint via `backend.service.js`. The responsibility of saving images and storing metadata has been shifted to the backend.
-
-7.  **`apps/frontend/services/openai.service.js`**: This file has been removed as all OpenAI API interactions are now proxied through the `backend` service.
-
-8.  **`apps/backend/backend_ai/main.py`**: The `/analyze-image` endpoint was updated to expect Base64 encoded images from the frontend and to correctly forward them to the `ai-service` for processing, ensuring proper data flow for image analysis.
-
-These changes collectively establish a clearer, more maintainable, and correctly wired microservices architecture for the Deckchatbot Monorepo.
+1.  **Prerequisites**: Ensure you have Node.js, Python 3.11, and Docker installed.
+2.  **Install Dependencies**:
+    ```bash
+    npm install
+    pip install -r config/requirements.txt
+    ```
+3.  **Run with Docker Compose**:
+    ```bash
+    docker-compose -f docker/docker-compose.yml up --build
+    ```

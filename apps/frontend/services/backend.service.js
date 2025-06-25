@@ -49,11 +49,52 @@ class BackendService {
       throw new Error('Failed to analyze image with backend');
     }
   }
+
+  async uploadFile(file, type) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    try {
+      const response = await axios.post(`${BACKEND_URL}/upload-file`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      logger.error(`Backend file upload API error: ${error.response?.data || error.message}`);
+      throw new Error('Failed to upload file to backend');
+    }
+  }
+
+  async analyzeFiles(files) {
+    try {
+      const response = await axios.post(`${BACKEND_URL}/analyze-files`, { files });
+      return response.data;
+    } catch (error) {
+      logger.error(`Backend file analysis API error: ${error.response?.data || error.message}`);
+      throw new Error('Failed to analyze files');
+    }
+  }
+
+  async generateBlueprint(analysisData) {
+    try {
+      const response = await axios.post(`${BACKEND_URL}/generate-blueprint`, { analysisData });
+      return response.data;
+    } catch (error) {
+      logger.error(`Backend blueprint generation API error: ${error.response?.data || error.message}`);
+      throw new Error('Failed to generate blueprint');
+    }
+  }
 }
 
 const backendService = new BackendService();
 
 module.exports = {
   askChat: (messages, options) => backendService.askChat(messages, options),
-  analyzeImage: (imageBase64, prompt) => backendService.analyzeImage(imageBase64, prompt)
+  analyzeImage: (imageBase64, prompt) => backendService.analyzeImage(imageBase64, prompt),
+  uploadFile: (file, type) => backendService.uploadFile(file, type),
+  analyzeFiles: (files) => backendService.analyzeFiles(files),
+  generateBlueprint: (analysisData) => backendService.generateBlueprint(analysisData),
 };
