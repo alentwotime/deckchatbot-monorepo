@@ -1,8 +1,15 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const Analysis = ({ analysisResult }) => {
   return (
-    <div style={{ height: '100vh', border: '1px solid #ccc', padding: '20px', margin: '10px' }}>
+    <motion.div 
+      style={{ height: '100vh', border: '1px solid #ccc', padding: '20px', margin: '10px' }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1 }}
+    >
       <h2>Stage 3: Deck Measurements & Analysis</h2>
       {analysisResult ? (
         <div>
@@ -14,7 +21,7 @@ const Analysis = ({ analysisResult }) => {
       ) : (
         <p>Awaiting analysis...</p>
       )}
-    </div>
+    </motion.div>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { motion } from 'framer-motion';
 import { uploadFile, analyzeFiles } from '../../services/backend.service';
 
 const Upload = ({ setAnalysisResult }) => {
@@ -54,7 +55,13 @@ const Upload = ({ setAnalysisResult }) => {
   };
 
   return (
-    <div style={{ height: '100vh', border: '1px solid #ccc', padding: '20px', margin: '10px' }}>
+    <motion.div 
+      style={{ height: '100vh', border: '1px solid #ccc', padding: '20px', margin: '10px' }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1 }}
+    >
       <h2>Stage 2: Upload Your Deck Plans</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       
@@ -73,7 +80,7 @@ const Upload = ({ setAnalysisResult }) => {
       </div>
 
       <button onClick={handleSubmit} style={{ marginTop: '20px' }}>Submit for Analysis</button>
-    </div>
+    </motion.div>
   );
 };
 

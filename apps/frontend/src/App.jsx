@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import Introduction from './components/Stage1_Introduction/Introduction';
 import Upload from './components/Stage2_Upload/Upload';
 import Analysis from './components/Stage3_Analysis/Analysis';
@@ -8,30 +9,20 @@ import Chatbox from './components/Chatbox/Chatbox';
 import './App.css';
 
 function App() {
-  const [isShrunk, setIsShrunk] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 100) {
-        setIsShrunk(true);
-      } else {
-        setIsShrunk(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const { scrollY } = useScroll();
+  const chatboxX = useTransform(scrollY, [0, 500], ['0%', '-50%']); // Example transformation
 
   return (
     <div className="App">
+      <motion.div style={{ x: chatboxX }}>
+        <Chatbox />
+      </motion.div>
       <Introduction />
       <Upload setAnalysisResult={setAnalysisResult} />
       <Analysis analysisResult={analysisResult} />
       <Blueprint analysisResult={analysisResult} />
-      <ModelViewer />
-      <Chatbox isShrunk={isShrunk} />
+      <ModelViewer analysisResult={analysisResult} />
     </div>
   );
 }

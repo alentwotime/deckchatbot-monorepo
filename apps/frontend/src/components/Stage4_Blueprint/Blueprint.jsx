@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { generateBlueprint } from '../../services/backend.service';
 
 const Blueprint = ({ analysisResult }) => {
@@ -25,7 +26,13 @@ const Blueprint = ({ analysisResult }) => {
   }, [analysisResult]);
 
   return (
-    <div style={{ height: '100vh', border: '1px solid #ccc', padding: '20px', margin: '10px' }}>
+    <motion.div 
+      style={{ height: '100vh', border: '1px solid #ccc', padding: '20px', margin: '10px' }}
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 1 }}
+    >
       <h2>Stage 4: Your Digital Blueprint</h2>
       {loading && <p>Generating blueprint...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -40,7 +47,7 @@ const Blueprint = ({ analysisResult }) => {
         </div>
       )}
       {!analysisResult && !loading && <p>Awaiting analysis to generate blueprint...</p>}
-    </div>
+    </motion.div>
   );
 };
 
