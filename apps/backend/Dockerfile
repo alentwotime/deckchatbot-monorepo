@@ -18,7 +18,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
 # Copy dependency files
-COPY apps/backend/pyproject.toml apps/backend/poetry.lock ./
+COPY apps/backend/pyproject.toml ./
+COPY --chown=nonroot:nonroot apps/backend/poetry.lock* ./
 
 # Copy the shared library
 COPY shared/libs/lib2 ./lib2

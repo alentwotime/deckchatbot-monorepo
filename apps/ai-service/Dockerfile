@@ -18,7 +18,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
 # Copy dependency files
-COPY apps/ai-service/pyproject.toml apps/ai-service/poetry.lock ./
+COPY apps/ai-service/pyproject.toml ./
+COPY --chown=nonroot:nonroot apps/ai-service/poetry.lock* ./
 
 # Copy the shared library
 COPY shared/libs/lib2 ./lib2
