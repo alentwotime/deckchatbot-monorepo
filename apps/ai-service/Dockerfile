@@ -14,10 +14,10 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy ai-service's pyproject and lockfile
-COPY pyproject.toml poetry.lock ./
+COPY apps/ai-service/pyproject.toml apps/ai-service/poetry.lock ./
 
 # Copy shared libs needed for install
-COPY ../../shared/libs/lib2 ./libs/lib2
+COPY shared/libs/lib2 ./libs/lib2
 
 # Install poetry + deps
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -26,7 +26,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     poetry install --no-root --only main
 
 # Copy app code
-COPY ai_service ./ai_service
+COPY apps/ai-service/ai_service ./ai_service
 
 # Optional: set PYTHONPATH
 ARG PYTHONPATH=""
@@ -35,6 +35,6 @@ ENV PYTHONPATH=${PYTHONPATH}:/app:/app/ai_service:/app/libs
 ENV PORT=8000
 EXPOSE ${PORT}
 
-COPY entrypoint.sh /entrypoint.sh
+COPY apps/ai-service/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 CMD ["/entrypoint.sh"]
