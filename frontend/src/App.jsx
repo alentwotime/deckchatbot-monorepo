@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { drawPreviewImage } from "./utils/canvasHelpers"; 
+import { drawPreviewImage } from "./utils/canvasHelpers";
+import ImageAnalyzer from "./components/ImageAnalyzer";
 
 export default function App() {
   const [file, setFile] = useState(null);
@@ -99,6 +100,7 @@ export default function App() {
   return (
     <div style={{ padding: 20, fontFamily: "Arial, sans-serif" }}>
       <h1>🧠 Deck OCR + SqFt Estimator</h1>
+      <ImageAnalyzer />
 
       <input type="file" accept="image/*" onChange={handleFileChange} />
       <button onClick={handleUpload} disabled={!file || loading}>
