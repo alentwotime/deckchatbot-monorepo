@@ -21,8 +21,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY pyproject.toml poetry.lock ./
 
 # ⛓️ Copy only local packages referenced by pyproject.toml before install
-COPY ai_service ./ai_service
-COPY libs/lib2 ./libs/lib2
+COPY ../../shared/libs/lib2 ./libs/lib2
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
@@ -42,4 +41,3 @@ RUN chmod +x /entrypoint.sh
 EXPOSE 8000
 
 CMD ["poetry", "run", "uvicorn", "backend_ai.main:app", "--host", "0.0.0.0", "--port", "8000"]
-

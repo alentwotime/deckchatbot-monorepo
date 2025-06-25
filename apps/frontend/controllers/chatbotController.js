@@ -9,7 +9,7 @@ const {
 } = require('../src/utils/geometry');
 const config = require('../config');
 const logger = require('../src/utils/logger');
-const { askChat } = require('../services/openai.service');
+const { askChat } = require('../services/backend.service'); // Changed import to backend.service
 
 const validate = [body('message').exists({ checkFalsy: true }).withMessage('message is required')];
 
@@ -19,7 +19,15 @@ async function chatbot(req, res, next) {
     return res.status(400).json({ errors: errors.array() });
   }
   const { message } = req.body;
-  const calculationGuide = `Here’s a detailed guide for calculating square footage and other shapes:\n1. Rectangle: L × W\n2. Triangle: (1/2) × Base × Height\n3. Circle: π × Radius²\n4. Half Circle: (1/2) × π × Radius²\n5. Quarter Circle: (1/4) × π × Radius²\n6. Trapezoid: (1/2) × (Base1 + Base2) × Height\n7. Complex Shapes: sum of all simpler shapes’ areas.\n8. Fascia Board: total perimeter length (excluding steps).`;
+  const calculationGuide = `Here’s a detailed guide for calculating square footage and other shapes:
+1. Rectangle: L × W
+2. Triangle: (1/2) × Base × Height
+3. Circle: π × Radius²
+4. Half Circle: (1/2) × π × Radius²
+5. Quarter Circle: (1/4) × π × Radius²
+6. Trapezoid: (1/2) × (Base1 + Base2) × Height
+7. Complex Shapes: sum of all simpler shapes’ areas.
+8. Fascia Board: total perimeter length (excluding steps).`;
   try {
     await addMessage('user', message);
     const shape = shapeFromMessage(message);
@@ -52,7 +60,9 @@ async function chatbot(req, res, next) {
     }
     const history = getRecentMessages();
     const botReply = await askChat([
-      { role: 'system', content: `You are a smart math bot using this calculation guide:\n${calculationGuide}\nAlways form follow-up questions if needed to clarify user data.` },
+      { role: 'system', content: `You are a smart math bot using this calculation guide:
+${calculationGuide}
+Always form follow-up questions if needed to clarify user data.` },
       ...history.map(m => ({ role: m.role, content: m.content })),
       { role: 'user', content: message }
     ]);
@@ -60,7 +70,7 @@ async function chatbot(req, res, next) {
     res.json({ response: botReply });
   } catch (err) {
     logger.error(err.stack);
-    err.userMessage = 'Error communicating with OpenAI.';
+    err.userMessage = 'Error communicating with backend service for chat.'; // Updated error message
     next(err);
   }
 }

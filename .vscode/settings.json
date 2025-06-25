@@ -25,5 +25,7 @@
       "**/.venv": true,
       "**/node_modules": true
     }
-  }
+  },
+  "IDX.aI.enableInlineCompletion": true,
+  "IDX.aI.enableCodebaseIndexing": true
 }
