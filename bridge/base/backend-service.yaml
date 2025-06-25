@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: backend-published
+    name: backend-service
     namespace: deckchatbot-monorepo
     labels:
         com.docker.compose.project: deckchatbot-monorepo
@@ -13,9 +13,6 @@ spec:
         com.docker.compose.project: deckchatbot-monorepo
         com.docker.compose.service: backend
     ports:
-        - name: backend-8000
+        - name: http
           port: 8000
-          protocol: TCP
-          targetPort: backend-8000
-
-# check if there is at least one published port
+          targetPort: 8000
