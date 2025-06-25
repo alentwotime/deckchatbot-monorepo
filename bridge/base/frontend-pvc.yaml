@@ -1,4 +1,4 @@
-#! frontend-C:\Users\aklin\deckchatbot-monorepo\frontend-persistentVolumeClaim.yaml
+#! frontend-C:\Users\aklin\deckchatbot-monoreporontend-persistentVolumeClaim.yaml
 # Generated code, do not edit
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -7,7 +7,7 @@ metadata:
     namespace: deckchatbot-monorepo
     labels:
         com.docker.compose.service: frontend
-        com.docker.compose.volume: C:\Users\aklin\deckchatbot-monorepo\frontend
+        com.docker.compose.volume: C:\Users\aklin\deckchatbot-monoreporontend
 spec:
     accessModes:
         # TODO would need to check which services use this volume

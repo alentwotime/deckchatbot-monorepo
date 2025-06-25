@@ -25,10 +25,10 @@ spec:
         spec:
             containers:
                 - name: backend
-                  image: deckchatbot-monorepo-backend
+                  image: alentwotime/deckchatbot-monorepo-backend:latest
                   imagePullPolicy: IfNotPresent
                   ports:
-                    - name: backend-8000
+                    - name: http
                       containerPort: 8000
                   volumeMounts:
                     - name: app
@@ -36,4 +36,4 @@ spec:
             volumes:
                 - name: app
                   hostPath:
-                    path: C:\Users\aklin\deckchatbot-monorepo\backend\backend-ai
+                    path: /apps/backend

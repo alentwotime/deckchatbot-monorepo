@@ -25,18 +25,18 @@ spec:
         spec:
             containers:
                 - name: frontend
-                  image: deckchatbot-monorepo-frontend
+                  image: alentwotime/deckchatbot-monorepo-frontend:latest
                   imagePullPolicy: IfNotPresent
                   env:
                     - name: REACT_APP_API_BASE_URL
                       value: "http://backend:8000"
                   ports:
-                    - name: frontend-3000
-                      containerPort: 3000
+                    - name: http
+                      containerPort: 80
                   volumeMounts:
                     - name: app
                       mountPath: /app
             volumes:
                 - name: app
                   hostPath:
-                    path: C:\Users\aklin\deckchatbot-monorepo\frontend
+                    path: /apps/frontend
