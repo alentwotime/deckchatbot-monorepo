@@ -14,6 +14,9 @@ This repository contains the frontend React application, FastAPI backend, and su
    ```bash
    docker compose up --build
    ```
+   Docker Compose creates a custom `decknet` network with the subnet
+   `192.168.65.0/24`. Ensure this range does not conflict with existing
+   networks on your machine or adjust the subnet in `docker-compose.yml`.
 
 See `docs/docker_healthcheck.md` for troubleshooting container health checks and log inspection tips.
 

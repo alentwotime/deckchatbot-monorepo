@@ -14,6 +14,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - decknet
 
   backend:
     build:
@@ -36,6 +38,8 @@ services:
       timeout: 10s
       start_period: 30s
       retries: 5
+    networks:
+      - decknet
 
   ai-service:
     build:
@@ -50,3 +54,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 20s
+    networks:
+      - decknet
+
+networks:
+  decknet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.65.0/24
