@@ -15,7 +15,7 @@ lib2 = {path = "libs/lib2", develop = true}
 
 [package.source]
 type = "directory"
-url = "backend/backend-ai/ai_service"
+url = "../apps/ai-service"
 
 [[package]]
 name = "annotated-types"
@@ -62,7 +62,7 @@ files = []
 develop = true
 
 [package.dependencies]
-ai-service = {path = "../backend-ai/ai_service", develop = true}
+ai-service = {path = "../apps/ai-service", develop = true}
 requests = "^2.26"
 
 [package.source]
@@ -120,7 +120,7 @@ uvicorn = "^0.34.0"
 
 [package.source]
 type = "directory"
-url = "backend/backend-ai"
+url = "../apps/backend"
 
 [[package]]
 name = "certifi"

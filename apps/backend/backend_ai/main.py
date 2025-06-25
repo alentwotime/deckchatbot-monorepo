@@ -77,7 +77,7 @@ async def analyze_image(request: ImageAnalysisRequest):
             image_bytes = base64.b64decode(request.imageBase64)
             async with httpx.AsyncClient() as client:
                 response = await client.post(
-                    "http://ai-service:8000/process",
+                    "http://ai-service:8000/analyze-image",
                     files={"file": ("image.png", image_bytes, "image/png")},
                     timeout=30.0,
                 )
@@ -87,6 +87,23 @@ async def analyze_image(request: ImageAnalysisRequest):
             raise HTTPException(status_code=500, detail=f"AI Service error: {str(e)}")
     else:
         raise HTTPException(status_code=400, detail="Invalid AI_PROVIDER specified")
+
+
+@app.post("/full-analyze")
+async def full_analyze(file: UploadFile = File(...)):
+    """Proxy file upload to the AI service's full analysis endpoint."""
+    try:
+        contents = await file.read()
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://ai-service:8000/full-analyze",
+                files={"file": (file.filename, contents, file.content_type)},
+                timeout=60.0,
+            )
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI Service error: {str(e)}")
 
 @app.post("/bot-query", response_model=BotQueryResponse)
 async def bot_query(request: BotQueryRequest):
