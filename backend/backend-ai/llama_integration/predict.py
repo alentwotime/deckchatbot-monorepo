@@ -11,7 +11,7 @@ def run_model(image_bytes: bytes, prompt: str = "What shape is this deck?") -> s
     response = requests.post(
         "http://localhost:11434/api/generate",
         json={
-            "model": "llava-llama3",
+            "model": "llava-deckbot",
             "prompt": prompt,
             "images": [encoded_image],
             "stream": False

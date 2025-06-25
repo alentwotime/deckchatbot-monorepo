@@ -13,7 +13,7 @@ export default function ImageAnalyzer() {
     formData.append("file", file);
     try {
       const API_URL = process.env.REACT_APP_API_BASE_URL || "https://deckchatbot-backend.onrender.com";
-      const res = await axios.post(`${API_URL}/analyze-image`, formData);
+      const res = await axios.post(`${API_URL}/vision-query`, formData);
       setResult(res.data);
     } catch (err) {
       console.error(err);

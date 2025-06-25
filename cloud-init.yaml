@@ -8,4 +8,4 @@ runcmd:
   - curl -fsSL https://ollama.com/install.sh | sh
   - systemctl enable ollama
   - systemctl start ollama
-  - su - alens -c "ollama run llava"
+  - su - alens -c "ollama run llava-deckbot"

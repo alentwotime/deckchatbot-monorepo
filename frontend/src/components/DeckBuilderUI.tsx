@@ -34,7 +34,7 @@ export default function DeckBuilderUI() {
       const API_URL =
         process.env.REACT_APP_API_BASE_URL || "https://deckchatbot-backend.onrender.com";
       try {
-        await axios.post(`${API_URL}/analyze-image`, formData, {
+        await axios.post(`${API_URL}/vision-query`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         const url = URL.createObjectURL(file);
