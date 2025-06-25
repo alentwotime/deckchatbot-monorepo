@@ -1,22 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
+/**
+ * Chatbox component that docks to the corner as the user scrolls.
+ * Initially full screen, then shrinks and moves to bottom-right.
+ */
 const Chatbox = () => {
+  const [docked, setDocked] = useState(false);
+
+  // Watch window scroll position to toggle docking state
+  useEffect(() => {
+    const handleScroll = () => {
+      const threshold = 300; // pixels scrolled before docking
+      setDocked(window.scrollY > threshold);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const variants = {
+    full: {
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100vh',
+      borderRadius: '0px',
+    },
+    docked: {
+      top: 'auto',
+      left: 'auto',
+      bottom: 20,
+      right: 20,
+      width: 300,
+      height: 400,
+      borderRadius: '8px',
+    },
+  };
+
   return (
-    <motion.div 
+    <motion.div
       style={{
         position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        width: '300px',
-        height: '400px',
-        border: '1px solid #ccc',
         backgroundColor: 'white',
+        border: '1px solid #ccc',
         zIndex: 1000,
       }}
-      initial={{ y: 500, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      animate={docked ? 'docked' : 'full'}
+      variants={variants}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
     >
       <h3>Chatbot</h3>
       <p>Contextual tips will appear here.</p>
