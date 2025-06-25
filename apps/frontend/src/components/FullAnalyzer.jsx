@@ -22,7 +22,8 @@ const UploadAnalyze = () => {
     setError(null);
 
     try {
-      const res = await axios.post('http://localhost:8000/full-analyze', formData, {
+      const API_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000';
+      const res = await axios.post(`${API_URL}/full-analyze`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setResult(res.data);

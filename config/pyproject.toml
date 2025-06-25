@@ -16,11 +16,11 @@ pytest = "^6.2"
 
 
 [tool.poetry.group.app.dependencies]
-backend-ai = { path = "backend/backend-ai", develop = true }
-app2 = { path = "backend/app2", develop = true }
+backend-ai = { path = "../apps/backend", develop = true }
+app2 = { path = "../apps/backend/app2", develop = true }
 
 [tool.poetry.group.lib.dependencies]
-ai-service = { path = "backend/backend-ai/ai_service", develop = true }
+ai-service = { path = "../apps/ai-service", develop = true }
 lib2 = { path = "libs/lib2", develop = true }  # adjust this name too if needed
 
 
