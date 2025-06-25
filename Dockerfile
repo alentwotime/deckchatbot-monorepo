@@ -15,6 +15,9 @@ RUN apt-get update && \
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
+# Ensure uvicorn is globally available
+RUN pip install --no-cache-dir "uvicorn[standard]"
+
 # Copy pyproject and lockfile
 COPY pyproject.toml poetry.lock ./
 
