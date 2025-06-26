@@ -15,6 +15,9 @@ This repository contains the frontend React application, FastAPI backend, and su
    docker compose -f docker/docker-compose.yml up --build
    ```
 
+### Environment variables
+Create a `.env` file based on `.env.example` and provide `HF_API_TOKEN` with a valid Hugging Face token so the backend can call the Difix model.
+
 See `docs/docker_healthcheck.md` for troubleshooting container health checks and log inspection tips.
 
 ### Windows line ending fix

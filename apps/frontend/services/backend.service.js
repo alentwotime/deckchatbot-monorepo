@@ -50,6 +50,25 @@ class BackendService {
     }
   }
 
+  async enhanceImage(imageBase64) {
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/enhance-image`,
+        { imageBase64 },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          timeout: 60000
+        }
+      );
+      return response.data.enhanced_image_base64;
+    } catch (error) {
+      logger.error('Backend image enhancement API error:', error.response?.data || error.message);
+      throw new Error('Failed to enhance image');
+    }
+  }
+
   async uploadFile(file, type) {
     const formData = new FormData();
     formData.append('file', file);
@@ -94,6 +113,7 @@ const backendService = new BackendService();
 module.exports = {
   askChat: (messages, options) => backendService.askChat(messages, options),
   analyzeImage: (imageBase64, prompt) => backendService.analyzeImage(imageBase64, prompt),
+  enhanceImage: (imageBase64) => backendService.enhanceImage(imageBase64),
   uploadFile: (file, type) => backendService.uploadFile(file, type),
   analyzeFiles: (files) => backendService.analyzeFiles(files),
   generateBlueprint: (analysisData) => backendService.generateBlueprint(analysisData),

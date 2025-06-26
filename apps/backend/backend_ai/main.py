@@ -6,6 +6,9 @@ import base64
 import os
 import uuid
 
+# Hugging Face Diffix token
+HF_API_TOKEN = os.getenv("HF_API_TOKEN")
+
 app = FastAPI()
 
 # --- Configuration ---
@@ -28,6 +31,12 @@ class ImageAnalysisRequest(BaseModel):
 
 class AnalyzeImageResponse(BaseModel):
     result: str
+
+class EnhanceImageRequest(BaseModel):
+    imageBase64: str
+
+class EnhanceImageResponse(BaseModel):
+    enhanced_image_base64: str
 
 class BotQueryRequest(BaseModel):
     messages: List[Dict[str, Any]]
@@ -104,6 +113,27 @@ async def full_analyze(file: UploadFile = File(...)):
         return response.json()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI Service error: {str(e)}")
+
+
+@app.post("/enhance-image", response_model=EnhanceImageResponse)
+async def enhance_image(request: EnhanceImageRequest):
+    """Use NVIDIA Difix via Hugging Face to clean rendering artifacts."""
+    if not HF_API_TOKEN:
+        raise HTTPException(status_code=500, detail="HF_API_TOKEN not configured")
+    try:
+        img_bytes = base64.b64decode(request.imageBase64)
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                "https://api-inference.huggingface.co/models/NVIDIA/difix",
+                headers={"Authorization": f"Bearer {HF_API_TOKEN}"},
+                content=img_bytes,
+                timeout=60.0,
+            )
+        resp.raise_for_status()
+        b64 = base64.b64encode(resp.content).decode("utf-8")
+        return {"enhanced_image_base64": b64}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"HuggingFace error: {str(e)}")
 
 @app.post("/bot-query", response_model=BotQueryResponse)
 async def bot_query(request: BotQueryRequest):
