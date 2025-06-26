@@ -21,8 +21,11 @@ OLLAMA_MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME", "llava-deckbot")
 @app.on_event("startup")
 async def startup_event():
     os.makedirs(UPLOAD_DIR, exist_ok=True)
-    if AI_PROVIDER == "openai" and not OPENAI_API_KEY:
-        raise ValueError("AI_PROVIDER is 'openai', but OPENAI_API_KEY is not set.")
+    # The AI_PROVIDER check for OPENAI_API_KEY will now happen in ai-service startup if needed.
+    # Backend doesn't need OPENAI_API_KEY unless it's making direct calls.
+    # We'll make backend always proxy to ai-service for image analysis if AI_PROVIDER is ollama
+    # or if AI_PROVIDER is openai and ai-service is configured as an OpenAI proxy.
+    pass
 
 # --- Models ---
 class ImageAnalysisRequest(BaseModel):
@@ -69,33 +72,18 @@ def health():
 
 @app.post("/analyze-image", response_model=AnalyzeImageResponse)
 async def analyze_image(request: ImageAnalysisRequest):
-    if AI_PROVIDER == "ollama":
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    "http://host.docker.internal:11434/api/generate",
-                    json={"model": OLLAMA_MODEL_NAME, "prompt": request.prompt, "images": [request.imageBase64]},
-                    timeout=60.0,
-                )
-            response.raise_for_status()
-            return {"result": response.json().get("response", "")}
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Ollama error: {str(e)}")
-    elif AI_PROVIDER == "openai":
-        try:
-            image_bytes = base64.b64decode(request.imageBase64)
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    "http://ai-service:8000/analyze-image",
-                    files={"file": ("image.png", image_bytes, "image/png")},
-                    timeout=30.0,
-                )
-            response.raise_for_status()
-            return {"result": response.json()["result"]}
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"AI Service error: {str(e)}")
-    else:
-        raise HTTPException(status_code=400, detail="Invalid AI_PROVIDER specified")
+    """Forward image analysis requests to the AI service."""
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://deckchatbot-ai-service:8000/analyze-image", # Use service name for inter-service communication
+                json=request.dict(),
+                timeout=300.0, # Increased timeout for potential large models
+            )
+        response.raise_for_status()
+        return {"result": response.json()["result"]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI Service proxy error: {str(e)}")
 
 
 @app.post("/full-analyze")
@@ -105,9 +93,9 @@ async def full_analyze(file: UploadFile = File(...)):
         contents = await file.read()
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "http://ai-service:8000/full-analyze",
+                "http://deckchatbot-ai-service:8000/full-analyze", # Use service name for inter-service communication
                 files={"file": (file.filename, contents, file.content_type)},
-                timeout=60.0,
+                timeout=300.0, # Increased timeout
             )
         response.raise_for_status()
         return response.json()
@@ -137,12 +125,21 @@ async def enhance_image(request: EnhanceImageRequest):
 
 @app.post("/bot-query", response_model=BotQueryResponse)
 async def bot_query(request: BotQueryRequest):
-    if AI_PROVIDER == "openai":
-        # In a real application, you would forward this to the ai-service or directly to OpenAI
-        return {"response": "This is a mocked OpenAI response."}
+    if AI_PROVIDER == "ollama":
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "http://deckchatbot-ai-service:8000/bot-query", # New endpoint for chat in ai-service
+                    json=request.dict(),
+                    timeout=300.0,
+                )
+            response.raise_for_status()
+            return {"response": response.json()["response"]}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"AI Service chat error: {str(e)}")
     else:
-        # Or to a local model via Ollama
-        return {"response": "This is a mocked local response."}
+        # Fallback for other AI_PROVIDERs (e.g., if you still want a mocked response for OpenAI)
+        return {"response": "This is a mocked response, configure AI_PROVIDER for live chat."}
 
 @app.post("/upload-file")
 async def upload_file(file: UploadFile = File(...), type: str = Form(...)):

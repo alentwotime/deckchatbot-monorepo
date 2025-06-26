@@ -17,6 +17,20 @@ RUN apt-get update && \
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
+# --- Install Ollama and download Llama-Llava model ---
+# Download Ollama
+RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama && \
+    chmod +x /usr/bin/ollama
+
+# Pull the Llama-Llava model (assuming llava-deckbot as per main.py)
+# This will make the image significantly larger
+ENV OLLAMA_HOST=0.0.0.0:11434
+RUN ollama serve &
+RUN while ! curl http://0.0.0.0:11434/api/tags; do sleep 1; done && \
+    ollama pull llava-deckbot && \
+    kill $(jobs -p)
+# --- End Ollama installation ---
+
 # Copy dependency files (paths are relative to the monorepo root)
 COPY apps/ai-service/pyproject.toml ./
 COPY --chown=nonroot:nonroot apps/ai-service/poetry.lock* ./
@@ -35,6 +49,15 @@ COPY apps/ai-service/ .
 ARG PYTHONPATH=""
 ENV PYTHONPATH=${PYTHONPATH}:/app
 
-# Entrypoint setup
-RUN chmod +x entrypoint.sh
+# Update entrypoint to start Ollama server in background
+RUN echo '#!/bin/bash
+\
+ollama serve & 
+\
+poetry run uvicorn ai_service.main:app --host 0.0.0.0 --port 8000' > entrypoint.sh && \
+    chmod +x entrypoint.sh
+
+EXPOSE 8000
+EXPOSE 11434 # Expose Ollama port
+
 CMD ["./entrypoint.sh"]

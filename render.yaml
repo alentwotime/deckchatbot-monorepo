@@ -18,6 +18,8 @@ services:
     envVars:
       - key: AI_SERVICE_URL
         value: https://deckchatbot-ai-service.onrender.com
+      - key: AI_PROVIDER
+        value: ollama
 
   - type: web
     name: deckchatbot-ai-service
@@ -25,5 +27,10 @@ services:
     plan: free
     rootDir: .
     dockerfilePath: apps/ai-service/Dockerfile
+    envVars:
+      - key: AI_PROVIDER
+        value: ollama
+      - key: OLLAMA_BASE_URL
+        value: http://localhost:11434 # Ollama is now embedded in this service
 
-# Added a comment to force Render to re-evaluate configuration
+# Updated configuration for Ollama integration.
