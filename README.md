@@ -34,6 +34,7 @@ A real-time 3D model of the deck is rendered using Three.js/Babylon.js. Key feat
 *   **Photo Superimposition**: Overlay the 3D model onto the customer's site photos.
 *   **Material Selection**: Change decking and railing materials and colors.
 *   **Download Options**: Export the model as an OBJ/GLB file or take a PNG screenshot.
+*   **Diffix Enhancement**: A button runs NVIDIA's Difix model via Hugging Face to remove artifacts from the 3D view.
 
 ## Core Features
 
