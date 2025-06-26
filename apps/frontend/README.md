@@ -88,6 +88,7 @@ npm test
 
 - `POST /calculate-deck-materials` - Calculate materials for single deck
 - `POST /calculate-multi-shape` - Calculate for multiple geometric shapes
+- `POST /calculate-steps` - Determine stair count from deck height
 
 ### File Upload
 
