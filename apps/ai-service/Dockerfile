@@ -18,24 +18,23 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
 # Copy dependency files
-COPY apps/ai-service/pyproject.toml ./
-COPY --chown=nonroot:nonroot apps/ai-service/poetry.lock* ./
+COPY pyproject.toml ./
+COPY --chown=nonroot:nonroot poetry.lock* ./
 
 # Copy the shared library
-COPY shared/libs/lib2 ./lib2
+COPY ../../shared/libs/lib2 ./lib2
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
     poetry install --no-root --only main
 
 # Copy app code
-COPY apps/ai-service/ .
+COPY . .
 
 # Set monorepo-aware import path
 ARG PYTHONPATH=""
 ENV PYTHONPATH=${PYTHONPATH}:/app
 
 # Entrypoint setup
-COPY apps/ai-service/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-CMD ["/entrypoint.sh"]
+RUN chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]
