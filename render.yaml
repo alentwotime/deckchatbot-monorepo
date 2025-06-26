@@ -25,3 +25,5 @@ services:
     plan: free
     rootDir: .
     dockerfilePath: apps/ai-service/Dockerfile
+
+# Added a comment to force Render to re-evaluate configuration
