@@ -8,6 +8,7 @@ const skirtingRoutes = require('./skirting');
 const deckCalcRoutes = require('./deckCalc');
 const digitalizeRoutes = require('./digitalize');
 const uploadDrawingRoutes = require('./uploadDrawing');
+const stepsRoutes = require('./steps');
 
 const router = express.Router();
 
@@ -28,5 +29,6 @@ router.use('/calculate-skirting', skirtingRoutes);
 router.use('/calculate-deck-materials', deckCalcRoutes);
 router.use('/digitalize-drawing', digitalizeRoutes);
 router.use('/upload-drawing', uploadDrawingRoutes);
+router.use('/calculate-steps', stepsRoutes);
 
 module.exports = router;
