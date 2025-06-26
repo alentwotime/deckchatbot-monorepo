@@ -22,7 +22,7 @@ COPY apps/ai-service/pyproject.toml ./
 COPY --chown=nonroot:nonroot apps/ai-service/poetry.lock* ./
 
 # Copy the shared library (path is relative to the monorepo root)
-COPY shared/libs/lib2 ./lib2
+COPY shared/libs/lib2/lib2 ./lib2
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \

@@ -10,8 +10,8 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 )
 
-# 🔁 Import from lib2.my_helper
-from lib2.my_helper import (
+# 🔁 Import from lib2.square_footage
+from lib2.square_footage import (
     extract_text_from_image,
     parse_dimensions_from_text,
     calculate_square_footage

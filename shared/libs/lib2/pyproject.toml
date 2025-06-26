@@ -3,6 +3,7 @@ name = "lib2"
 version = "0.1.0"
 description = "Shared utilities for DeckChatbot"
 authors = ["Your Name <you@example.com>"]
+packages = [{include = "lib2"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
