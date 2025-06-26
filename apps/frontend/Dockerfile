@@ -1,8 +1,11 @@
 FROM node:22-alpine AS builder
+WORKDIR /app
+# Copy frontend dependency manifests
+COPY apps/frontend/package*.json ./apps/frontend/
 WORKDIR /app/apps/frontend
-COPY package*.json ./
 RUN npm install
-COPY . ./
+# Copy the rest of the frontend source
+COPY apps/frontend/ ./
 RUN npm run build
 
 FROM nginx:stable-alpine
