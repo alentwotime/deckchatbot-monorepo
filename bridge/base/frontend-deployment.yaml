@@ -25,18 +25,7 @@ spec:
         spec:
             containers:
                 - name: frontend
-                  image: alentwotime/deckchatbot-monorepo-frontend:latest
+                  image: alentwotime/frontend:latest
                   imagePullPolicy: IfNotPresent
                   env:
                     - name: REACT_APP_API_BASE_URL
-                      value: "http://backend:8000"
-                  ports:
-                    - name: http
-                      containerPort: 80
-                  volumeMounts:
-                    - name: app
-                      mountPath: /app
-            volumes:
-                - name: app
-                  hostPath:
-                    path: /apps/frontend
