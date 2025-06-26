@@ -8,7 +8,7 @@ packages = [{include = "app2"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 requests = "^2.26"
-ai-service = { path = "../backend-ai/ai_service", develop = true }
+ai-service = { path = "../../apps/ai-service", develop = true } # Corrected path
 
 [build-system]
 requires = ["poetry-core"]

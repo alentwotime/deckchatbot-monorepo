@@ -14,15 +14,14 @@ requests = "^2.26"
 [tool.poetry.group.dev.dependencies]
 pytest = "^6.2"
 
+# Removed local package dependencies from root pyproject.toml as they are managed by sub-projects
+# [tool.poetry.group.app.dependencies]
+# backend-ai = { path = "apps/backend", develop = true }
+# app2 = { path = "apps/backend/app2", develop = true }
 
-[tool.poetry.group.app.dependencies]
-backend-ai = { path = "../apps/backend", develop = true }
-app2 = { path = "../apps/backend/app2", develop = true }
-
-[tool.poetry.group.lib.dependencies]
-ai-service = { path = "../apps/ai-service", develop = true }
-lib2 = { path = "libs/lib2", develop = true }  # adjust this name too if needed
-
+# [tool.poetry.group.lib.dependencies]
+# ai-service = { path = "apps/ai-service", develop = true }
+# lib2 = { path = "shared/libs/lib2", develop = true }
 
 [tool.poetry-monorepo-dependency-plugin]
-enable = true
+enable = false
