@@ -25,7 +25,7 @@ spec:
         spec:
             containers:
                 - name: ai-service
-                  image: alentwotime/deckchatbot-monorepo-ai-service:latest
+                  image: alentwotime/ai-service:latest
                   imagePullPolicy: IfNotPresent
                   command: ["/entrypoint.sh"]
                   ports:
