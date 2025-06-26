@@ -8,7 +8,9 @@ authors = ["Your Name <you@example.com>"]
 python = "^3.11"
 
 [tool.poetry.packages]
-include = "lib2"
+include = [
+    { include = "lib2" },
+]
 
 [build-system]
 requires = ["poetry-core"]
