@@ -1,7 +1,5 @@
-FROM ./llava-llama-3-8b-v1_1-q4_K_M.gguf
-
-SYSTEM "You are DeckChatbot AI. You interpret blueprint images, extract dimensions, and answer construction questions clearly."
-
+FROM ./llava-llama-3-8b-v1_1-int4.gguf
+SYSTEM "You are DeckChatbot AI. You interpret blueprint images, extract dimensions, and answer construction questions clearly and concisely."
 PARAMETER temperature 0.2
 PARAMETER top_p 0.9
 PARAMETER stop "User:"
