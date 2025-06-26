@@ -4,7 +4,7 @@ services:
     env: docker
     plan: free
     rootDir: .
-    dockerfilePath: ./apps/frontend/Dockerfile
+    dockerfilePath: apps/frontend/Dockerfile
     envVars:
       - key: REACT_APP_API_BASE_URL
         value: https://deckchatbot-backend.onrender.com
@@ -14,7 +14,7 @@ services:
     env: docker
     plan: free
     rootDir: .
-    dockerfilePath: ./apps/backend/Dockerfile
+    dockerfilePath: apps/backend/Dockerfile
     envVars:
       - key: AI_SERVICE_URL
         value: https://deckchatbot-ai-service.onrender.com
@@ -24,4 +24,4 @@ services:
     env: docker
     plan: free
     rootDir: .
-    dockerfilePath: ./apps/ai-service/Dockerfile
+    dockerfilePath: apps/ai-service/Dockerfile
