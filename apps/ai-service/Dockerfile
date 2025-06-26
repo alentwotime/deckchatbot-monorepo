@@ -2,11 +2,7 @@
 
 FROM python:3.11-slim
 
-# Copy the entire 'apps' directory from the build context to /apps in the image
-COPY apps/ /apps
-
-# Set the working directory to the AI service app within /apps
-WORKDIR /apps/ai-service
+WORKDIR /app
 
 # Install OCR & build essentials
 RUN apt-get update && \
@@ -21,17 +17,24 @@ RUN apt-get update && \
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
-# Copy dependency files (now relative to WORKDIR /apps/ai-service)
+# Copy dependency files (relative to current build context, which will be apps/ai-service)
 COPY pyproject.toml ./
 COPY --chown=nonroot:nonroot poetry.lock* ./
 
-# Copy the shared library (now relative to WORKDIR /apps/ai-service)
+# Copy the shared library (relative to current build context)
 COPY ../../shared/libs/lib2 ./lib2
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
     poetry install --no-root --only main
 
-# Entrypoint setup (now relative to WORKDIR /apps/ai-service)
+# Copy app code (relative to current build context)
+COPY . .
+
+# Set monorepo-aware import path
+ARG PYTHONPATH=""
+ENV PYTHONPATH=${PYTHONPATH}:/app
+
+# Entrypoint setup
 RUN chmod +x entrypoint.sh
 CMD ["./entrypoint.sh"]
