@@ -25,7 +25,7 @@ spec:
         spec:
             containers:
                 - name: backend
-                  image: alentwotime/deckchatbot-monorepo-backend:latest
+                  image: alentwotime/deckchatbot:latest
                   imagePullPolicy: IfNotPresent
                   ports:
                     - name: http
