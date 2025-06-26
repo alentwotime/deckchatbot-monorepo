@@ -18,18 +18,18 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir poetry
 
 # Copy dependency files
-COPY pyproject.toml ./
-COPY --chown=nonroot:nonroot poetry.lock* ./
+COPY apps/ai-service/pyproject.toml ./
+COPY --chown=nonroot:nonroot apps/ai-service/poetry.lock* ./
 
 # Copy the shared library
-COPY ../../shared/libs/lib2 ./lib2
+COPY shared/libs/lib2 ./lib2
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
     poetry install --no-root --only main
 
 # Copy app code
-COPY . .
+COPY apps/ai-service/ .
 
 # Set monorepo-aware import path
 ARG PYTHONPATH=""
