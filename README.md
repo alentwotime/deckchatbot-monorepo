@@ -34,23 +34,41 @@ A real-time 3D model of the deck is rendered using Three.js/Babylon.js. Key feat
 *   **Photo Superimposition**: Overlay the 3D model onto the customer's site photos.
 *   **Material Selection**: Change decking and railing materials and colors.
 *   **Download Options**: Export the model as an OBJ/GLB file or take a PNG screenshot.
-*   **Diffix Enhancement**: A button runs NVIDIA's Difix model via Hugging Face to remove artifacts from the 3D view.
+*   **Enhanced Difix Integration**: Advanced NVIDIA Difix model integration with multiple quality levels and enhancement types for professional 3D rendering.
+*   **Voice Commands**: Use voice commands to navigate and modify the 3D preview hands-free.
 
 ## Core Features
 
-*   **AI-Powered Chatbot**: An intelligent assistant (powered by OpenAI GPT) that guides the salesperson through the quoting and design process.
-*   **Automated Measurement Extraction**: AI-driven analysis of uploaded drawings to detect dimensions and features.
-*   **Sketch-to-Blueprint Conversion**: Generates clean, editable 2D blueprints from user sketches.
-*   **Real-time 3D Modeling**: Instantly visualizes the deck design in an interactive 3D environment.
+### Enhanced AI Capabilities
+*   **Multi-Model AI System**: Intelligent model selection using Neural-Chat, Llama 3.1 8B, Qwen 2.5-VL, and Phi-3 Mini for optimal performance across different tasks.
+*   **Context-Aware Conversations**: Advanced chatbot with vector database integration for contextual responses and knowledge retention.
+*   **Enhanced Multimodal Analysis**: Superior blueprint interpretation and visual understanding using Qwen 2.5-VL.
+*   **Voice Interaction**: Whisper ASR integration for hands-free operation and voice commands throughout the design process.
+
+### Advanced Processing
+*   **Automated Measurement Extraction**: AI-driven analysis of uploaded drawings to detect dimensions and features with enhanced accuracy.
+*   **Sketch-to-Blueprint Conversion**: Generates clean, editable 2D blueprints from user sketches with improved precision.
+*   **Real-time 3D Modeling**: Instantly visualizes the deck design in an interactive 3D environment with NVIDIA Difix enhancement.
+*   **Knowledge Base Search**: Semantic search capabilities for deck design information and similar project matching.
+
+### Technical Excellence
 *   **Secure File Handling**: Ensures all customer uploads are handled securely, with encryption in transit and at rest.
 *   **Modular & Scalable**: Built with a modern microservices architecture for reliability and performance.
+*   **Vector Database Integration**: ChromaDB for efficient knowledge storage and contextual retrieval.
+*   **Fallback Mechanisms**: Robust error handling with intelligent model fallbacks for consistent performance.
 
 ## Technical Stack
 
 *   **Frontend**: React.js/Vue.js, HTML5, CSS3, JavaScript (ES6+), Three.js/Babylon.js
 *   **Backend**: Node.js (Express) / Python (FastAPI, Django)
-*   **AI & Machine Learning**: OCR and computer vision models for image analysis.
-*   **Database**: SQLite for storing conversation history and measurements.
+*   **AI & Machine Learning**: 
+    *   **Language Models**: Neural-Chat, Llama 3.1 8B, Qwen 2.5-VL, Phi-3 Mini via Ollama
+    *   **Computer Vision**: Enhanced OCR and multimodal image analysis
+    *   **Speech Recognition**: OpenAI Whisper for voice interaction
+    *   **3D Enhancement**: NVIDIA Difix for rendering improvement
+*   **Vector Database**: ChromaDB for semantic search and knowledge management
+*   **Database**: SQLite for storing conversation history and measurements
+*   **Development Tools**: Streamlit, LangChain for AI application development
 
 ## Running the Project Locally
 
@@ -64,3 +82,49 @@ A real-time 3D model of the deck is rendered using Three.js/Babylon.js. Key feat
     ```bash
     docker-compose -f docker/docker-compose.yml up --build
     ```
+
+## AI Enhancements Setup
+
+### Model Installation
+To use the enhanced AI capabilities, install the recommended models:
+
+```bash
+# Install Ollama models
+ollama pull neural-chat      # Enhanced conversation
+ollama pull llama3.1:8b     # Fallback conversation model
+ollama pull qwen2.5-vl      # Multimodal analysis
+ollama pull phi3:mini       # Reasoning tasks
+```
+
+### Environment Configuration
+Set up environment variables for enhanced features:
+
+```bash
+# Optional: Override default models
+export CONVERSATION_MODEL=neural-chat
+export MULTIMODAL_MODEL=qwen2.5-vl
+export REASONING_MODEL=phi3:mini
+
+# Optional: Hugging Face API key for Difix enhancement
+export HUGGING_FACE_API_KEY=your_hf_api_key_here
+```
+
+### Testing Enhanced Features
+Run the AI enhancements test suite:
+
+```bash
+cd apps/ai-service
+python test_enhancements.py
+```
+
+### New API Endpoints
+The enhanced AI service provides additional endpoints:
+
+- `POST /enhanced-chat` - Context-aware conversations with intelligent model selection
+- `POST /difix-enhance` - 3D rendering enhancement using NVIDIA Difix
+- `POST /transcribe-voice` - Voice command transcription and processing
+- `POST /search-knowledge` - Semantic search in the deck design knowledge base
+- `POST /analyze-blueprint-enhanced` - Advanced blueprint analysis with context storage
+- `GET /ai-capabilities` - Information about available AI features
+
+For detailed documentation, see `docs/ai_enhancements.md`.

@@ -1,5 +1,21 @@
-FROM ./llava-llama-3-8b-v1_1-int4.gguf
-SYSTEM "You are DeckChatbot AI. You interpret blueprint images, extract dimensions, and answer construction questions clearly and concisely."
+# Enhanced DeckChatbot AI Configuration
+# Based on research report recommendations for improved AI capabilities
+
+# Primary multimodal model for blueprint analysis
+FROM qwen2.5-vl
+SYSTEM "You are DeckChatbot AI, an expert in deck design and construction. You interpret blueprint images, extract dimensions, analyze structural elements, and provide comprehensive construction guidance. You help sales professionals by providing accurate measurements, material recommendations, and technical advice."
+
+# Enhanced parameters for better performance
 PARAMETER temperature 0.2
 PARAMETER top_p 0.9
 PARAMETER stop "User:"
+
+# Fallback models configuration (commented for reference)
+# Conversation model: neural-chat
+# Reasoning model: phi3:mini  
+# Legacy model: llava-llama-3-8b-v1_1-int4.gguf
+
+# Model-specific optimizations
+PARAMETER num_ctx 4096
+PARAMETER num_predict 512
+PARAMETER repeat_penalty 1.1

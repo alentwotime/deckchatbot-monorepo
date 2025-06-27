@@ -7,3 +7,19 @@ python-multipart
 opencv-python-headless
 numpy
 tqdm
+# Enhanced AI capabilities dependencies
+ollama>=0.1.7
+transformers>=4.35.0
+# Vector database for enhanced knowledge retrieval
+chromadb>=0.4.0
+# Development and integration tools
+streamlit>=1.28.0
+langchain>=0.0.350
+langchain-community>=0.0.10
+# Audio processing for Whisper ASR integration
+whisper-openai>=20231117
+soundfile>=0.12.1
+# Additional ML utilities
+torch>=2.0.0
+torchvision>=0.15.0
+sentence-transformers>=2.2.2
