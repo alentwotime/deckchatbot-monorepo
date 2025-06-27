@@ -2,3 +2,5 @@ AlenTwoTime_credentials.csv
 VSCodeUserSetup-x64-1.101.2.exe
 deckchatbot-monorepo-main.zip
 eamodio.gitlens-2025.6.2517.vsix
+.npm-cache/
+node_modules/
