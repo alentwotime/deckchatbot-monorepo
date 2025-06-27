@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use('/api', routes);
 
-// Add a test route for the database
+// Add a temporary test route for the database
 app.get('/db-test', async (req, res) => {
   try {
     // This query will ask the database for the current time
