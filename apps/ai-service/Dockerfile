@@ -25,8 +25,8 @@ RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama &&
 # Pull the Llama-Llava model (assuming llava-deckbot as per main.py)
 # This will make the image significantly larger
 ENV OLLAMA_HOST=0.0.0.0:11434
-RUN ollama serve &
-RUN while ! curl http://0.0.0.0:11434/api/tags; do sleep 1; done && \
+RUN ollama serve &\
+    while ! curl http://0.0.0.0:11434/api/tags; do sleep 1; done && \
     ollama pull llava-deckbot && \
     kill $(jobs -p)
 # --- End Ollama installation ---
@@ -51,9 +51,7 @@ ENV PYTHONPATH=${PYTHONPATH}:/app
 
 # Update entrypoint to start Ollama server in background
 RUN echo '#!/bin/bash
-\
-ollama serve & 
-\
+ollama serve & \
 poetry run uvicorn ai_service.main:app --host 0.0.0.0 --port 8000' > entrypoint.sh && \
     chmod +x entrypoint.sh
 
