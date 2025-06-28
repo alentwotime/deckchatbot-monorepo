@@ -16,11 +16,13 @@ This guide will help you understand SSH (Secure Shell) and set it up properly fo
 ### Quick Check
 
 **On Windows 10/11:**
+
 1. Open Command Prompt or PowerShell
 2. Type: `ssh -V`
 3. If you see a version number, SSH is installed!
 
 **On macOS/Linux:**
+
 1. Open Terminal
 2. Type: `ssh -V`
 3. If you see a version number, SSH is installed!
@@ -32,16 +34,19 @@ SSH keys are like digital "passwords" that are more secure than regular password
 **Check if you already have SSH keys:**
 
 1. **Windows**: Open PowerShell and run:
+
    ```powershell
    ls ~/.ssh
    ```
 
 2. **macOS/Linux**: Open Terminal and run:
+
    ```bash
    ls ~/.ssh
    ```
 
 **What to look for:**
+
 - `id_rsa` and `id_rsa.pub` (RSA key pair)
 - `id_ed25519` and `id_ed25519.pub` (Ed25519 key pair - newer and recommended)
 
@@ -59,12 +64,13 @@ If you see these files, **you already have SSH keys!** Skip to the "Using Your S
    - Find "OpenSSH Client" and install it
 
 2. **Alternative: Install Git for Windows**
-   - Download from: https://git-scm.com/download/win
+   - Download from: <https://git-scm.com/download/win>
    - This includes SSH and Git Bash
 
 ### macOS
 
 SSH is pre-installed on macOS. If it's not working, try:
+
 ```bash
 xcode-select --install
 ```
@@ -97,7 +103,7 @@ ssh-keygen -t rsa -b 4096 -C "your-email@example.com"
 ### Step 2: Follow the Prompts
 
 1. **File location**: Press Enter to use the default location
-2. **Passphrase**: 
+2. **Passphrase**:
    - **Recommended**: Enter a passphrase for extra security
    - **Optional**: Press Enter twice for no passphrase (less secure but easier)
 
@@ -108,6 +114,7 @@ ls ~/.ssh
 ```
 
 You should see:
+
 - `id_ed25519` (private key - keep this secret!)
 - `id_ed25519.pub` (public key - this is what you share)
 
@@ -118,23 +125,26 @@ You should see:
 You'll need to copy your public key to add it to services like Hetzner Cloud.
 
 **Windows (PowerShell):**
+
 ```powershell
 Get-Content ~/.ssh/id_ed25519.pub
 ```
 
 **macOS/Linux:**
+
 ```bash
 cat ~/.ssh/id_ed25519.pub
 ```
 
 **Copy the entire output** - it should look like:
+
 ```
 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGq... your-email@example.com
 ```
 
 ### Add SSH Key to Hetzner Cloud
 
-1. **Go to Hetzner Cloud Console**: https://console.hetzner.com/projects
+1. **Go to Hetzner Cloud Console**: <https://console.hetzner.com/projects>
 2. **Navigate to**: Security → SSH Keys
 3. **Click**: "Add SSH Key"
 4. **Paste your public key** (the output from above)
@@ -144,6 +154,7 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGq... your-email@example.com
 ### Add SSH Key to Other Services
 
 **GitHub:**
+
 1. Go to Settings → SSH and GPG keys
 2. Click "New SSH key"
 3. Paste your public key
@@ -161,6 +172,7 @@ ssh root@YOUR_SERVER_IP
 Replace `YOUR_SERVER_IP` with your actual server IP address.
 
 **First connection:**
+
 - You'll see a message about authenticity - type `yes`
 - If you set a passphrase, enter it when prompted
 
@@ -171,16 +183,19 @@ Replace `YOUR_SERVER_IP` with your actual server IP address.
 **Possible solutions:**
 
 1. **Check if your key is loaded:**
+
    ```bash
    ssh-add -l
    ```
 
 2. **Add your key to SSH agent:**
+
    ```bash
    ssh-add ~/.ssh/id_ed25519
    ```
 
 3. **Specify the key explicitly:**
+
    ```bash
    ssh -i ~/.ssh/id_ed25519 root@YOUR_SERVER_IP
    ```
@@ -204,6 +219,7 @@ Then try connecting again.
 ### Windows-Specific Issues
 
 **If using Git Bash on Windows:**
+
 ```bash
 # Start SSH agent
 eval $(ssh-agent -s)
@@ -224,6 +240,7 @@ Host my-server
 ```
 
 Then connect with just:
+
 ```bash
 ssh my-server
 ```
@@ -256,6 +273,8 @@ scp file.txt root@YOUR_SERVER_IP:/path/to/destination/
 # Copy files from server
 scp root@YOUR_SERVER_IP:/path/to/file.txt ./local-file.txt
 ```
+
+scp file.txt root@178.156.163.36:/path/to/destination/
 
 ### File Locations
 
