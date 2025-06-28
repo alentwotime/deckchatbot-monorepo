@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 # Pre-configured values
 SERVER_IP="178.156.163.36"
 DOMAIN_NAME="AlensDeckBot.online"
-GITHUB_USER="alentwotime"  # Update this with your actual GitHub username
+GITHUB_USER="aklin"  # Update this with your actual GitHub username
 REPO_NAME="deckchatbot-monorepo"
 
 # Function to print colored output
