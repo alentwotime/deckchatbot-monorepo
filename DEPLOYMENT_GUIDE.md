@@ -1,7 +1,12 @@
 # DeckChatbot Deployment Guide
 
 ## Server & Domain Information
-- **Server IP**: 178.156.163.36
+- **Server ID**: #66421252
+- **Server Name**: AlensDeckBot
+- **Server IP (IPv4)**: 178.156.163.36
+- **IPv6**: 2a01:4ff:f0:f8d5::/64
+- **Private IP**: 10.0.0.2
+- **Floating IP**: 5.161.23.197
 - **Domain**: AlensDeckBot.online
 - **Target URL**: https://AlensDeckBot.online
 

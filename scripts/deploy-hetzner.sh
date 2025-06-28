@@ -2,6 +2,15 @@
 
 # Hetzner Cloud Deployment Script for DeckChatbot
 # This script automates the deployment process on a fresh Ubuntu server
+#
+# Hetzner Server Information:
+# Server ID: #66421252
+# Server Name: AlensDeckBot
+# IPv4: 178.156.163.36
+# IPv6: 2a01:4ff:f0:f8d5::/64
+# Private IP: 10.0.0.2
+# Floating IP: 5.161.23.197
+# Domain: AlensDeckBot.online
 
 set -e  # Exit on any error
 

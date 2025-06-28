@@ -2,6 +2,15 @@
 
 # Pre-Deployment Verification Script for DeckChatbot
 # This script checks if everything is ready for deployment
+#
+# Hetzner Server Information:
+# Server ID: #66421252
+# Server Name: AlensDeckBot
+# IPv4: 178.156.163.36
+# IPv6: 2a01:4ff:f0:f8d5::/64
+# Private IP: 10.0.0.2
+# Floating IP: 5.161.23.197
+# Domain: AlensDeckBot.online
 
 set -e
 
@@ -13,7 +22,12 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
+SERVER_ID="#66421252"
+SERVER_NAME="AlensDeckBot"
 SERVER_IP="178.156.163.36"
+SERVER_IPV6="2a01:4ff:f0:f8d5::/64"
+PRIVATE_IP="10.0.0.2"
+FLOATING_IP="5.161.23.197"
 DOMAIN_NAME="AlensDeckBot.online"
 GITHUB_USER="aklin"
 REPO_NAME="deckchatbot-monorepo"
@@ -66,7 +80,7 @@ if nslookup ${DOMAIN_NAME} >/dev/null 2>&1; then
     if [ -z "$RESOLVED_IP" ]; then
         RESOLVED_IP=$(dig +short ${DOMAIN_NAME} | head -1)
     fi
-    
+
     if [ "$RESOLVED_IP" = "$SERVER_IP" ]; then
         print_success "DNS A record correctly points to ${SERVER_IP}"
         ((CHECKS_PASSED++))
@@ -212,7 +226,7 @@ print_header "6. Deployment Script Validation"
 
 if [ -f "scripts/deploy-custom.sh" ]; then
     print_status "Validating deployment script..."
-    
+
     if grep -q "${SERVER_IP}" scripts/deploy-custom.sh; then
         print_success "Server IP is correctly configured in deployment script"
         ((CHECKS_PASSED++))
@@ -220,7 +234,7 @@ if [ -f "scripts/deploy-custom.sh" ]; then
         print_error "Server IP not found in deployment script"
         ((CHECKS_FAILED++))
     fi
-    
+
     if grep -q "${DOMAIN_NAME}" scripts/deploy-custom.sh; then
         print_success "Domain name is correctly configured in deployment script"
         ((CHECKS_PASSED++))
@@ -228,7 +242,7 @@ if [ -f "scripts/deploy-custom.sh" ]; then
         print_error "Domain name not found in deployment script"
         ((CHECKS_FAILED++))
     fi
-    
+
     if [ -x "scripts/deploy-custom.sh" ]; then
         print_success "Deployment script is executable"
         ((CHECKS_PASSED++))
@@ -265,11 +279,11 @@ if [ ${CHECKS_FAILED} -eq 0 ]; then
     echo "4. After deployment, visit:"
     echo "   https://${DOMAIN_NAME}"
     echo ""
-    
+
     if [ ${CHECKS_WARNING} -gt 0 ]; then
         print_warning "Note: There are ${CHECKS_WARNING} warnings that should be addressed"
     fi
-    
+
     exit 0
 else
     print_error "❌ ${CHECKS_FAILED} critical issues found!"

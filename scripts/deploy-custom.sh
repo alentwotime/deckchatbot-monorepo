@@ -1,7 +1,13 @@
 #!/bin/bash
 
 # Custom Deployment Script for DeckChatbot
-# Server: 178.156.163.36
+# Hetzner Server Information:
+# Server ID: #66421252
+# Server Name: AlensDeckBot
+# IPv4: 178.156.163.36
+# IPv6: 2a01:4ff:f0:f8d5::/64
+# Private IP: 10.0.0.2
+# Floating IP: 5.161.23.197
 # Domain: AlensDeckBot.online
 
 set -e  # Exit on any error
@@ -14,7 +20,12 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Pre-configured values
+SERVER_ID="#66421252"
+SERVER_NAME="AlensDeckBot"
 SERVER_IP="178.156.163.36"
+SERVER_IPV6="2a01:4ff:f0:f8d5::/64"
+PRIVATE_IP="10.0.0.2"
+FLOATING_IP="5.161.23.197"
 DOMAIN_NAME="AlensDeckBot.online"
 GITHUB_USER="aklin"  # Update this with your actual GitHub username
 REPO_NAME="deckchatbot-monorepo"
