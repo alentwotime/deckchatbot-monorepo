@@ -128,6 +128,29 @@ For detailed AWS deployment instructions, see:
 
 **Looking for cheaper hosting options?** The AWS deployment above costs $120-230/month, but there are much more affordable alternatives:
 
+#### 🚀 Hetzner Cloud (RECOMMENDED) - **$4.15/month**
+**Perfect for production use with excellent performance and value!**
+
+Since you've already created your Hetzner Cloud account, here are your next steps:
+
+**Quick Start (Automated):**
+1. Create a server in your [Hetzner Console](https://console.hetzner.com/projects)
+2. SSH into your server: `ssh root@YOUR_SERVER_IP`
+3. Run the automated deployment script:
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/deckchatbot-monorepo/main/scripts/deploy-hetzner.sh | bash
+   ```
+
+**Manual Setup:**
+Follow the comprehensive step-by-step guide: [`docs/hetzner-deployment-guide.md`](docs/hetzner-deployment-guide.md)
+
+**What you get:**
+- ✅ Full production environment
+- ✅ SSL certificates (HTTPS)
+- ✅ Custom domain support
+- ✅ Automatic security hardening
+- ✅ Only $4.15/month!
+
 #### Render.com (FREE) - **$0/month**
 Deploy for free using the pre-configured `render.yaml`:
 1. Create a [Render account](https://render.com)
