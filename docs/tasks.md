@@ -12,6 +12,13 @@ designed to enhance code quality, architecture, performance, or user experience.
 - Create a clear separation of concerns between different AI functionalities
 - Document the purpose and responsibilities of each AI component
 
+[✓] Provide load balancer guidance
+
+- Analyze current deployment architecture and load balancing needs
+- Document when load balancers are needed vs. when they're not
+- Provide cost-effective alternatives and scaling recommendations
+- Create comprehensive guidance document for deployment decisions
+
 [ ] Standardize project structure
 `   - Establish consistent naming conventions across directories and files
 
