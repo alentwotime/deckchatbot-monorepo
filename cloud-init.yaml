@@ -9,3 +9,4 @@ runcmd:
   - systemctl enable ollama
   - systemctl start ollama
   - su - alens -c "ollama run llava-deckbot"
+  - ip addr add 5.161.23.197 dev eth0

@@ -48,6 +48,9 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+print_status "Configuring floating IP address..."
+ip addr add 5.161.23.197 dev eth0 || print_warning "Floating IP may already be configured or interface not available"
+
 print_status "Updating system packages..."
 apt update && apt upgrade -y
 
@@ -250,11 +253,11 @@ if [[ $USE_DOMAIN =~ ^[Yy]$ ]]; then
     print_status "Setting up SSL certificate..."
     echo "Do you want to set up SSL certificate with Let's Encrypt? (y/n)"
     read -r SETUP_SSL
-    
+
     if [[ $SETUP_SSL =~ ^[Yy]$ ]]; then
         print_status "Obtaining SSL certificate for ${DOMAIN_NAME}..."
         certbot --nginx -d "${DOMAIN_NAME}" --non-interactive --agree-tos --email admin@"${DOMAIN_NAME}"
-        
+
         # Set up auto-renewal
         (crontab -l 2>/dev/null; echo "0 12 * * * /usr/bin/certbot renew --quiet") | crontab -
         print_success "SSL certificate installed and auto-renewal configured"

@@ -3,6 +3,7 @@ package_update: true
 packages:
   - docker.io
 runcmd:
+  - ip addr add 5.161.23.197 dev eth0
   - systemctl start docker
   - systemctl enable docker
   - docker pull myrepo/deckchatbot-backend-ai:latest

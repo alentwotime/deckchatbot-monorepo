@@ -49,6 +49,9 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+print_status "Configuring floating IP address..."
+ip addr add 5.161.23.197 dev eth0 || print_warning "Floating IP may already be configured or interface not available"
+
 print_status "Updating system packages..."
 apt update && apt upgrade -y
 
