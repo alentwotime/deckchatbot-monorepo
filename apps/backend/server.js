@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
+import session from 'express-session';
 import dotenv from 'dotenv';
 
 import routes from './routes.js';
@@ -9,21 +10,31 @@ import visionRouter from './visionRouter.js';
 import dbService from './utils/db.js';
 import cacheService from './utils/cache.js';
 import rateLimiters from './middleware/rateLimiting.js';
+import { 
+  enhancedCSP, 
+  securityHeaders, 
+  csrfProtection, 
+  generateCSRFToken 
+} from './middleware/security.js';
 
 dotenv.config();
 
 const app = express();
 
-// Security and performance middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
-    },
-  },
+// Enhanced security middleware
+app.use(securityHeaders);
+app.use(enhancedCSP);
+
+// Session configuration for CSRF protection
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 
 app.use(compression({
@@ -62,6 +73,9 @@ app.get('/health', (req, res) => {
     version: process.env.npm_package_version || '1.0.0'
   });
 });
+
+// CSRF token endpoint
+app.get('/csrf-token', generateCSRFToken);
 
 // Database test route with caching and rate limiting
 app.get('/db-test', rateLimiters.db, async (req, res) => {
@@ -128,9 +142,9 @@ app.get('/cache/stats', rateLimiters.db, async (req, res) => {
   }
 });
 
-// Apply specific rate limiting to routes
-app.use('/api', routes);
-app.use('/vision', rateLimiters.ai, visionRouter);
+// Apply specific rate limiting and CSRF protection to routes
+app.use('/api', csrfProtection, routes);
+app.use('/vision', rateLimiters.ai, csrfProtection, visionRouter);
 
 // Error handling middleware
 app.use((error, req, res, next) => {

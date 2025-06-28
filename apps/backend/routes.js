@@ -3,6 +3,7 @@ import multer from 'multer';
 import dbService from './utils/db.js';
 import cacheService from './utils/cache.js';
 import { uploadLimiter, dbLimiter } from './middleware/rateLimiting.js';
+import { validateRequest, secureFileUpload, InputSanitizer } from './middleware/security.js';
 
 const router = express.Router();
 const upload = multer({ 
@@ -19,8 +20,12 @@ router.get('/hello', (req, res) => {
   });
 });
 
-// File upload endpoint with caching
-router.post('/upload-file', uploadLimiter, upload.single('file'), async (req, res) => {
+// File upload endpoint with caching and security validation
+router.post('/upload-file', uploadLimiter, upload.single('file'), secureFileUpload, validateRequest({
+  body: {
+    type: { type: 'string', required: false, maxLength: 50 }
+  }
+}), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -201,8 +206,13 @@ router.post('/generate-blueprint', dbLimiter, async (req, res) => {
   }
 });
 
-// Bot query endpoint with caching
-router.post('/bot-query', dbLimiter, async (req, res) => {
+// Bot query endpoint with caching and input validation
+router.post('/bot-query', dbLimiter, validateRequest({
+  body: {
+    messages: { type: 'array', required: true, maxItems: 50 },
+    options: { type: 'object', required: false }
+  }
+}), async (req, res) => {
   try {
     const { messages, options = {} } = req.body;
 
@@ -227,8 +237,14 @@ router.post('/bot-query', dbLimiter, async (req, res) => {
       });
     }
 
+    // Sanitize user messages before processing
+    const sanitizedMessages = messages.map(msg => ({
+      ...msg,
+      content: InputSanitizer.sanitizeString(msg.content || '', 1000)
+    }));
+
     // Generate bot response (placeholder - integrate with actual AI chatbot)
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = sanitizedMessages[sanitizedMessages.length - 1];
     let response = "I'm here to help with your deck project! ";
 
     if (lastMessage.content.toLowerCase().includes('material')) {

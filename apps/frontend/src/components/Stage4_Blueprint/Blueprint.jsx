@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import { generateBlueprint } from '../../services/backend.service';
 
 const Blueprint = ({ analysisResult }) => {
@@ -14,7 +15,24 @@ const Blueprint = ({ analysisResult }) => {
         setError('');
         try {
           const bp = await generateBlueprint(analysisResult);
-          setBlueprint(bp.svg);
+          // Sanitize SVG content to prevent XSS attacks
+          const sanitizedSVG = DOMPurify.sanitize(bp.svg || bp.blueprint, {
+            USE_PROFILES: { svg: true, svgFilters: true },
+            ALLOWED_TAGS: [
+              'svg', 'g', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 
+              'polygon', 'text', 'tspan', 'defs', 'marker', 'pattern', 'clipPath',
+              'mask', 'image', 'desc', 'title'
+            ],
+            ALLOWED_ATTR: [
+              'width', 'height', 'viewBox', 'xmlns', 'x', 'y', 'cx', 'cy', 'r', 'rx', 'ry',
+              'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'opacity', 'transform',
+              'font-family', 'font-size', 'font-weight', 'text-anchor', 'd', 'points',
+              'x1', 'y1', 'x2', 'y2', 'id', 'class'
+            ],
+            FORBID_TAGS: ['script', 'object', 'embed', 'link', 'style'],
+            FORBID_ATTR: ['onload', 'onerror', 'onclick', 'onmouseover', 'style']
+          });
+          setBlueprint(sanitizedSVG);
         } catch (err) {
           setError('Failed to generate blueprint. Please try again.');
         } finally {
