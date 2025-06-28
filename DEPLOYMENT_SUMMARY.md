@@ -39,7 +39,13 @@ Your DeckChatbot project is **fully prepared** for deployment to:
 ### Step 1: Configure DNS (CRITICAL)
 You need to configure your domain's DNS settings:
 
-**DNS Records to Add:**
+**First: Update Name Servers**
+Configure your domain to use Hetzner's name servers:
+- **Name server 1**: `hydrogen.ns.hetzner.com`
+- **Name server 2**: `oxygen.ns.hetzner.com`
+- **Name server 3**: `helium.ns.hetzner.de`
+
+**Then: Add DNS Records**
 ```
 Type    Name    Value               TTL
 A       @       178.156.163.36      300
@@ -48,6 +54,8 @@ CNAME   www     AlensDeckBot.online 300
 
 **Where to configure:**
 - Log into your domain registrar's control panel
+- Navigate to DNS/Name Server settings
+- Replace current name servers with Hetzner name servers above
 - Navigate to DNS management
 - Add the A record pointing your domain to your server IP
 - Add the CNAME record for www subdomain

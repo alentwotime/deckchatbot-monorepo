@@ -195,15 +195,29 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
 
 If you have a domain name:
 
-1. **Point Your Domain to the Server**
-   - Update your domain's DNS A record to point to your server's IP address
+1. **Configure Name Servers**
+   First, update your domain to use Hetzner's name servers:
+   - **Name server 1**: `hydrogen.ns.hetzner.com`
+   - **Name server 2**: `oxygen.ns.hetzner.com`
+   - **Name server 3**: `helium.ns.hetzner.de`
 
-2. **Get SSL Certificate**
+   **How to update:**
+   - Log into your domain registrar's control panel
+   - Navigate to DNS/Name Server settings
+   - Replace current name servers with Hetzner name servers above
+   - Save changes and wait for propagation (up to 48 hours)
+
+2. **Point Your Domain to the Server**
+   After name servers are configured, update your DNS records:
+   - Add an A record: `AlensDeckBot.online` → `178.156.163.36`
+   - Add a CNAME record: `www.AlensDeckBot.online` → `AlensDeckBot.online`
+
+3. **Get SSL Certificate**
    ```bash
    certbot --nginx -d AlensDeckBot.online
    ```
 
-3. **Set Up Auto-Renewal**
+4. **Set Up Auto-Renewal**
    ```bash
    crontab -e
    ```

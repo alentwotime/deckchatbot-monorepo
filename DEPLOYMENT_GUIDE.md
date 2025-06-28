@@ -15,6 +15,22 @@
 ### 1. Domain DNS Configuration
 Before running the deployment script, ensure your domain DNS is properly configured:
 
+#### Name Servers
+Configure your domain to use Hetzner's name servers:
+
+1. **Name server 1**: `hydrogen.ns.hetzner.com`
+2. **Name server 2**: `oxygen.ns.hetzner.com`
+3. **Name server 3**: `helium.ns.hetzner.de`
+
+**How to update name servers:**
+1. Log into your domain registrar's control panel
+2. Navigate to DNS/Name Server settings
+3. Replace the current name servers with the Hetzner name servers above
+4. Save changes and wait for propagation (can take up to 48 hours)
+
+#### DNS Records
+After configuring name servers, set up the following DNS records:
+
 1. **A Record**: Point `AlensDeckBot.online` to `178.156.163.36`
 2. **CNAME Record**: Point `www.AlensDeckBot.online` to `AlensDeckBot.online`
 
