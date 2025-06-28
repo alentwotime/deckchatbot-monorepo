@@ -83,6 +83,44 @@ A real-time 3D model of the deck is rendered using Three.js/Babylon.js. Key feat
     docker-compose -f docker/docker-compose.yml up --build
     ```
 
+## Deployment Options
+
+### Local Development
+See the "Running the Project Locally" section above for local development setup.
+
+### AWS Cloud Deployment
+Deploy DeckChatbot to AWS using ECS Fargate for production-ready scalability:
+
+1. **Prerequisites**:
+   - AWS CLI installed and configured
+   - Docker installed
+   - SSL certificate in AWS Certificate Manager
+   - Domain name (recommended)
+
+2. **Quick AWS Deployment**:
+   ```bash
+   # Set required environment variables
+   export CERTIFICATE_ARN=arn:aws:acm:us-east-1:123456789012:certificate/your-cert-id
+   export DOMAIN_NAME=your-domain.com
+
+   # Run deployment script
+   cd aws/scripts
+   chmod +x *.sh
+   ./deploy.sh
+   ```
+
+3. **AWS Architecture**:
+   - **ECS Fargate**: Containerized services with auto-scaling
+   - **Application Load Balancer**: SSL termination and traffic routing
+   - **VPC**: Secure network with public/private subnets
+   - **ECR**: Container image registry
+   - **CloudWatch**: Logging and monitoring
+   - **Parameter Store**: Secure configuration management
+
+4. **Cost Estimation**: ~$120-230/month (varies by usage)
+
+For detailed AWS deployment instructions, see [`aws/README.md`](aws/README.md).
+
 ## AI Enhancements Setup
 
 ### Model Installation

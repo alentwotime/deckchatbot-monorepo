@@ -25,11 +25,23 @@ designed to enhance code quality, architecture, performance, or user experience.
 - Document service boundaries and interfaces
   -Implement OpenAPI/Swagger for API documentation
 
-[ ] Enhance deployment architecture
+[✓] Enhance deployment architecture
 
 - Consolidate Docker configurations into a single, well-organized structure
 - Implement proper environment configuration management
 - Create deployment diagrams for different environments (dev, staging, prod)
+
+[✓] Prepare website for AWS deployment
+
+- Create comprehensive AWS infrastructure as code (CloudFormation templates)
+- Set up ECS Fargate deployment with Application Load Balancer
+- Configure ECR repositories for container images
+- Implement AWS Systems Manager Parameter Store for configuration
+- Create automated deployment scripts
+- Set up VPC with proper security groups and networking
+- Configure CloudWatch logging and monitoring
+- Implement auto-scaling and health checks
+- Create detailed AWS deployment documentation
 
 ## Code Quality Improvements
 
