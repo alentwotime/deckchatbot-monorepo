@@ -1,7 +1,6 @@
 {
   "name": "deckchatbot-frontend",
   "version": "1.0.0",
-  "type": "module",
   "private": true,
   "scripts": {
     "start": "webpack serve --mode development --open",
