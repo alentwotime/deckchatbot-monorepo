@@ -162,6 +162,12 @@ fi
 # Configure Nginx
 print_status "Configuring Nginx reverse proxy for ${DOMAIN_NAME}..."
 
+# Create directory for Let's Encrypt ACME challenges
+print_status "Setting up Let's Encrypt challenge directory..."
+mkdir -p /var/www/html/.well-known/acme-challenge
+chown -R www-data:www-data /var/www/html
+chmod -R 755 /var/www/html
+
 # Create Nginx configuration
 cat > /etc/nginx/sites-available/deckchatbot << EOF
 server {
@@ -174,6 +180,12 @@ server {
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "no-referrer-when-downgrade" always;
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;" always;
+
+    # Let's Encrypt ACME challenge
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+        try_files \$uri =404;
+    }
 
     # Frontend
     location / {
@@ -243,11 +255,149 @@ fi
 # Set up SSL certificate
 print_status "Setting up SSL certificate for ${DOMAIN_NAME}..."
 print_warning "Make sure ${DOMAIN_NAME} DNS A record points to ${SERVER_IP}"
-echo "Proceeding with SSL setup in 10 seconds..."
-sleep 10
 
-# Obtain SSL certificate
-certbot --nginx -d "${DOMAIN_NAME}" -d "www.${DOMAIN_NAME}" --non-interactive --agree-tos --email "admin@${DOMAIN_NAME}" --redirect
+# Test domain accessibility before SSL setup
+print_status "Testing domain accessibility..."
+sleep 5
+
+# Create a test file for domain verification
+echo "Domain verification test" > /var/www/html/test.txt
+
+# Test if domain is accessible
+if curl -s -f "http://${DOMAIN_NAME}/test.txt" >/dev/null 2>&1; then
+    print_success "Domain ${DOMAIN_NAME} is accessible"
+else
+    print_error "Domain ${DOMAIN_NAME} is not accessible. Please check DNS settings."
+    print_error "Make sure the A record for ${DOMAIN_NAME} points to ${SERVER_IP}"
+    exit 1
+fi
+
+# Test www subdomain
+WWW_DOMAIN="yes"
+if curl -s -f "http://www.${DOMAIN_NAME}/test.txt" >/dev/null 2>&1; then
+    print_success "Domain www.${DOMAIN_NAME} is accessible"
+else
+    print_warning "Domain www.${DOMAIN_NAME} is not accessible. Continuing with main domain only."
+    WWW_DOMAIN=""
+fi
+
+# Clean up test file
+rm -f /var/www/html/test.txt
+
+print_status "Proceeding with SSL setup..."
+sleep 5
+
+# Obtain SSL certificate using webroot method
+if [ -n "$WWW_DOMAIN" ]; then
+    print_status "Obtaining SSL certificate for both ${DOMAIN_NAME} and www.${DOMAIN_NAME}..."
+    certbot certonly --webroot -w /var/www/html -d "${DOMAIN_NAME}" -d "www.${DOMAIN_NAME}" --non-interactive --agree-tos --email "admin@${DOMAIN_NAME}"
+else
+    print_status "Obtaining SSL certificate for ${DOMAIN_NAME} only..."
+    certbot certonly --webroot -w /var/www/html -d "${DOMAIN_NAME}" --non-interactive --agree-tos --email "admin@${DOMAIN_NAME}"
+fi
+
+# Update nginx configuration with SSL
+if [ -f "/etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem" ]; then
+    print_success "SSL certificate obtained successfully"
+
+    # Update nginx configuration to include SSL
+    cat > /etc/nginx/sites-available/deckchatbot << EOF
+server {
+    listen 80;
+    server_name ${DOMAIN_NAME} www.${DOMAIN_NAME};
+
+    # Let's Encrypt ACME challenge
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+        try_files \$uri =404;
+    }
+
+    # Redirect all HTTP traffic to HTTPS
+    location / {
+        return 301 https://\$server_name\$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl http2;
+    server_name ${DOMAIN_NAME} www.${DOMAIN_NAME};
+
+    # SSL configuration
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN_NAME}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN_NAME}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # Frontend
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_buffering off;
+
+        # WebSocket support
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # Backend API
+    location /api/ {
+        proxy_pass http://localhost:8000/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_buffering off;
+
+        # Increase timeout for AI operations
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+    }
+
+    # AI Service
+    location /ai/ {
+        proxy_pass http://localhost:8001/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_buffering off;
+
+        # Increase timeout for AI operations
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+    }
+
+    # Health check endpoint
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+}
+EOF
+
+    # Reload nginx with new SSL configuration
+    nginx -t && systemctl reload nginx
+    print_success "Nginx updated with SSL configuration"
+else
+    print_error "SSL certificate generation failed"
+    exit 1
+fi
 
 # Set up auto-renewal
 (crontab -l 2>/dev/null; echo "0 12 * * * /usr/bin/certbot renew --quiet") | crontab -
