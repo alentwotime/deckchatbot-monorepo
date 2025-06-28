@@ -1,6 +1,6 @@
-const express = require('express');
-const routes = require('./routes');
-const db = require('./utils/db'); // Import the db utility
+import express from 'express';
+import routes from './routes.js';
+import db from './utils/db.js'; // Import the db utility
 const app = express();
 
 app.use(express.json());

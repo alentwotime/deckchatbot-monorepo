@@ -1,13 +1,19 @@
 // apps/backend/visionRouter.js
 
-const express = require('express');
-const multer = require('multer');
-const axios = require('axios');
-const FormData = require('form-data');
-const fs = require('fs');
-const path = require('path');
-require('dotenv').config();
-const rateLimit = require('express-rate-limit');
+import express from 'express';
+import multer from 'multer';
+import axios from 'axios';
+import FormData from 'form-data';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -44,4 +50,4 @@ router.post('/analyze', analyzeRateLimiter, upload.single('image'), async (req, 
   }
 });
 
-module.exports = router;
+export default router;

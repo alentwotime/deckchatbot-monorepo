@@ -1,11 +1,14 @@
 {
   "name": "deckchatbot-frontend",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "start": "webpack serve --mode development --open",
     "build": "webpack --mode production",
-    "test": "jest"
+    "test": "jest",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch"
   },
   "dependencies": {
     "@react-three/drei": "^9.102.6",
@@ -24,6 +27,10 @@
     "@babel/core": "^7.27.4",
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
+    "typescript": "^5.7.2",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "babel-jest": "^30.0.2",

@@ -10,13 +10,21 @@
   "scripts": {
     "start": "node server.cjs",
     "dev": "nodemon",
-    "test": "npx jest"
+    "test": "npx jest",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "backend:dev": "cd apps/backend && npm run dev",
+    "frontend:dev": "cd apps/frontend && npm run start",
+    "install:all": "npm install && cd apps/backend && npm install && cd ../frontend && npm install"
   },
   "devDependencies": {
     "eslint": "^9.29.0",
     "jest": "^30.0.2",
     "nodemon": "^3.1.10",
-    "prettier": "^3.6.0"
+    "prettier": "^3.6.0",
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2",
+    "@types/express": "^5.0.0"
   },
   "dependencies": {
     "axios": "^1.6.7",
