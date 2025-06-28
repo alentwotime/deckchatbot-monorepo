@@ -6,7 +6,7 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
 
 - ✅ Hetzner Cloud account (already created)
 - Git installed on your local machine
-- SSH client (built into Windows 10/11, macOS, and Linux)
+- SSH client and SSH keys set up (see [SSH Setup Guide](ssh-setup-guide.md) for help)
 
 ## Step 1: Create a Hetzner Cloud Server
 
@@ -49,16 +49,16 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
    # Install Docker
    curl -fsSL https://get.docker.com -o get-docker.sh
    sh get-docker.sh
-   
+
    # Install Docker Compose
    apt install docker-compose-plugin -y
-   
+
    # Install Git
    apt install git -y
-   
+
    # Install Nginx (for reverse proxy)
    apt install nginx -y
-   
+
    # Install Certbot (for SSL certificates)
    apt install certbot python3-certbot-nginx -y
    ```
@@ -77,21 +77,21 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
    ```bash
    # Install UFW
    apt install ufw -y
-   
+
    # Set default policies
    ufw default deny incoming
    ufw default allow outgoing
-   
+
    # Allow SSH
    ufw allow ssh
-   
+
    # Allow HTTP and HTTPS
    ufw allow 80
    ufw allow 443
-   
+
    # Enable firewall
    ufw --force enable
-   
+
    # Check status
    ufw status
    ```
@@ -110,19 +110,19 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
    cp .env.example .env
    nano .env
    ```
-   
+
    Configure your environment variables:
    ```env
    # AI Configuration
    AI_PROVIDER=ollama
    OLLAMA_MODEL_NAME=llama3.1:8b
-   
+
    # Optional: OpenAI API Key (if using OpenAI instead of Ollama)
    # OPENAI_API_KEY=your_openai_key_here
-   
+
    # Optional: Hugging Face API Key (for enhanced features)
    # HUGGING_FACE_API_KEY=your_hf_key_here
-   
+
    # Production settings
    NODE_ENV=production
    ENVIRONMENT=production
@@ -138,7 +138,7 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
    ```bash
    docker compose ps
    ```
-   
+
    You should see all three services (frontend, backend, ai-service) running.
 
 ## Step 5: Configure Nginx Reverse Proxy
@@ -218,10 +218,10 @@ If you have a domain name:
    ```bash
    # Test frontend
    curl -I http://localhost:3000
-   
+
    # Test backend
    curl -I http://localhost:8000/health
-   
+
    # Test AI service
    curl -I http://localhost:8001/health
    ```
@@ -251,10 +251,10 @@ If you have a domain name:
    ```bash
    # Check disk usage
    df -h
-   
+
    # Check memory usage
    free -h
-   
+
    # Check running containers
    docker ps
    ```
@@ -267,7 +267,7 @@ If you have a domain name:
    ```bash
    # Check Docker logs
    docker compose logs
-   
+
    # Restart services
    docker compose restart
    ```
@@ -276,7 +276,7 @@ If you have a domain name:
    ```bash
    # Check what's using the port
    netstat -tulpn | grep :3000
-   
+
    # Kill the process if needed
    sudo kill -9 PID
    ```
@@ -285,7 +285,7 @@ If you have a domain name:
    ```bash
    # Check certificate status
    certbot certificates
-   
+
    # Renew certificate manually
    certbot renew
    ```
@@ -294,7 +294,7 @@ If you have a domain name:
    ```bash
    # Test nginx configuration
    nginx -t
-   
+
    # Check nginx status
    systemctl status nginx
    ```

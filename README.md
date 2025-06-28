@@ -144,6 +144,9 @@ Since you've already created your Hetzner Cloud account, here are your next step
 **Manual Setup:**
 Follow the comprehensive step-by-step guide: [`docs/hetzner-deployment-guide.md`](docs/hetzner-deployment-guide.md)
 
+**Need SSH Help?**
+New to SSH or need to set up SSH keys? See: [`docs/ssh-setup-guide.md`](docs/ssh-setup-guide.md)
+
 **What you get:**
 - ✅ Full production environment
 - ✅ SSL certificates (HTTPS)

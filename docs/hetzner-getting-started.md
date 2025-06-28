@@ -12,7 +12,7 @@ Since you're ready to get your DeckChatbot application online, here are the **im
    - **Location**: Choose closest to your users (Ashburn for US, Falkenstein for Europe)
    - **Image**: Ubuntu 22.04
    - **Type**: CPX11 (2 vCPUs, 4 GB RAM) - **$4.15/month**
-   - **SSH Keys**: Add your SSH key (or create one if you don't have it)
+   - **SSH Keys**: Add your SSH key (see [SSH Setup Guide](ssh-setup-guide.md) if you need help)
    - **Name**: `deckchatbot-server`
 4. **Click "Create & Buy now"**
 5. **Wait 1-2 minutes** for the server to be created
