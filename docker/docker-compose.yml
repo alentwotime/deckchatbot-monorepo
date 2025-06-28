@@ -19,6 +19,21 @@ services:
       - 1.1.1.1
     networks:
       - decknet
+    # Security and resource optimizations
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:noexec,nosuid,size=100m
+      - /var/run:noexec,nosuid,size=100m
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
 
   backend:
     build:
@@ -37,7 +52,7 @@ services:
     depends_on:
       ai-service:
         condition: service_healthy
-    entrypoint: /entrypoint.sh
+    entrypoint: /app/entrypoint.sh
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 30s
@@ -49,6 +64,21 @@ services:
       - 1.1.1.1
     networks:
       - decknet
+    # Security and resource optimizations
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
 
   ai-service:
     build:
@@ -68,6 +98,21 @@ services:
       - 1.1.1.1
     networks:
       - decknet
+    # Security and resource optimizations
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '0.75'
 
 networks:
   decknet:
@@ -75,4 +120,3 @@ networks:
     ipam:
       config:
         - subnet: 192.168.65.0/24
-
