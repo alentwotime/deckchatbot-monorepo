@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 # Pre-configured values
 SERVER_IP="178.156.163.36"
 DOMAIN_NAME="AlensDeckBot.online"
-GITHUB_USER="aklin"  # Update this with your actual GitHub username
+GITHUB_USER="alentwotime"  # Update this with your actual GitHub username
 REPO_NAME="deckchatbot-monorepo"
 
 # Function to print colored output
@@ -183,7 +183,7 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_buffering off;
-        
+
         # WebSocket support
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
@@ -198,7 +198,7 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_buffering off;
-        
+
         # Increase timeout for AI operations
         proxy_read_timeout 300s;
         proxy_connect_timeout 75s;
@@ -212,7 +212,7 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_buffering off;
-        
+
         # Increase timeout for AI operations
         proxy_read_timeout 300s;
         proxy_connect_timeout 75s;
