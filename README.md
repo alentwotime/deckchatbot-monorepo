@@ -124,6 +124,28 @@ For detailed AWS deployment instructions, see:
 - **Quick Reference**: [`docs/aws-quick-reference.md`](docs/aws-quick-reference.md) - Essential commands and troubleshooting
 - **Technical Details**: [`aws/README.md`](aws/README.md) - Advanced configuration and architecture
 
+### Cost-Effective Alternatives
+
+**Looking for cheaper hosting options?** The AWS deployment above costs $120-230/month, but there are much more affordable alternatives:
+
+#### Render.com (FREE) - **$0/month**
+Deploy for free using the pre-configured `render.yaml`:
+1. Create a [Render account](https://render.com)
+2. Connect your GitHub repository
+3. Render automatically detects the configuration
+4. All services deploy on the free tier
+
+#### Self-Hosted VPS - **$5-10/month**
+Use the existing Docker Compose setup on a VPS:
+```bash
+# On your VPS (Ubuntu/Debian)
+git clone your-repo
+cd deckchatbot-monorepo/docker
+docker-compose up -d
+```
+
+**📋 Complete Cost Comparison**: See [`docs/cost-effective-deployment-alternatives.md`](docs/cost-effective-deployment-alternatives.md) for detailed comparison of all hosting options, from FREE to enterprise-grade.
+
 ## AI Enhancements Setup
 
 ### Model Installation
