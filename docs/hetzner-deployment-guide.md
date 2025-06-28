@@ -36,7 +36,7 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
 
 1. **Connect to Your Server**
    ```bash
-   ssh root@YOUR_SERVER_IP
+   ssh root@178.156.163.36
    ```
 
 2. **Update the System**
@@ -101,7 +101,7 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
 1. **Clone the Repository**
    ```bash
    cd /opt
-   git clone https://github.com/YOUR_USERNAME/deckchatbot-monorepo.git
+   git clone https://github.com/aklin/deckchatbot-monorepo.git
    cd deckchatbot-monorepo
    ```
 
@@ -152,7 +152,7 @@ This guide will walk you through deploying the DeckChatbot application on Hetzne
    ```nginx
    server {
        listen 80;
-       server_name YOUR_DOMAIN_OR_IP;
+       server_name AlensDeckBot.online;
 
        # Frontend
        location / {
@@ -200,7 +200,7 @@ If you have a domain name:
 
 2. **Get SSL Certificate**
    ```bash
-   certbot --nginx -d your-domain.com
+   certbot --nginx -d AlensDeckBot.online
    ```
 
 3. **Set Up Auto-Renewal**
@@ -227,7 +227,7 @@ If you have a domain name:
    ```
 
 2. **Access Your Application**
-   - Open your browser and go to `http://YOUR_SERVER_IP` or `https://your-domain.com`
+   - Open your browser and go to `http://178.156.163.36` or `https://AlensDeckBot.online`
    - You should see the DeckChatbot application running
 
 ## Step 8: Monitoring and Maintenance

@@ -27,10 +27,10 @@ Run this single command on your server:
 
 ```bash
 # SSH into your server
-ssh root@YOUR_SERVER_IP
+ssh root@178.156.163.36
 
 # Run the automated deployment script
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/deckchatbot-monorepo/main/scripts/deploy-hetzner.sh | bash
+curl -fsSL https://raw.githubusercontent.com/aklin/deckchatbot-monorepo/main/scripts/deploy-hetzner.sh | bash
 ```
 
 The script will:
@@ -48,7 +48,7 @@ Follow the detailed guide: [`hetzner-deployment-guide.md`](hetzner-deployment-gu
 After deployment completes:
 
 1. **Open your browser**
-2. **Go to**: `http://YOUR_SERVER_IP`
+2. **Go to**: `http://178.156.163.36`
 3. **You should see your DeckChatbot application running!**
 
 ## Optional: Set Up a Custom Domain

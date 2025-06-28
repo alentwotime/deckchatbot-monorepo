@@ -166,10 +166,10 @@ ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGq... your-email@example.com
 Once your SSH key is added to Hetzner Cloud:
 
 ```bash
-ssh root@YOUR_SERVER_IP
+ssh root@178.156.163.36
 ```
 
-Replace `YOUR_SERVER_IP` with your actual server IP address.
+Replace `178.156.163.36` with your actual server IP address if different.
 
 **First connection:**
 
@@ -197,7 +197,7 @@ Replace `YOUR_SERVER_IP` with your actual server IP address.
 3. **Specify the key explicitly:**
 
    ```bash
-   ssh -i ~/.ssh/id_ed25519 root@YOUR_SERVER_IP
+   ssh -i ~/.ssh/id_ed25519 root@178.156.163.36
    ```
 
 ### "Connection refused"
@@ -211,7 +211,7 @@ Replace `YOUR_SERVER_IP` with your actual server IP address.
 This happens if the server's fingerprint changed:
 
 ```bash
-ssh-keygen -R YOUR_SERVER_IP
+ssh-keygen -R 178.156.163.36
 ```
 
 Then try connecting again.
@@ -234,7 +234,7 @@ Create `~/.ssh/config` to simplify connections:
 
 ```
 Host my-server
-    HostName YOUR_SERVER_IP
+    HostName 178.156.163.36
     User root
     IdentityFile ~/.ssh/id_ed25519
 ```
@@ -265,16 +265,14 @@ ssh-keygen -t ed25519 -C "your-email@example.com"
 cat ~/.ssh/id_ed25519.pub
 
 # Connect to server
-ssh root@YOUR_SERVER_IP
+ssh root@178.156.163.36
 
 # Copy files to server
-scp file.txt root@YOUR_SERVER_IP:/path/to/destination/
+scp file.txt root@178.156.163.36:/path/to/destination/
 
 # Copy files from server
-scp root@YOUR_SERVER_IP:/path/to/file.txt ./local-file.txt
+scp root@178.156.163.36:/path/to/file.txt ./local-file.txt
 ```
-
-scp file.txt root@178.156.163.36:/path/to/destination/
 
 ### File Locations
 

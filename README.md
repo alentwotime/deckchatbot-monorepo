@@ -135,10 +135,10 @@ Since you've already created your Hetzner Cloud account, here are your next step
 
 **Quick Start (Automated):**
 1. Create a server in your [Hetzner Console](https://console.hetzner.com/projects)
-2. SSH into your server: `ssh root@YOUR_SERVER_IP`
+2. SSH into your server: `ssh root@178.156.163.36`
 3. Run the automated deployment script:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/deckchatbot-monorepo/main/scripts/deploy-hetzner.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/aklin/deckchatbot-monorepo/main/scripts/deploy-hetzner.sh | bash
    ```
 
 **Manual Setup:**
