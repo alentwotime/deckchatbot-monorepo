@@ -119,7 +119,10 @@ Deploy DeckChatbot to AWS using ECS Fargate for production-ready scalability:
 
 4. **Cost Estimation**: ~$120-230/month (varies by usage)
 
-For detailed AWS deployment instructions, see [`aws/README.md`](aws/README.md).
+For detailed AWS deployment instructions, see:
+- **Step-by-Step Guide**: [`docs/aws-step-by-step-guide.md`](docs/aws-step-by-step-guide.md) - Complete walkthrough for beginners
+- **Quick Reference**: [`docs/aws-quick-reference.md`](docs/aws-quick-reference.md) - Essential commands and troubleshooting
+- **Technical Details**: [`aws/README.md`](aws/README.md) - Advanced configuration and architecture
 
 ## AI Enhancements Setup
 
