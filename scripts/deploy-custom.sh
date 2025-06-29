@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # Custom Deployment Script for DeckChatbot
-# Hetzner Server Information:
-# Server ID: #66421252
-# Server Name: AlensDeckBot
-# IPv4: 178.156.163.36
-# IPv6: 2a01:4ff:f0:f8d5::/64
-# Private IP: 10.0.0.2
-# Floating IP: 5.161.23.197
-# Domain: AlensDeckBot.online
+# Azure Configuration:
+# Subscription: Azure subscription 1
+# Resource Group: db82500a-1f73-43d9-bf55-c5e0f63ee888/resourcegroups/cloud-shell-storage-eastus
+# Storage Account: cs210032004c5b3ebc0
+# File Share: cs-icjalenz-gmail-com-10032004c5b3ebc0
+# Region: East US
+# Domain: AlensDeckBot.online (from Godaddy)
 
 set -e  # Exit on any error
 
@@ -20,12 +19,11 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Pre-configured values
-SERVER_ID="#66421252"
-SERVER_NAME="AlensDeckBot"
-SERVER_IP="178.156.163.36"
-SERVER_IPV6="2a01:4ff:f0:f8d5::/64"
-PRIVATE_IP="10.0.0.2"
-FLOATING_IP="5.161.23.197"
+AZURE_SUBSCRIPTION="Azure subscription 1"
+AZURE_RESOURCE_GROUP="db82500a-1f73-43d9-bf55-c5e0f63ee888/resourcegroups/cloud-shell-storage-eastus"
+AZURE_STORAGE_ACCOUNT="cs210032004c5b3ebc0"
+AZURE_FILE_SHARE="cs-icjalenz-gmail-com-10032004c5b3ebc0"
+AZURE_REGION="East US"
 DOMAIN_NAME="AlensDeckBot.online"
 GITHUB_USER="aklin"  # Update this with your actual GitHub username
 REPO_NAME="deckchatbot-monorepo"
@@ -52,7 +50,7 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-print_status "Starting DeckChatbot deployment for ${DOMAIN_NAME} on ${SERVER_IP}..."
+print_status "Starting DeckChatbot deployment for ${DOMAIN_NAME} on Azure..."
 
 # Check if running as root
 if [[ $EUID -ne 0 ]]; then
@@ -60,8 +58,8 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-print_status "Configuring floating IP address..."
-ip addr add 5.161.23.197 dev eth0 || print_warning "Floating IP may already be configured or interface not available"
+print_status "Configuring Azure environment..."
+# Azure-specific configuration would go here if needed
 
 print_status "Updating system packages..."
 apt update && apt upgrade -y
@@ -268,7 +266,7 @@ fi
 
 # Set up SSL certificate
 print_status "Setting up SSL certificate for ${DOMAIN_NAME}..."
-print_warning "Make sure ${DOMAIN_NAME} DNS A record points to ${SERVER_IP}"
+print_warning "Make sure ${DOMAIN_NAME} DNS A record points to your Azure VM's public IP"
 
 # Test domain accessibility before SSL setup
 print_status "Testing domain accessibility..."
@@ -282,7 +280,7 @@ if curl -s -f "http://${DOMAIN_NAME}/test.txt" >/dev/null 2>&1; then
     print_success "Domain ${DOMAIN_NAME} is accessible"
 else
     print_error "Domain ${DOMAIN_NAME} is not accessible. Please check DNS settings."
-    print_error "Make sure the A record for ${DOMAIN_NAME} points to ${SERVER_IP}"
+    print_error "Make sure the A record for ${DOMAIN_NAME} points to your Azure VM's public IP"
     exit 1
 fi
 

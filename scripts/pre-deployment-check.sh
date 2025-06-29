@@ -3,14 +3,13 @@
 # Pre-Deployment Verification Script for DeckChatbot
 # This script checks if everything is ready for deployment
 #
-# Hetzner Server Information:
-# Server ID: #66421252
-# Server Name: AlensDeckBot
-# IPv4: 178.156.163.36
-# IPv6: 2a01:4ff:f0:f8d5::/64
-# Private IP: 10.0.0.2
-# Floating IP: 5.161.23.197
-# Domain: AlensDeckBot.online
+# Azure Configuration:
+# Subscription: Azure subscription 1
+# Resource Group: db82500a-1f73-43d9-bf55-c5e0f63ee888/resourcegroups/cloud-shell-storage-eastus
+# Storage Account: cs210032004c5b3ebc0
+# File Share: cs-icjalenz-gmail-com-10032004c5b3ebc0
+# Region: East US
+# Domain: AlensDeckBot.online (from Godaddy)
 
 set -e
 
@@ -22,12 +21,11 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-SERVER_ID="#66421252"
-SERVER_NAME="AlensDeckBot"
-SERVER_IP="178.156.163.36"
-SERVER_IPV6="2a01:4ff:f0:f8d5::/64"
-PRIVATE_IP="10.0.0.2"
-FLOATING_IP="5.161.23.197"
+AZURE_SUBSCRIPTION="Azure subscription 1"
+AZURE_RESOURCE_GROUP="db82500a-1f73-43d9-bf55-c5e0f63ee888/resourcegroups/cloud-shell-storage-eastus"
+AZURE_STORAGE_ACCOUNT="cs210032004c5b3ebc0"
+AZURE_FILE_SHARE="cs-icjalenz-gmail-com-10032004c5b3ebc0"
+AZURE_REGION="East US"
 DOMAIN_NAME="AlensDeckBot.online"
 GITHUB_USER="aklin"
 REPO_NAME="deckchatbot-monorepo"
@@ -67,7 +65,7 @@ CHECKS_FAILED=0
 CHECKS_WARNING=0
 
 print_header "DeckChatbot Pre-Deployment Verification"
-echo "Server: ${SERVER_IP}"
+echo "Azure Region: ${AZURE_REGION}"
 echo "Domain: ${DOMAIN_NAME}"
 echo ""
 
@@ -81,17 +79,17 @@ if nslookup ${DOMAIN_NAME} >/dev/null 2>&1; then
         RESOLVED_IP=$(dig +short ${DOMAIN_NAME} | head -1)
     fi
 
-    if [ "$RESOLVED_IP" = "$SERVER_IP" ]; then
-        print_success "DNS A record correctly points to ${SERVER_IP}"
+    if [ -n "$RESOLVED_IP" ]; then
+        print_success "DNS A record resolves to ${RESOLVED_IP}"
+        print_warning "Make sure this IP matches your Azure VM's public IP after deployment"
         ((CHECKS_PASSED++))
     else
-        print_error "DNS A record points to ${RESOLVED_IP}, should be ${SERVER_IP}"
-        print_warning "Please update your DNS A record before deployment"
-        ((CHECKS_FAILED++))
+        print_error "DNS A record exists but could not determine IP"
+        ((CHECKS_WARNING++))
     fi
 else
     print_error "Cannot resolve ${DOMAIN_NAME}"
-    print_warning "Please configure DNS A record: ${DOMAIN_NAME} → ${SERVER_IP}"
+    print_warning "Please configure DNS A record: ${DOMAIN_NAME} → your Azure VM's public IP"
     ((CHECKS_FAILED++))
 fi
 
@@ -105,36 +103,24 @@ else
     ((CHECKS_WARNING++))
 fi
 
-# Check 2: Server Connectivity
-print_header "2. Server Connectivity Check"
+# Check 2: Azure Environment Check
+print_header "2. Azure Environment Check"
 
-print_status "Testing SSH connectivity to ${SERVER_IP}..."
-if timeout 10 nc -z ${SERVER_IP} 22 >/dev/null 2>&1; then
-    print_success "SSH port (22) is accessible on ${SERVER_IP}"
+print_status "Checking if Azure CLI is available..."
+if command -v az >/dev/null 2>&1; then
+    print_success "Azure CLI is installed"
     ((CHECKS_PASSED++))
 else
-    print_error "Cannot connect to SSH port on ${SERVER_IP}"
-    print_warning "Ensure SSH is enabled and firewall allows port 22"
-    ((CHECKS_FAILED++))
-fi
-
-print_status "Testing HTTP connectivity to ${SERVER_IP}..."
-if timeout 10 nc -z ${SERVER_IP} 80 >/dev/null 2>&1; then
-    print_warning "HTTP port (80) is already open - this is normal if server is configured"
+    print_warning "Azure CLI not found - will be installed during deployment"
     ((CHECKS_WARNING++))
-else
-    print_status "HTTP port (80) is not open - will be configured during deployment"
-    ((CHECKS_PASSED++))
 fi
 
-print_status "Testing HTTPS connectivity to ${SERVER_IP}..."
-if timeout 10 nc -z ${SERVER_IP} 443 >/dev/null 2>&1; then
-    print_warning "HTTPS port (443) is already open - this is normal if server is configured"
-    ((CHECKS_WARNING++))
-else
-    print_status "HTTPS port (443) is not open - will be configured during deployment"
-    ((CHECKS_PASSED++))
-fi
+print_status "Checking Azure configuration..."
+print_warning "Make sure you have:"
+print_warning "  - Azure subscription access"
+print_warning "  - Resource group permissions"
+print_warning "  - VM creation permissions in ${AZURE_REGION}"
+((CHECKS_WARNING++))
 
 # Check 3: GitHub Repository Access
 print_header "3. GitHub Repository Check"
@@ -227,11 +213,11 @@ print_header "6. Deployment Script Validation"
 if [ -f "scripts/deploy-custom.sh" ]; then
     print_status "Validating deployment script..."
 
-    if grep -q "${SERVER_IP}" scripts/deploy-custom.sh; then
-        print_success "Server IP is correctly configured in deployment script"
+    if grep -q "Azure" scripts/deploy-custom.sh; then
+        print_success "Azure configuration found in deployment script"
         ((CHECKS_PASSED++))
     else
-        print_error "Server IP not found in deployment script"
+        print_error "Azure configuration not found in deployment script"
         ((CHECKS_FAILED++))
     fi
 
@@ -266,13 +252,15 @@ if [ ${CHECKS_FAILED} -eq 0 ]; then
     echo ""
     print_status "You're ready to deploy! Follow these steps:"
     echo ""
-    echo "1. Copy the deployment script to your server:"
-    echo "   scp scripts/deploy-custom.sh root@${SERVER_IP}:~/"
+    echo "1. Create your Azure VM and note the public IP"
     echo ""
-    echo "2. SSH to your server:"
-    echo "   ssh root@${SERVER_IP}"
+    echo "2. Copy the deployment script to your Azure VM:"
+    echo "   scp scripts/deploy-custom.sh root@YOUR_AZURE_VM_IP:~/"
     echo ""
-    echo "3. Run the deployment script:"
+    echo "3. SSH to your Azure VM:"
+    echo "   ssh root@YOUR_AZURE_VM_IP"
+    echo ""
+    echo "4. Run the deployment script:"
     echo "   chmod +x deploy-custom.sh"
     echo "   sudo ./deploy-custom.sh"
     echo ""
@@ -291,8 +279,8 @@ else
     print_status "Please fix the issues above before proceeding with deployment."
     echo ""
     print_status "Common fixes:"
-    echo "• Update DNS A record: ${DOMAIN_NAME} → ${SERVER_IP}"
-    echo "• Ensure SSH access to server"
+    echo "• Update DNS A record: ${DOMAIN_NAME} → your Azure VM's public IP"
+    echo "• Ensure SSH access to Azure VM"
     echo "• Check GitHub repository permissions"
     echo "• Install missing dependencies"
     echo ""

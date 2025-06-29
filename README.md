@@ -128,21 +128,21 @@ For detailed AWS deployment instructions, see:
 
 **Looking for cheaper hosting options?** The AWS deployment above costs $120-230/month, but there are much more affordable alternatives:
 
-#### 🚀 Hetzner Cloud (RECOMMENDED) - **$4.15/month**
-**Perfect for production use with excellent performance and value!**
+#### 🚀 Azure (RECOMMENDED) - **Variable pricing**
+**Perfect for production use with excellent performance and scalability!**
 
-Since you've already created your Hetzner Cloud account, here are your next steps:
+Since you're switching to Azure, here are your next steps:
 
 **Quick Start (Automated):**
-1. Create a server in your [Hetzner Console](https://console.hetzner.com/projects)
-2. SSH into your server: `ssh root@178.156.163.36`
+1. Create a VM in your Azure portal (East US region)
+2. SSH into your Azure VM: `ssh root@YOUR_AZURE_VM_PUBLIC_IP`
 3. Run the automated deployment script:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/aklin/deckchatbot-monorepo/main/scripts/deploy-hetzner.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/aklin/deckchatbot-monorepo/main/scripts/deploy-azure.sh | bash
    ```
 
 **Manual Setup:**
-Follow the comprehensive step-by-step guide: [`docs/hetzner-deployment-guide.md`](docs/hetzner-deployment-guide.md)
+Follow the comprehensive step-by-step guide: [`DEPLOYMENT_GUIDE.md`](DEPLOYMENT_GUIDE.md)
 
 **Need SSH Help?**
 New to SSH or need to set up SSH keys? See: [`docs/ssh-setup-guide.md`](docs/ssh-setup-guide.md)

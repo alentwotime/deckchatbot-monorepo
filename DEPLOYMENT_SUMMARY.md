@@ -3,13 +3,12 @@
 ## ✅ What's Ready
 
 Your DeckChatbot project is **fully prepared** for deployment to:
-- **Server ID**: #66421252
-- **Server Name**: AlensDeckBot
-- **Server IP (IPv4)**: 178.156.163.36
-- **IPv6**: 2a01:4ff:f0:f8d5::/64
-- **Private IP**: 10.0.0.2
-- **Floating IP**: 5.161.23.197
-- **Domain**: AlensDeckBot.online
+- **Subscription**: Azure subscription 1
+- **Resource Group**: db82500a-1f73-43d9-bf55-c5e0f63ee888/resourcegroups/cloud-shell-storage-eastus
+- **Storage Account**: cs210032004c5b3ebc0
+- **File Share**: cs-icjalenz-gmail-com-10032004c5b3ebc0
+- **Region**: East US
+- **Domain**: AlensDeckBot.online (from Godaddy)
 - **Target URL**: https://AlensDeckBot.online
 
 ## 📁 Files Created
@@ -39,25 +38,20 @@ Your DeckChatbot project is **fully prepared** for deployment to:
 ### Step 1: Configure DNS (CRITICAL)
 You need to configure your domain's DNS settings:
 
-**First: Update Name Servers**
-Configure your domain to use Hetzner's name servers:
-- **Name server 1**: `hydrogen.ns.hetzner.com`
-- **Name server 2**: `oxygen.ns.hetzner.com`
-- **Name server 3**: `helium.ns.hetzner.de`
+**Configure DNS Records**
+After creating your Azure VM, configure your domain's DNS:
 
-**Then: Add DNS Records**
+**Add DNS Records**
 ```
-Type    Name    Value               TTL
-A       @       178.156.163.36      300
-CNAME   www     AlensDeckBot.online 300
+Type    Name    Value                    TTL
+A       @       YOUR_AZURE_VM_PUBLIC_IP  300
+CNAME   www     AlensDeckBot.online      300
 ```
 
 **Where to configure:**
-- Log into your domain registrar's control panel
-- Navigate to DNS/Name Server settings
-- Replace current name servers with Hetzner name servers above
-- Navigate to DNS management
-- Add the A record pointing your domain to your server IP
+- Log into your domain registrar's control panel (GoDaddy)
+- Navigate to DNS management settings
+- Add the A record pointing your domain to your Azure VM's public IP
 - Add the CNAME record for www subdomain
 
 ### Step 2: Verify DNS Propagation
@@ -65,16 +59,17 @@ After configuring DNS, wait 5-30 minutes and verify:
 ```bash
 nslookup AlensDeckBot.online
 ```
-Should return: `178.156.163.36`
+Should return: your Azure VM's public IP address
 
 ## 🚀 Deployment Process
 
 ### Option A: Quick Deployment (Recommended)
 ```bash
-# 1. SSH to your server
-ssh root@178.156.163.36
+# 1. Create Azure VM and note the public IP
+# 2. SSH to your Azure VM
+ssh root@YOUR_AZURE_VM_PUBLIC_IP
 
-# 2. Download and run the deployment script
+# 3. Download and run the deployment script
 curl -o deploy-custom.sh https://raw.githubusercontent.com/aklin/deckchatbot-monorepo/main/scripts/deploy-custom.sh
 chmod +x deploy-custom.sh
 sudo ./deploy-custom.sh
@@ -82,11 +77,11 @@ sudo ./deploy-custom.sh
 
 ### Option B: Manual Upload
 ```bash
-# 1. Copy deployment script to server
-scp scripts/deploy-custom.sh root@178.156.163.36:~/
+# 1. Copy deployment script to Azure VM
+scp scripts/deploy-custom.sh root@YOUR_AZURE_VM_PUBLIC_IP:~/
 
-# 2. SSH to server and run
-ssh root@178.156.163.36
+# 2. SSH to Azure VM and run
+ssh root@YOUR_AZURE_VM_PUBLIC_IP
 chmod +x deploy-custom.sh
 sudo ./deploy-custom.sh
 ```
