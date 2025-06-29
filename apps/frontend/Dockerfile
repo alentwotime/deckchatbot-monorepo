@@ -9,8 +9,8 @@ RUN addgroup -g 1001 -S nodejs && \
 COPY apps/frontend/package*.json ./apps/frontend/
 WORKDIR /app/apps/frontend
 
-# Install dependencies with clean cache
-RUN npm ci --only=production && \
+# Install all dependencies (including dev dependencies needed for build)
+RUN npm ci && \
     npm cache clean --force
 
 # Copy the rest of the frontend source
