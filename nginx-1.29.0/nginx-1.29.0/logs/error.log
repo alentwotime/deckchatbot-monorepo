@@ -1,2 +1,0 @@
-2025/06/28 02:41:21 [emerg] 12100#12536: bind() to 0.0.0.0:80 failed (10013: An attempt was made to access a socket in a way forbidden by its access permissions)
-2025/06/28 02:41:36 [emerg] 28816#12148: bind() to 0.0.0.0:80 failed (10013: An attempt was made to access a socket in a way forbidden by its access permissions)
