@@ -9,6 +9,9 @@ export * from './deckchatbot.js';
 // ==================== AZURE SERVICE TYPES ====================
 export * from './azure.js';
 
+// ==================== VISUAL FEATURE TYPES ====================
+export * from './visual.js';
+
 // ==================== RE-EXPORTS FOR CONVENIENCE ====================
 
 // Core Chat Types
@@ -104,6 +107,105 @@ export type {
   AzureAlert,
   AzureResourceStatus
 } from './azure.js';
+
+// ==================== VISUAL FEATURE TYPES ====================
+
+// 3D Model Types
+export type {
+  ThreeDModelConfig,
+  Vector3,
+  Vector2,
+  PointLight,
+  SpotLight,
+  AnimationTrack,
+  Keyframe,
+  Quaternion,
+  PhysicsBody
+} from './visual.js';
+
+// Blueprint Types
+export type {
+  BlueprintSettings
+} from './visual.js';
+
+// Image Processing Types
+export type {
+  ImageProcessingOptions
+} from './visual.js';
+
+// Drawing Analysis Types
+export type {
+  DrawingAnalysis,
+  DetectedCard,
+  DetectedText,
+  DetectedShape,
+  DetectedLine,
+  DetectedAnnotation,
+  DetectedSymbol,
+  BoundingBox,
+  LayoutRegion,
+  ElementRelationship,
+  RecognizedCardName,
+  RecognizedQuantity,
+  RecognizedCategory,
+  RecognizedFormat,
+  Suggestion,
+  Correction,
+  Alternative,
+  Enhancement,
+  ProcessingStep
+} from './visual.js';
+
+// Visual Quality Types
+export type {
+  VisualQuality,
+  RenderingEngine,
+  ImageFormat,
+  ModelFormat,
+  ProcessingMethod,
+  AnalysisType
+} from './visual.js';
+
+// ==================== AZURE COMPUTER VISION TYPES ====================
+
+// Computer Vision Service Types
+export type {
+  DeckBlueprint,
+  UploadedImage,
+  DeckVisualization,
+  RecognizedCard,
+  CardPosition,
+  DeckBlueprintAnalysis,
+  ImageAnalysisResult,
+  VisualizationConfig,
+  VisualizationSettings
+} from '../services/azure-computer-vision.js';
+
+// OCR and Recognition Types
+export type {
+  OCRRequest,
+  OCRResponse,
+  TextRegion,
+  TextLine,
+  TextWord,
+  CardRecognitionRequest,
+  CardRecognitionResponse,
+  ImageAnalysisRequest,
+  DeckPhotoAnalysisRequest,
+  DeckPhotoAnalysisResponse
+} from '../services/azure-computer-vision.js';
+
+// Image Analysis Types
+export type {
+  DetectedObject,
+  ExtractedText,
+  DetectedFace,
+  FaceLandmark,
+  FaceAttributes,
+  ColorAnalysis,
+  ImageCategory,
+  ImageTag
+} from '../services/azure-computer-vision.js';
 
 // ==================== TYPE UNIONS AND UTILITIES ====================
 
