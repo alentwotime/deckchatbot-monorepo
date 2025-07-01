@@ -19,6 +19,7 @@ services:
       - AI_SERVICE_URL=http://ai-service:8000
       - AI_PROVIDER=${AI_PROVIDER:-openai}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_ADMIN_API_KEY=${OPENAI_ADMIN_API_KEY}
       - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llava-deckbot}
     ports:
       - "8000:8000"
@@ -36,6 +37,7 @@ services:
     environment:
       - HF_API_TOKEN=${HF_API_TOKEN}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_ADMIN_API_KEY=${OPENAI_ADMIN_API_KEY}
     ports:
       - "8001:8000"
     restart: unless-stopped
