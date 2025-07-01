@@ -1,5 +1,26 @@
-FROM node:22-alpine AS builder
+# Multi-stage build with Node.js 18 Alpine
+FROM node:18-alpine AS builder
+
 WORKDIR /app
+
+# Install image processing dependencies and security updates
+RUN apk update && \
+    apk add --no-cache \
+    # Image processing dependencies
+    imagemagick \
+    imagemagick-dev \
+    graphicsmagick \
+    vips \
+    vips-dev \
+    # Build dependencies
+    python3 \
+    make \
+    g++ \
+    # Security and utilities
+    curl \
+    ca-certificates && \
+    # Clean up
+    rm -rf /var/cache/apk/*
 
 # Create non-root user for build stage
 RUN addgroup -g 1001 -S nodejs && \
@@ -23,7 +44,22 @@ RUN npm run build && \
     npm ci --only=production && \
     npm cache clean --force
 
+# Production stage with security best practices
 FROM nginx:stable-alpine
+
+# Install image processing dependencies and security updates
+RUN apk update && \
+    apk add --no-cache \
+    # Image processing dependencies for runtime
+    imagemagick \
+    graphicsmagick \
+    vips \
+    # Health check utilities
+    curl \
+    # Security updates
+    ca-certificates && \
+    # Clean up
+    rm -rf /var/cache/apk/*
 
 # Create non-root user for nginx
 RUN addgroup -g 1001 -S nginx-user && \
@@ -44,8 +80,22 @@ RUN sed -i 's/user nginx;/user nginx-user;/' /etc/nginx/nginx.conf && \
     mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
     chown -R nginx-user:nginx-user /var/cache/nginx /var/log/nginx /var/run /usr/share/nginx/html
 
+# Security best practices
+RUN # Remove unnecessary packages and files
+    apk del --purge && \
+    # Set proper file permissions
+    chmod -R 755 /usr/share/nginx/html && \
+    # Remove shell access for nginx user (security)
+    sed -i 's|/bin/ash|/sbin/nologin|' /etc/passwd
+
+# Health check configuration
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:80/ || exit 1
+
 # Switch to non-root user
 USER nginx-user
 
 EXPOSE 80
+
+# Use exec form for better signal handling
 CMD ["nginx", "-g", "daemon off;"]
