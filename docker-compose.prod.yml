@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: alentwotime/unifiedservices:frontend
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=https://hybrid-functions.azurewebsites.net/api
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - decknet
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+
+  backend:
+    image: alentwotime/unifiedservices:backend
+    environment:
+      - NODE_ENV=production
+      - AI_SERVICE_URL=https://ai-service-container.eastus.azurecontainer.io:8000
+      - DATABASE_URL=${DATABASE_URL}
+      - AZURE_AI_KEY=${AZURE_AI_KEY}
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - decknet
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  ai-service:
+    image: alentwotime/unifiedservices:ai-service
+    environment:
+      - ENVIRONMENT=production
+      - AZURE_AI_KEY=${AZURE_AI_KEY}
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+    networks:
+      - decknet
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '0.75'
+
+networks:
+  decknet:
+    driver: bridge
