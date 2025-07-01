@@ -2,7 +2,7 @@
  * Geometry utility functions for deck calculations
  */
 // Use shared extract helper from repo root utils
-const { extractNumbers } = require("../../../utils/extract");
+import { extractNumbers } from "../../../utils/extract.js";
 
 /**
  * Calculate rectangle area
@@ -278,7 +278,7 @@ function calculateSteps(heightInches) {
   return Math.ceil(val / 7.25);
 }
 
-module.exports = {
+export {
   rectangleArea,
   circleArea,
   triangleArea,

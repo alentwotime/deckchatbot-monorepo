@@ -1,14 +1,14 @@
-const express = require('express');
-const { chatbot, validate } = require('../controllers/chatbotController');
+import express from 'express';
+import { chatbot, validate } from '../controllers/chatbotController.js';
 
 // Child routers
-const multishapeRoutes = require('./multishape');
-const measurementsRoutes = require('./measurements');
-const skirtingRoutes = require('./skirting');
-const deckCalcRoutes = require('./deckCalc');
-const digitalizeRoutes = require('./digitalize');
-const uploadDrawingRoutes = require('./uploadDrawing');
-const stepsRoutes = require('./steps');
+import multishapeRoutes from './multishape.js';
+import measurementsRoutes from './measurements.js';
+import skirtingRoutes from './skirting.js';
+import deckCalcRoutes from './deckCalc.js';
+import digitalizeRoutes from './digitalize.js';
+import uploadDrawingRoutes from './uploadDrawing.js';
+import stepsRoutes from './steps.js';
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
-    version: require('../package.json').version
+    version: '1.0.0'
   });
 });
 
@@ -31,4 +31,4 @@ router.use('/digitalize-drawing', digitalizeRoutes);
 router.use('/upload-drawing', uploadDrawingRoutes);
 router.use('/calculate-steps', stepsRoutes);
 
-module.exports = router;
+export default router;

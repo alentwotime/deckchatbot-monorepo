@@ -14,7 +14,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["apps/frontend/src/*"],
+      "@backend/*": ["apps/backend/*"]
+    }
   },
   "include": [
     "apps/frontend/src/**/*",

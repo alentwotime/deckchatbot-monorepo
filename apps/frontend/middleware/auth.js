@@ -1,5 +1,5 @@
-const config = require('../config');
-const logger = require('../src/utils/logger');
+import config from '../config.js';
+import logger from '../src/utils/logger.js';
 
 /**
  * Authentication middleware
@@ -35,4 +35,4 @@ function auth(req, res, next) {
   });
 }
 
-module.exports = auth;
+export default auth;

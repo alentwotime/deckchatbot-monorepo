@@ -1,8 +1,8 @@
-const express = require('express');
-const { calculateSkirting } = require('../controllers/skirtingController');
+import express from 'express';
+import { calculateSkirting } from '../controllers/skirtingController.js';
 
 const router = express.Router();
 
 router.post('/', calculateSkirting);
 
-module.exports = router;
+export default router;

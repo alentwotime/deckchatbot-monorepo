@@ -1,17 +1,17 @@
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
-const helmet = require('helmet');
-const compression = require('compression');
-const morgan = require('morgan');
+import express from 'express';
+import path from 'path';
+import cors from 'cors';
+import helmet from 'helmet';
+import compression from 'compression';
+import morgan from 'morgan';
 
 // Middleware imports
-const auth = require('./middleware/auth');
-const rateLimiter = require('./middleware/rateLimiter');
-const errorLogger = require('./middleware/errorLogger');
-const requestLogger = require('./middleware/requestLogger');
-const routes = require('./routes');
-const logger = require('./src/utils/logger');
+import auth from './middleware/auth.js';
+import rateLimiter from './middleware/rateLimiter.js';
+import errorLogger from './middleware/errorLogger.js';
+import requestLogger from './middleware/requestLogger.js';
+import routes from './routes/index.js';
+import logger from './src/utils/logger.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -75,4 +75,4 @@ app.listen(PORT, () => {
   logger.info(`🚀 Deck Chatbot Server running on http://localhost:${PORT}`);
 });
 
-module.exports = { app, logger };
+export { app, logger };

@@ -1,6 +1,6 @@
-const express = require('express');
-const multer = require('multer');
-const { uploadDrawing } = require('../controllers/drawingUploadController');
+import express from 'express';
+import multer from 'multer';
+import { uploadDrawing } from '../controllers/drawingUploadController.js';
 
 const router = express.Router();
 
@@ -46,4 +46,4 @@ router.post('/', (req, res, next) => {
   });
 }, uploadDrawing);
 
-module.exports = router;
+export default router;

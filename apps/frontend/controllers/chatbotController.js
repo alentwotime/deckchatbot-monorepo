@@ -1,15 +1,15 @@
-const { body, validationResult } = require('express-validator');
-const { addMessage, getRecentMessages } = require('../memory');
-const {
+import { body, validationResult } from 'express-validator';
+import { addMessage, getRecentMessages } from '../memory.js';
+import {
   rectangleArea,
   circleArea,
   triangleArea,
   shapeFromMessage,
   deckAreaExplanation
-} = require('../src/utils/geometry');
-const config = require('../config');
-const logger = require('../src/utils/logger');
-const { askChat } = require('../services/backend.service'); // Changed import to backend.service
+} from '../src/utils/geometry.js';
+import config from '../config.js';
+import logger from '../src/utils/logger.js';
+import { askChat } from '../services/backend.service.js'; // Changed import to backend.service
 
 const validate = [body('message').exists({ checkFalsy: true }).withMessage('message is required')];
 
@@ -75,4 +75,4 @@ Always form follow-up questions if needed to clarify user data.` },
   }
 }
 
-module.exports = { chatbot, validate };
+export { chatbot, validate };

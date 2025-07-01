@@ -1,6 +1,6 @@
-const rateLimit = require('express-rate-limit');
-const config = require('../config');
-const logger = require('../src/utils/logger');
+import rateLimit from 'express-rate-limit';
+import config from '../config.js';
+import logger from '../src/utils/logger.js';
 
 /**
  * Rate limiting middleware
@@ -16,7 +16,7 @@ const rateLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false,  // Disable the `X-RateLimit-*` headers
-  
+
   // Custom handler for rate limit exceeded
   handler: (req, res) => {
     logger.warn('Rate limit exceeded', {
@@ -25,7 +25,7 @@ const rateLimiter = rateLimit({
       method: req.method,
       userAgent: req.get('User-Agent')
     });
-    
+
     res.status(429).json({
       errors: [{ 
         msg: 'Too many requests from this IP, please try again later.',
@@ -41,4 +41,4 @@ const rateLimiter = rateLimit({
   }
 });
 
-module.exports = rateLimiter;
+export default rateLimiter;

@@ -1,9 +1,13 @@
-const path = require('path');
-const fs = require('fs');
-const winston = require('winston');
-const DailyRotateFile = require('winston-daily-rotate-file');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 // Adjust path to shared config at frontend/config.js
-const config = require('../../config');
+import config from '../../config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Custom log format
 const logFormat = winston.format.combine(
@@ -34,7 +38,7 @@ const logger = winston.createLogger({
       format: consoleFormat,
       silent: config.NODE_ENV === 'test'
     }),
-    
+
     // File transport for errors
     new winston.transports.File({
       filename: 'logs/error.log',
@@ -42,7 +46,7 @@ const logger = winston.createLogger({
       maxsize: 5242880, // 5MB
       maxFiles: 5
     }),
-    
+
     // Daily rotate file for all logs
     new DailyRotateFile({
       filename: 'logs/application-%DATE%.log',
@@ -70,5 +74,4 @@ process.on('unhandledRejection', (ex) => {
   throw ex;
 });
 
-module.exports = logger;
-
+export default logger;

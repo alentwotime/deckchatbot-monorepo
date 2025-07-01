@@ -1,8 +1,8 @@
-const express = require('express');
-const { calculateDeckMaterials } = require('../controllers/deckCalcController');
+import express from 'express';
+import { calculateDeckMaterials } from '../controllers/deckCalcController.js';
 
 const router = express.Router();
 
 router.post('/', calculateDeckMaterials);
 
-module.exports = router;
+export default router;

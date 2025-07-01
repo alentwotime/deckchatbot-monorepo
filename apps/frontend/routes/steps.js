@@ -1,8 +1,8 @@
-const express = require('express');
-const { calculateStepsEndpoint } = require('../controllers/stepsController');
+import express from 'express';
+import { calculateStepsEndpoint } from '../controllers/stepsController.js';
 
 const router = express.Router();
 
 router.post('/', calculateStepsEndpoint);
 
-module.exports = router;
+export default router;

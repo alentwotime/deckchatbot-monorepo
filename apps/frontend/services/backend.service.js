@@ -1,6 +1,6 @@
-const axios = require('axios');
-const config = require('../config');
-const logger = require('../src/utils/logger');
+import axios from 'axios';
+import config from '../config.js';
+import logger from '../src/utils/logger.js';
 
 const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'; // Default to local backend
 
@@ -110,11 +110,9 @@ class BackendService {
 
 const backendService = new BackendService();
 
-module.exports = {
-  askChat: (messages, options) => backendService.askChat(messages, options),
-  analyzeImage: (imageBase64, prompt) => backendService.analyzeImage(imageBase64, prompt),
-  enhanceImage: (imageBase64) => backendService.enhanceImage(imageBase64),
-  uploadFile: (file, type) => backendService.uploadFile(file, type),
-  analyzeFiles: (files) => backendService.analyzeFiles(files),
-  generateBlueprint: (analysisData) => backendService.generateBlueprint(analysisData),
-};
+export const askChat = (messages, options) => backendService.askChat(messages, options);
+export const analyzeImage = (imageBase64, prompt) => backendService.analyzeImage(imageBase64, prompt);
+export const enhanceImage = (imageBase64) => backendService.enhanceImage(imageBase64);
+export const uploadFile = (file, type) => backendService.uploadFile(file, type);
+export const analyzeFiles = (files) => backendService.analyzeFiles(files);
+export const generateBlueprint = (analysisData) => backendService.generateBlueprint(analysisData);

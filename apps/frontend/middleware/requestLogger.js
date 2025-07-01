@@ -1,5 +1,5 @@
-const logger = require('../src/utils/logger');
-const config = require('../config');
+import logger from '../src/utils/logger.js';
+import config from '../config.js';
 
 /**
  * Request logging middleware
@@ -7,7 +7,7 @@ const config = require('../config');
  */
 function requestLogger(req, res, next) {
   const start = Date.now();
-  
+
   // Log request
   logger.info('Incoming request:', {
     method: req.method,
@@ -21,7 +21,7 @@ function requestLogger(req, res, next) {
   const originalEnd = res.end;
   res.end = function(chunk, encoding) {
     const duration = Date.now() - start;
-    
+
     logger.info('Request completed:', {
       method: req.method,
       url: req.url,
@@ -36,4 +36,4 @@ function requestLogger(req, res, next) {
   next();
 }
 
-module.exports = requestLogger;
+export default requestLogger;

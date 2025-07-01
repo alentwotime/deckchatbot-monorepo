@@ -1,4 +1,5 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 const config = {
   // Server configuration
@@ -46,4 +47,4 @@ if (config.NODE_ENV === 'production' && config.API_KEY === 'revamp123secure') {
   console.warn('⚠️  Warning: Using default API_KEY in production. Please set a secure API_KEY.');
 }
 
-module.exports = config;
+export default config;

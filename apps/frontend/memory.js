@@ -1,6 +1,11 @@
-const path = require('path');
-const Database = require('better-sqlite3');
-const config = require('./config');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import Database from 'better-sqlite3';
+import fs from 'fs';
+import config from './config.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const dbFile = config.MEM_DB || path.join(__dirname, 'memory.sqlite');
 let db;
@@ -108,7 +113,6 @@ function getRecentMessages(limit = 10) {
  */
 function cleanTempFile(filePath) {
   try {
-    const fs = require('fs');
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
@@ -117,7 +121,7 @@ function cleanTempFile(filePath) {
   }
 }
 
-module.exports = {
+export {
   addMessage,
   addMeasurement,
   getAllMeasurements,

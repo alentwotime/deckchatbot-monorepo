@@ -1,7 +1,7 @@
-const express = require('express');
-const multer = require('multer');
-const { body } = require('express-validator');
-const { digitalizeDrawing } = require('../controllers/digitalizeController');
+import express from 'express';
+import multer from 'multer';
+import { body } from 'express-validator';
+import { digitalizeDrawing } from '../controllers/digitalizeController.js';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -19,4 +19,4 @@ const validateImage = [
 // POST /digitalize-drawing
 router.post('/', upload.single('image'), digitalizeDrawing);
 
-module.exports = router;
+export default router;

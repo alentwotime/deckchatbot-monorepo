@@ -1,5 +1,5 @@
-const logger = require('../src/utils/logger');
-const config = require('../config');
+import logger from '../src/utils/logger.js';
+import config from '../config.js';
 
 /**
  * Error logging middleware
@@ -47,4 +47,4 @@ function errorLogger(err, req, res, next) {
   });
 }
 
-module.exports = errorLogger;
+export default errorLogger;

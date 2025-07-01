@@ -1,8 +1,8 @@
-const express = require('express');
-const { calculateMultiShape } = require('../controllers/shapeController');
+import express from 'express';
+import { calculateMultiShape } from '../controllers/shapeController.js';
 
 const router = express.Router();
 
 router.post('/', calculateMultiShape);
 
-module.exports = router;
+export default router;
