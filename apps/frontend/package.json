@@ -1,11 +1,16 @@
 {
   "name": "deckchatbot-frontend",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
+  "main": "dist/index.js",
   "scripts": {
     "start": "webpack serve --mode development --open",
+    "dev": "webpack serve --mode development --open",
     "build": "webpack --mode production",
     "test": "jest",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "format": "prettier --write .",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch"
   },
@@ -15,7 +20,6 @@
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "dompurify": "^3.0.8",
-    "express": "^5.1.0",
     "framer-motion": "^11.0.8",
     "ollama": "^0.5.16",
     "react": "^18.3.1",
