@@ -58,7 +58,10 @@ fi
 # Load environment variables from .env file
 if [ -f ".env" ]; then
     print_status "Loading configuration from .env file..."
-    export $(grep -v '^#' .env | grep -v '^$' | xargs)
+    # Fix line endings and export variables safely
+    set -a
+    source <(grep -v '^#' .env | grep -v '^$' | sed 's/\r$//')
+    set +a
 else
     print_error ".env file not found. Please ensure it exists with Azure credentials."
     exit 1
