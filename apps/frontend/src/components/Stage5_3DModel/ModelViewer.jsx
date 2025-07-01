@@ -1,9 +1,10 @@
-import React, { Suspense, useState, useRef } from 'react';
+import React, { Suspense, useState, useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stage, Text, Html } from '@react-three/drei';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import backendService from '../../../services/backend.service';
+import { Deck3DModelCreator } from '../../visualizers/deck-3d-model';
 
 function DeckBoard({ position, dimensions, material, rotation = [0, 0, 0] }) {
   const meshRef = useRef();
@@ -142,6 +143,9 @@ function Deck({ dimensions, customization }) {
 
 const ModelViewer = ({ analysisResult }) => {
   const [enhancedImage, setEnhancedImage] = useState(null);
+  const [visualizationMode, setVisualizationMode] = useState('physical'); // 'physical' or 'cards'
+  const [cardDeck3D, setCardDeck3D] = useState(null);
+  const cardDeck3DRef = useRef(null);
   const [customization, setCustomization] = useState({
     material: {
       color: '#8B4513',
@@ -159,6 +163,14 @@ const ModelViewer = ({ analysisResult }) => {
     }
   });
 
+  const [cardDeckOptions, setCardDeckOptions] = useState({
+    layoutMode: 'stack',
+    cardSpacing: 0.1,
+    showCardDetails: true,
+    animateCards: true,
+    highlightCommander: true
+  });
+
   const [cameraControls, setCameraControls] = useState({
     autoRotate: false,
     enableZoom: true,
@@ -166,6 +178,55 @@ const ModelViewer = ({ analysisResult }) => {
     maxDistance: 50,
     minDistance: 5
   });
+
+  // Initialize card deck 3D visualization
+  useEffect(() => {
+    if (visualizationMode === 'cards' && analysisResult?.recognizedCards) {
+      // Create mock deck data from analysis results
+      const mockDeck = {
+        cards: analysisResult.recognizedCards.map(card => ({
+          name: card.name,
+          quantity: card.quantity || 1,
+          manaCost: card.manaCost || 1,
+          type: card.type || 'Creature',
+          colors: card.colors || ['C'],
+          rarity: card.rarity || 'common',
+          isCommander: card.isCommander || false
+        })),
+        commander: analysisResult.recognizedCards.find(card => card.isCommander),
+        totalCards: analysisResult.recognizedCards.reduce((sum, card) => sum + (card.quantity || 1), 0)
+      };
+
+      // Initialize Deck3DModelCreator if we have a container
+      if (cardDeck3DRef.current && !cardDeck3D) {
+        const deck3D = new Deck3DModelCreator(cardDeck3DRef.current);
+        deck3D.setDeck(mockDeck);
+        deck3D.setLayoutMode(cardDeckOptions.layoutMode);
+        setCardDeck3D(deck3D);
+      }
+    }
+  }, [visualizationMode, analysisResult, cardDeckOptions.layoutMode]);
+
+  // Update card deck options
+  const updateCardDeckOptions = (property, value) => {
+    setCardDeckOptions(prev => ({
+      ...prev,
+      [property]: value
+    }));
+
+    if (cardDeck3D) {
+      switch (property) {
+        case 'layoutMode':
+          cardDeck3D.setLayoutMode(value);
+          break;
+        case 'animateCards':
+          cardDeck3D.setInteractionOptions({ enableAnimations: value });
+          break;
+        default:
+          break;
+      }
+    }
+  };
 
   const dimensions = analysisResult
     ? { length: Math.sqrt(analysisResult.gross_living_area), width: Math.sqrt(analysisResult.gross_living_area) }
