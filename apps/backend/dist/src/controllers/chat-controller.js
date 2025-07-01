@@ -1,12 +1,8 @@
-import { AzureOpenAIService } from '../services/azure-openai.js';
-import { AzureCosmosService } from '../services/azure-cosmos.js';
+import { azureOpenAI } from '../services/azure-openai.js';
+import { azureCosmos } from '../services/azure-cosmos.js';
 export class ChatController {
-    openAIService;
-    cosmosService;
-    constructor() {
-        this.openAIService = AzureOpenAIService.getInstance();
-        this.cosmosService = AzureCosmosService.getInstance();
-    }
+    openAIService = azureOpenAI;
+    cosmosService = azureCosmos;
     /**
      * Send a message and get AI response
      */
@@ -14,9 +10,14 @@ export class ChatController {
         try {
             const { message, sessionId, userId, context } = req.body;
             if (!message || !sessionId || !userId) {
+                const error = {
+                    code: 'MISSING_REQUIRED_FIELDS',
+                    message: 'Missing required fields: message, sessionId, userId',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'Missing required fields: message, sessionId, userId'
+                    error
                 });
                 return;
             }
@@ -27,8 +28,7 @@ export class ChatController {
                 userId,
                 content: message,
                 role: 'user',
-                timestamp: new Date(),
-                metadata: context ? { context } : undefined
+                timestamp: new Date()
             };
             await this.cosmosService.storeChatMessage(userMessage);
             // Get chat history for context
@@ -53,8 +53,7 @@ export class ChatController {
                 role: 'assistant',
                 timestamp: new Date(),
                 metadata: {
-                    model: aiResponse.model,
-                    usage: aiResponse.usage
+                    tokens: aiResponse.usage?.totalTokens
                 }
             };
             await this.cosmosService.storeChatMessage(assistantMessage);
@@ -68,9 +67,15 @@ export class ChatController {
         }
         catch (error) {
             console.error('Error in sendMessage:', error);
+            const appError = {
+                code: 'MESSAGE_PROCESSING_FAILED',
+                message: 'Failed to process message',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to process message'
+                error: appError
             });
         }
     };
@@ -102,8 +107,7 @@ export class ChatController {
                 userId,
                 content: message,
                 role: 'user',
-                timestamp: new Date(),
-                metadata: context ? { context } : undefined
+                timestamp: new Date()
             };
             await this.cosmosService.storeChatMessage(userMessage);
             // Get chat history
@@ -133,7 +137,7 @@ export class ChatController {
                     timestamp: new Date(),
                     metadata: {
                         model: response.model,
-                        usage: response.usage
+                        tokens: response.usage?.totalTokens
                     }
                 };
                 await this.cosmosService.storeChatMessage(assistantMessage);
@@ -161,9 +165,14 @@ export class ChatController {
             const { sessionId } = req.params;
             const { limit = 50, offset = 0 } = req.query;
             if (!sessionId) {
+                const error = {
+                    code: 'SESSION_ID_REQUIRED',
+                    message: 'Session ID is required',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'Session ID is required'
+                    error
                 });
                 return;
             }
@@ -182,9 +191,15 @@ export class ChatController {
         }
         catch (error) {
             console.error('Error in getChatHistory:', error);
+            const appError = {
+                code: 'CHAT_HISTORY_RETRIEVAL_FAILED',
+                message: 'Failed to retrieve chat history',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to retrieve chat history'
+                error: appError
             });
         }
     };
@@ -195,9 +210,14 @@ export class ChatController {
         try {
             const { userId, title, context } = req.body;
             if (!userId) {
+                const error = {
+                    code: 'USER_ID_REQUIRED',
+                    message: 'User ID is required',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'User ID is required'
+                    error
                 });
                 return;
             }
@@ -208,8 +228,7 @@ export class ChatController {
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 messageCount: 0,
-                isActive: true,
-                metadata: context ? { context } : undefined
+                isActive: true
             };
             await this.cosmosService.createSession(session);
             res.json({
@@ -219,9 +238,15 @@ export class ChatController {
         }
         catch (error) {
             console.error('Error in createSession:', error);
+            const appError = {
+                code: 'SESSION_CREATION_FAILED',
+                message: 'Failed to create session',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to create session'
+                error: appError
             });
         }
     };
@@ -233,9 +258,14 @@ export class ChatController {
             const { userId } = req.params;
             const { limit = 20, offset = 0 } = req.query;
             if (!userId) {
+                const error = {
+                    code: 'USER_ID_REQUIRED',
+                    message: 'User ID is required',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'User ID is required'
+                    error
                 });
                 return;
             }
@@ -254,9 +284,15 @@ export class ChatController {
         }
         catch (error) {
             console.error('Error in getUserSessions:', error);
+            const appError = {
+                code: 'SESSION_RETRIEVAL_FAILED',
+                message: 'Failed to retrieve sessions',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to retrieve sessions'
+                error: appError
             });
         }
     };
@@ -268,9 +304,14 @@ export class ChatController {
             const { sessionId } = req.params;
             const { userId, updates } = req.body;
             if (!sessionId || !userId) {
+                const error = {
+                    code: 'MISSING_REQUIRED_FIELDS',
+                    message: 'Session ID and User ID are required',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'Session ID and User ID are required'
+                    error
                 });
                 return;
             }
@@ -285,9 +326,15 @@ export class ChatController {
         }
         catch (error) {
             console.error('Error in updateSession:', error);
+            const appError = {
+                code: 'SESSION_UPDATE_FAILED',
+                message: 'Failed to update session',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to update session'
+                error: appError
             });
         }
     };
@@ -299,9 +346,14 @@ export class ChatController {
             const { sessionId } = req.params;
             const { userId } = req.body;
             if (!sessionId || !userId) {
+                const error = {
+                    code: 'MISSING_REQUIRED_FIELDS',
+                    message: 'Session ID and User ID are required',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'Session ID and User ID are required'
+                    error
                 });
                 return;
             }
@@ -316,9 +368,15 @@ export class ChatController {
         }
         catch (error) {
             console.error('Error in deleteSession:', error);
+            const appError = {
+                code: 'SESSION_DELETION_FAILED',
+                message: 'Failed to delete session',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to delete session'
+                error: appError
             });
         }
     };
@@ -329,9 +387,14 @@ export class ChatController {
         try {
             const { deckList, format, analysisType } = req.body;
             if (!deckList) {
+                const error = {
+                    code: 'DECK_LIST_REQUIRED',
+                    message: 'Deck list is required',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'Deck list is required'
+                    error
                 });
                 return;
             }
@@ -347,9 +410,15 @@ export class ChatController {
         }
         catch (error) {
             console.error('Error in analyzeDeck:', error);
+            const appError = {
+                code: 'DECK_ANALYSIS_FAILED',
+                message: 'Failed to analyze deck',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to analyze deck'
+                error: appError
             });
         }
     };

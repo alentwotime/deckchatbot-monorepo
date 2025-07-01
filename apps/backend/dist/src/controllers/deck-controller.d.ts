@@ -4,7 +4,6 @@ export declare class DeckController {
     private storageService;
     private visionService;
     private openAIService;
-    constructor();
     /**
      * Save a deck
      */

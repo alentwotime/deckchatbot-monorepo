@@ -1,16 +1,11 @@
 import { Request, Response } from 'express';
-import { AzureOpenAIService } from '../services/azure-openai.js';
-import { AzureCosmosService } from '../services/azure-cosmos.js';
-import { ChatMessage, ChatSession, ApiResponse } from '../types/index.js';
+import { azureOpenAI } from '../services/azure-openai.js';
+import { azureCosmos } from '../services/azure-cosmos.js';
+import { ChatMessage, ChatSession, ApiResponse, AppError } from '../types/index.js';
 
 export class ChatController {
-  private openAIService: AzureOpenAIService;
-  private cosmosService: AzureCosmosService;
-
-  constructor() {
-    this.openAIService = AzureOpenAIService.getInstance();
-    this.cosmosService = AzureCosmosService.getInstance();
-  }
+  private openAIService = azureOpenAI;
+  private cosmosService = azureCosmos;
 
   /**
    * Send a message and get AI response
@@ -20,9 +15,14 @@ export class ChatController {
       const { message, sessionId, userId, context } = req.body;
 
       if (!message || !sessionId || !userId) {
+        const error: AppError = {
+          code: 'MISSING_REQUIRED_FIELDS',
+          message: 'Missing required fields: message, sessionId, userId',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'Missing required fields: message, sessionId, userId'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -34,15 +34,14 @@ export class ChatController {
         userId,
         content: message,
         role: 'user',
-        timestamp: new Date(),
-        metadata: context ? { context } : undefined
+        timestamp: new Date()
       };
 
       await this.cosmosService.storeChatMessage(userMessage);
 
       // Get chat history for context
       const chatHistory = await this.cosmosService.getChatMessages(sessionId, { limit: 10 });
-      
+
       // Prepare messages for OpenAI
       const messages = chatHistory.map(msg => ({
         role: msg.role,
@@ -65,8 +64,7 @@ export class ChatController {
         role: 'assistant',
         timestamp: new Date(),
         metadata: {
-          model: aiResponse.model,
-          usage: aiResponse.usage
+          tokens: aiResponse.usage?.totalTokens
         }
       };
 
@@ -82,9 +80,15 @@ export class ChatController {
 
     } catch (error) {
       console.error('Error in sendMessage:', error);
+      const appError: AppError = {
+        code: 'MESSAGE_PROCESSING_FAILED',
+        message: 'Failed to process message',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to process message'
+        error: appError
       } as ApiResponse<null>);
     }
   };
@@ -120,8 +124,7 @@ export class ChatController {
         userId,
         content: message,
         role: 'user',
-        timestamp: new Date(),
-        metadata: context ? { context } : undefined
+        timestamp: new Date()
       };
 
       await this.cosmosService.storeChatMessage(userMessage);
@@ -156,12 +159,12 @@ export class ChatController {
             timestamp: new Date(),
             metadata: {
               model: response.model,
-              usage: response.usage
+              tokens: response.usage?.totalTokens
             }
           };
 
           await this.cosmosService.storeChatMessage(assistantMessage);
-          
+
           res.write(`data: ${JSON.stringify({ type: 'complete', messageId: assistantMessageId })}\n\n`);
           res.end();
         },
@@ -189,9 +192,14 @@ export class ChatController {
       const { limit = 50, offset = 0 } = req.query;
 
       if (!sessionId) {
+        const error: AppError = {
+          code: 'SESSION_ID_REQUIRED',
+          message: 'Session ID is required',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'Session ID is required'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -212,9 +220,15 @@ export class ChatController {
 
     } catch (error) {
       console.error('Error in getChatHistory:', error);
+      const appError: AppError = {
+        code: 'CHAT_HISTORY_RETRIEVAL_FAILED',
+        message: 'Failed to retrieve chat history',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to retrieve chat history'
+        error: appError
       } as ApiResponse<null>);
     }
   };
@@ -227,9 +241,14 @@ export class ChatController {
       const { userId, title, context } = req.body;
 
       if (!userId) {
+        const error: AppError = {
+          code: 'USER_ID_REQUIRED',
+          message: 'User ID is required',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'User ID is required'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -241,8 +260,7 @@ export class ChatController {
         createdAt: new Date(),
         updatedAt: new Date(),
         messageCount: 0,
-        isActive: true,
-        metadata: context ? { context } : undefined
+        isActive: true
       };
 
       await this.cosmosService.createSession(session);
@@ -254,9 +272,15 @@ export class ChatController {
 
     } catch (error) {
       console.error('Error in createSession:', error);
+      const appError: AppError = {
+        code: 'SESSION_CREATION_FAILED',
+        message: 'Failed to create session',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to create session'
+        error: appError
       } as ApiResponse<null>);
     }
   };
@@ -270,9 +294,14 @@ export class ChatController {
       const { limit = 20, offset = 0 } = req.query;
 
       if (!userId) {
+        const error: AppError = {
+          code: 'USER_ID_REQUIRED',
+          message: 'User ID is required',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'User ID is required'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -293,9 +322,15 @@ export class ChatController {
 
     } catch (error) {
       console.error('Error in getUserSessions:', error);
+      const appError: AppError = {
+        code: 'SESSION_RETRIEVAL_FAILED',
+        message: 'Failed to retrieve sessions',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to retrieve sessions'
+        error: appError
       } as ApiResponse<null>);
     }
   };
@@ -309,9 +344,14 @@ export class ChatController {
       const { userId, updates } = req.body;
 
       if (!sessionId || !userId) {
+        const error: AppError = {
+          code: 'MISSING_REQUIRED_FIELDS',
+          message: 'Session ID and User ID are required',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'Session ID and User ID are required'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -328,9 +368,15 @@ export class ChatController {
 
     } catch (error) {
       console.error('Error in updateSession:', error);
+      const appError: AppError = {
+        code: 'SESSION_UPDATE_FAILED',
+        message: 'Failed to update session',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to update session'
+        error: appError
       } as ApiResponse<null>);
     }
   };
@@ -344,16 +390,21 @@ export class ChatController {
       const { userId } = req.body;
 
       if (!sessionId || !userId) {
+        const error: AppError = {
+          code: 'MISSING_REQUIRED_FIELDS',
+          message: 'Session ID and User ID are required',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'Session ID and User ID are required'
+          error
         } as ApiResponse<null>);
         return;
       }
 
       // Delete messages first
       await this.cosmosService.deleteChatMessages(sessionId);
-      
+
       // Delete session
       await this.cosmosService.deleteSession(sessionId, userId);
 
@@ -364,9 +415,15 @@ export class ChatController {
 
     } catch (error) {
       console.error('Error in deleteSession:', error);
+      const appError: AppError = {
+        code: 'SESSION_DELETION_FAILED',
+        message: 'Failed to delete session',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to delete session'
+        error: appError
       } as ApiResponse<null>);
     }
   };
@@ -379,9 +436,14 @@ export class ChatController {
       const { deckList, format, analysisType } = req.body;
 
       if (!deckList) {
+        const error: AppError = {
+          code: 'DECK_LIST_REQUIRED',
+          message: 'Deck list is required',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'Deck list is required'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -399,9 +461,15 @@ export class ChatController {
 
     } catch (error) {
       console.error('Error in analyzeDeck:', error);
+      const appError: AppError = {
+        code: 'DECK_ANALYSIS_FAILED',
+        message: 'Failed to analyze deck',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to analyze deck'
+        error: appError
       } as ApiResponse<null>);
     }
   };

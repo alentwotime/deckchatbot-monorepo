@@ -1,22 +1,15 @@
 import { Request, Response } from 'express';
-import { AzureCosmosService } from '../services/azure-cosmos.js';
-import { AzureStorageService } from '../services/azure-storage.js';
-import { AzureComputerVisionService } from '../services/azure-computer-vision.js';
-import { AzureOpenAIService } from '../services/azure-openai.js';
-import { DeckData, ApiResponse } from '../types/index.js';
+import { azureCosmos } from '../services/azure-cosmos.js';
+import { azureStorage } from '../services/azure-storage.js';
+import { azureComputerVision } from '../services/azure-computer-vision.js';
+import { azureOpenAI } from '../services/azure-openai.js';
+import { DeckData, ApiResponse, AppError } from '../types/index.js';
 
 export class DeckController {
-  private cosmosService: AzureCosmosService;
-  private storageService: AzureStorageService;
-  private visionService: AzureComputerVisionService;
-  private openAIService: AzureOpenAIService;
-
-  constructor() {
-    this.cosmosService = AzureCosmosService.getInstance();
-    this.storageService = AzureStorageService.getInstance();
-    this.visionService = AzureComputerVisionService.getInstance();
-    this.openAIService = AzureOpenAIService.getInstance();
-  }
+  private cosmosService = azureCosmos;
+  private storageService = azureStorage;
+  private visionService = azureComputerVision;
+  private openAIService = azureOpenAI;
 
   /**
    * Save a deck
@@ -26,9 +19,14 @@ export class DeckController {
       const { name, cards, format, description, userId, tags, isPublic } = req.body;
 
       if (!name || !cards || !userId) {
+        const error: AppError = {
+          code: 'MISSING_REQUIRED_FIELDS',
+          message: 'Missing required fields: name, cards, userId',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'Missing required fields: name, cards, userId'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -44,12 +42,12 @@ export class DeckController {
         isPublic: isPublic || false,
         createdAt: new Date(),
         updatedAt: new Date(),
-        version: 1,
-        statistics: this.calculateDeckStatistics(cards),
+        mainboard: cards,
+        sideboard: [],
+        deckList: cards.map((card: any) => `${card.quantity} ${card.name}`).join('\n'),
         metadata: {
-          cardCount: cards.reduce((sum: number, card: any) => sum + card.quantity, 0),
-          colors: this.extractColors(cards),
-          manaCurve: this.calculateManaCurve(cards)
+          source: 'manual',
+          version: 1
         }
       };
 
@@ -62,9 +60,15 @@ export class DeckController {
 
     } catch (error) {
       console.error('Error in saveDeck:', error);
+      const appError: AppError = {
+        code: 'DECK_SAVE_FAILED',
+        message: 'Failed to save deck',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to save deck'
+        error: appError
       } as ApiResponse<null>);
     }
   };
@@ -78,9 +82,14 @@ export class DeckController {
       const { userId } = req.query;
 
       if (!deckId) {
+        const error: AppError = {
+          code: 'DECK_ID_REQUIRED',
+          message: 'Deck ID is required',
+          timestamp: new Date()
+        };
         res.status(400).json({
           success: false,
-          error: 'Deck ID is required'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -88,9 +97,14 @@ export class DeckController {
       const deck = await this.cosmosService.getDeck(deckId, userId as string);
 
       if (!deck) {
+        const error: AppError = {
+          code: 'DECK_NOT_FOUND',
+          message: 'Deck not found',
+          timestamp: new Date()
+        };
         res.status(404).json({
           success: false,
-          error: 'Deck not found'
+          error
         } as ApiResponse<null>);
         return;
       }
@@ -102,9 +116,15 @@ export class DeckController {
 
     } catch (error) {
       console.error('Error in getDeck:', error);
+      const appError: AppError = {
+        code: 'DECK_RETRIEVAL_FAILED',
+        message: 'Failed to retrieve deck',
+        timestamp: new Date(),
+        details: error
+      };
       res.status(500).json({
         success: false,
-        error: 'Failed to retrieve deck'
+        error: appError
       } as ApiResponse<null>);
     }
   };
@@ -158,7 +178,11 @@ export class DeckController {
       console.error('Error in searchDecks:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to search decks'
+        error: {
+          code: 'SEARCH_DECKS_ERROR',
+          message: 'Failed to search decks',
+          timestamp: new Date()
+        }
       } as ApiResponse<null>);
     }
   };
@@ -174,7 +198,11 @@ export class DeckController {
       if (!deckId || !userId) {
         res.status(400).json({
           success: false,
-          error: 'Deck ID and User ID are required'
+          error: {
+            code: 'MISSING_REQUIRED_FIELDS',
+            message: 'Deck ID and User ID are required',
+            timestamp: new Date()
+          }
         } as ApiResponse<null>);
         return;
       }
@@ -205,7 +233,11 @@ export class DeckController {
       console.error('Error in updateDeck:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to update deck'
+        error: {
+          code: 'UPDATE_DECK_ERROR',
+          message: 'Failed to update deck',
+          timestamp: new Date()
+        }
       } as ApiResponse<null>);
     }
   };
@@ -221,7 +253,11 @@ export class DeckController {
       if (!deckId || !userId) {
         res.status(400).json({
           success: false,
-          error: 'Deck ID and User ID are required'
+          error: {
+            code: 'MISSING_REQUIRED_FIELDS',
+            message: 'Deck ID and User ID are required',
+            timestamp: new Date()
+          }
         } as ApiResponse<null>);
         return;
       }
@@ -237,7 +273,11 @@ export class DeckController {
       console.error('Error in deleteDeck:', error);
       res.status(500).json({
         success: false,
-        error: 'Failed to delete deck'
+        error: {
+          code: 'DELETE_DECK_ERROR',
+          message: 'Failed to delete deck',
+          timestamp: new Date()
+        }
       } as ApiResponse<null>);
     }
   };
@@ -253,7 +293,11 @@ export class DeckController {
       if (!deckId) {
         res.status(400).json({
           success: false,
-          error: 'Deck ID is required'
+          error: {
+            code: 'MISSING_DECK_ID',
+            message: 'Deck ID is required',
+            timestamp: new Date()
+          }
         } as ApiResponse<null>);
         return;
       }
@@ -262,7 +306,11 @@ export class DeckController {
       if (!deck) {
         res.status(404).json({
           success: false,
-          error: 'Deck not found'
+          error: {
+            code: 'DECK_NOT_FOUND',
+            message: 'Deck not found',
+            timestamp: new Date()
+          }
         } as ApiResponse<null>);
         return;
       }
@@ -304,7 +352,7 @@ export class DeckController {
       }
 
       const importedDeck = await this.storageService.importDeck(containerName, blobName);
-      
+
       // Create deck record in database
       const deck: DeckData = {
         id: `deck_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -547,7 +595,7 @@ export class DeckController {
     const totalCards = cards.reduce((sum, card) => sum + card.quantity, 0);
     const uniqueCards = cards.length;
     const averageCMC = this.calculateAverageCMC(cards);
-    
+
     return {
       totalCards,
       uniqueCards,
@@ -559,13 +607,13 @@ export class DeckController {
 
   private calculateManaCurve(cards: any[]): { [key: string]: number } {
     const curve: { [key: string]: number } = {};
-    
+
     cards.forEach(card => {
       const cmc = card.cmc || 0;
       const key = cmc >= 7 ? '7+' : cmc.toString();
       curve[key] = (curve[key] || 0) + card.quantity;
     });
-    
+
     return curve;
   }
 
@@ -587,7 +635,7 @@ export class DeckController {
 
   private calculateColorDistribution(cards: any[]): { [key: string]: number } {
     const distribution: { [key: string]: number } = {};
-    
+
     cards.forEach(card => {
       if (card.colors && card.colors.length > 0) {
         card.colors.forEach((color: string) => {
@@ -597,29 +645,29 @@ export class DeckController {
         distribution['Colorless'] = (distribution['Colorless'] || 0) + card.quantity;
       }
     });
-    
+
     return distribution;
   }
 
   private calculateCardTypeDistribution(cards: any[]): { [key: string]: number } {
     const distribution: { [key: string]: number } = {};
-    
+
     cards.forEach(card => {
       const type = card.type_line ? card.type_line.split(' ')[0] : 'Unknown';
       distribution[type] = (distribution[type] || 0) + card.quantity;
     });
-    
+
     return distribution;
   }
 
   private calculateRarityDistribution(cards: any[]): { [key: string]: number } {
     const distribution: { [key: string]: number } = {};
-    
+
     cards.forEach(card => {
       const rarity = card.rarity || 'common';
       distribution[rarity] = (distribution[rarity] || 0) + card.quantity;
     });
-    
+
     return distribution;
   }
 }

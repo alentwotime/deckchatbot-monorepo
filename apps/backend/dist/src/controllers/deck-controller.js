@@ -1,18 +1,12 @@
-import { AzureCosmosService } from '../services/azure-cosmos.js';
-import { AzureStorageService } from '../services/azure-storage.js';
-import { AzureComputerVisionService } from '../services/azure-computer-vision.js';
-import { AzureOpenAIService } from '../services/azure-openai.js';
+import { azureCosmos } from '../services/azure-cosmos.js';
+import { azureStorage } from '../services/azure-storage.js';
+import { azureComputerVision } from '../services/azure-computer-vision.js';
+import { azureOpenAI } from '../services/azure-openai.js';
 export class DeckController {
-    cosmosService;
-    storageService;
-    visionService;
-    openAIService;
-    constructor() {
-        this.cosmosService = AzureCosmosService.getInstance();
-        this.storageService = AzureStorageService.getInstance();
-        this.visionService = AzureComputerVisionService.getInstance();
-        this.openAIService = AzureOpenAIService.getInstance();
-    }
+    cosmosService = azureCosmos;
+    storageService = azureStorage;
+    visionService = azureComputerVision;
+    openAIService = azureOpenAI;
     /**
      * Save a deck
      */
@@ -20,9 +14,14 @@ export class DeckController {
         try {
             const { name, cards, format, description, userId, tags, isPublic } = req.body;
             if (!name || !cards || !userId) {
+                const error = {
+                    code: 'MISSING_REQUIRED_FIELDS',
+                    message: 'Missing required fields: name, cards, userId',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'Missing required fields: name, cards, userId'
+                    error
                 });
                 return;
             }
@@ -37,12 +36,12 @@ export class DeckController {
                 isPublic: isPublic || false,
                 createdAt: new Date(),
                 updatedAt: new Date(),
-                version: 1,
-                statistics: this.calculateDeckStatistics(cards),
+                mainboard: cards,
+                sideboard: [],
+                deckList: cards.map((card) => `${card.quantity} ${card.name}`).join('\n'),
                 metadata: {
-                    cardCount: cards.reduce((sum, card) => sum + card.quantity, 0),
-                    colors: this.extractColors(cards),
-                    manaCurve: this.calculateManaCurve(cards)
+                    source: 'manual',
+                    version: 1
                 }
             };
             await this.cosmosService.storeDeck(deck);
@@ -53,9 +52,15 @@ export class DeckController {
         }
         catch (error) {
             console.error('Error in saveDeck:', error);
+            const appError = {
+                code: 'DECK_SAVE_FAILED',
+                message: 'Failed to save deck',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to save deck'
+                error: appError
             });
         }
     };
@@ -67,17 +72,27 @@ export class DeckController {
             const { deckId } = req.params;
             const { userId } = req.query;
             if (!deckId) {
+                const error = {
+                    code: 'DECK_ID_REQUIRED',
+                    message: 'Deck ID is required',
+                    timestamp: new Date()
+                };
                 res.status(400).json({
                     success: false,
-                    error: 'Deck ID is required'
+                    error
                 });
                 return;
             }
             const deck = await this.cosmosService.getDeck(deckId, userId);
             if (!deck) {
+                const error = {
+                    code: 'DECK_NOT_FOUND',
+                    message: 'Deck not found',
+                    timestamp: new Date()
+                };
                 res.status(404).json({
                     success: false,
-                    error: 'Deck not found'
+                    error
                 });
                 return;
             }
@@ -88,9 +103,15 @@ export class DeckController {
         }
         catch (error) {
             console.error('Error in getDeck:', error);
+            const appError = {
+                code: 'DECK_RETRIEVAL_FAILED',
+                message: 'Failed to retrieve deck',
+                timestamp: new Date(),
+                details: error
+            };
             res.status(500).json({
                 success: false,
-                error: 'Failed to retrieve deck'
+                error: appError
             });
         }
     };
@@ -128,7 +149,11 @@ export class DeckController {
             console.error('Error in searchDecks:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to search decks'
+                error: {
+                    code: 'SEARCH_DECKS_ERROR',
+                    message: 'Failed to search decks',
+                    timestamp: new Date()
+                }
             });
         }
     };
@@ -142,7 +167,11 @@ export class DeckController {
             if (!deckId || !userId) {
                 res.status(400).json({
                     success: false,
-                    error: 'Deck ID and User ID are required'
+                    error: {
+                        code: 'MISSING_REQUIRED_FIELDS',
+                        message: 'Deck ID and User ID are required',
+                        timestamp: new Date()
+                    }
                 });
                 return;
             }
@@ -170,7 +199,11 @@ export class DeckController {
             console.error('Error in updateDeck:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to update deck'
+                error: {
+                    code: 'UPDATE_DECK_ERROR',
+                    message: 'Failed to update deck',
+                    timestamp: new Date()
+                }
             });
         }
     };
@@ -184,7 +217,11 @@ export class DeckController {
             if (!deckId || !userId) {
                 res.status(400).json({
                     success: false,
-                    error: 'Deck ID and User ID are required'
+                    error: {
+                        code: 'MISSING_REQUIRED_FIELDS',
+                        message: 'Deck ID and User ID are required',
+                        timestamp: new Date()
+                    }
                 });
                 return;
             }
@@ -198,7 +235,11 @@ export class DeckController {
             console.error('Error in deleteDeck:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to delete deck'
+                error: {
+                    code: 'DELETE_DECK_ERROR',
+                    message: 'Failed to delete deck',
+                    timestamp: new Date()
+                }
             });
         }
     };
@@ -212,7 +253,11 @@ export class DeckController {
             if (!deckId) {
                 res.status(400).json({
                     success: false,
-                    error: 'Deck ID is required'
+                    error: {
+                        code: 'MISSING_DECK_ID',
+                        message: 'Deck ID is required',
+                        timestamp: new Date()
+                    }
                 });
                 return;
             }
@@ -220,7 +265,11 @@ export class DeckController {
             if (!deck) {
                 res.status(404).json({
                     success: false,
-                    error: 'Deck not found'
+                    error: {
+                        code: 'DECK_NOT_FOUND',
+                        message: 'Deck not found',
+                        timestamp: new Date()
+                    }
                 });
                 return;
             }

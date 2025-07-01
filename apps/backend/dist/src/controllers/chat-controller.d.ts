@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 export declare class ChatController {
     private openAIService;
     private cosmosService;
-    constructor();
     /**
      * Send a message and get AI response
      */
