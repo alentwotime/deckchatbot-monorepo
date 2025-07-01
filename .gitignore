@@ -344,3 +344,4 @@ pids
 *.seed
 *.pid.lock
 CustomRoleDefinition.json
+ultimate_hybrid_docker_azure_guide.md
