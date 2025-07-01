@@ -81,7 +81,7 @@ RUN sed -i 's/user nginx;/user nginx-user;/' /etc/nginx/nginx.conf && \
     chown -R nginx-user:nginx-user /var/cache/nginx /var/log/nginx /var/run /usr/share/nginx/html
 
 # Security best practices
-RUN # Remove unnecessary packages and files
+RUN # Remove unnecessary packages and files \
     apk del --purge && \
     # Set proper file permissions
     chmod -R 755 /usr/share/nginx/html && \
