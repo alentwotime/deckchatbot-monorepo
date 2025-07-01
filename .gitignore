@@ -343,3 +343,4 @@ pids
 *.pid
 *.seed
 *.pid.lock
+CustomRoleDefinition.json
