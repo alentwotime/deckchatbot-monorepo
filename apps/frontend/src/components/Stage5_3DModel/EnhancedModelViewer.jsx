@@ -3,7 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stage, Text, Html } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
-import backendService from '../../../services/backend.service';
+import backendService from '../../../services/backend.service.js';
 import { Deck3DModelCreator } from '../../visualizers/deck-3d-model';
 
 // Physical Deck Components (simplified from original)
@@ -135,7 +135,7 @@ const EnhancedModelViewer = ({ analysisResult }) => {
   const [visualizationMode, setVisualizationMode] = useState('physical');
   const [cardDeck3D, setCardDeck3D] = useState(null);
   const cardDeck3DRef = useRef(null);
-  
+
   const [physicalCustomization, setPhysicalCustomization] = useState({
     material: {
       color: '#8B4513',
@@ -469,7 +469,7 @@ const EnhancedModelViewer = ({ analysisResult }) => {
           {/* Camera Controls */}
           <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
             <h4 style={{ marginBottom: '1rem', color: '#2d3748' }}>Camera Controls</h4>
-            
+
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'flex', alignItems: 'center', fontWeight: '600', color: '#2d3748' }}>
                 <input 

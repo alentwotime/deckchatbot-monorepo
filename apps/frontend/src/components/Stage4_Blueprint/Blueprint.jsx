@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DOMPurify from 'dompurify';
-import { generateBlueprint } from '../../services/backend.service';
+import { generateBlueprint } from '../../../services/backend.service.js';
 
 const Blueprint = ({ analysisResult }) => {
   const [blueprint, setBlueprint] = useState(null);

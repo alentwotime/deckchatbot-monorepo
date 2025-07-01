@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
-import { uploadFile, analyzeFiles } from '../../services/backend.service';
+import { uploadFile, analyzeFiles } from '../../../services/backend.service.js';
 
 const Upload = ({ setAnalysisResult }) => {
   const [blueprint, setBlueprint] = useState(null);

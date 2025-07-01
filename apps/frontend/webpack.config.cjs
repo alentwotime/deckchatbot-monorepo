@@ -31,6 +31,16 @@ module.exports = {
         }
       },
       {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript']
+          }
+        }
+      },
+      {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
       }
@@ -38,14 +48,14 @@ module.exports = {
   },
 
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
     fallback: {
       crypto: require.resolve('crypto-browserify'),
       stream: require.resolve('stream-browserify'),
       path: require.resolve('path-browserify'),
       os: require.resolve('os-browserify/browser'),
-      buffer: require.resolve('buffer/'),
-      process: require.resolve('process/browser'),
+      buffer: require.resolve('buffer'),
+      process: require.resolve('process/browser.js'),
       assert: require.resolve('assert/'),
       url: require.resolve('url/'),
       http: require.resolve('stream-http'),
@@ -59,6 +69,10 @@ module.exports = {
     new Dotenv(),
     new HtmlWebpackPlugin({ template: './public/index.html' }),
     new NodePolyfillPlugin(),
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: 'process/browser.js'
+    }),
     new webpack.IgnorePlugin({ resourceRegExp: /^node:/ }),
     new webpack.IgnorePlugin({ resourceRegExp: /potrace|sqlite3/ }),
     new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false })

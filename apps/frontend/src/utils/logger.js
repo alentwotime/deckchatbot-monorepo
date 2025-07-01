@@ -1,77 +1,69 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-import winston from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
-// Adjust path to shared config at frontend/config.js
-import config from '../../config.js';
+// Browser-compatible logger for frontend
+class BrowserLogger {
+  constructor() {
+    this.levels = {
+      error: 0,
+      warn: 1,
+      info: 2,
+      debug: 3
+    };
+    this.currentLevel = this.levels.info; // Default level
+  }
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+  setLevel(level) {
+    if (this.levels.hasOwnProperty(level)) {
+      this.currentLevel = this.levels[level];
+    }
+  }
 
-// Custom log format
-const logFormat = winston.format.combine(
-  winston.format.timestamp(),
-  winston.format.errors({ stack: true }),
-  winston.format.json()
-);
+  formatMessage(level, message, meta = {}) {
+    const timestamp = new Date().toISOString();
+    const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
+    return `${timestamp} [${level.toUpperCase()}]: ${message}${metaStr}`;
+  }
 
-// Console format with colors
-const consoleFormat = winston.format.combine(
-  winston.format.colorize(),
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-  winston.format.printf(({ timestamp, level, message, ...meta }) => {
-    return `${timestamp} [${level}]: ${message} ${
-      Object.keys(meta).length ? JSON.stringify(meta, null, 2) : ''
-    }`;
-  })
-);
+  error(message, meta = {}) {
+    if (this.currentLevel >= this.levels.error) {
+      console.error(this.formatMessage('error', message, meta));
+    }
+  }
 
-// Create logger
-const logger = winston.createLogger({
-  level: config.LOG_LEVEL,
-  format: logFormat,
-  defaultMeta: { service: 'deckchatbot' },
-  transports: [
-    // Console transport
-    new winston.transports.Console({
-      format: consoleFormat,
-      silent: config.NODE_ENV === 'test'
-    }),
+  warn(message, meta = {}) {
+    if (this.currentLevel >= this.levels.warn) {
+      console.warn(this.formatMessage('warn', message, meta));
+    }
+  }
 
-    // File transport for errors
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5
-    }),
+  info(message, meta = {}) {
+    if (this.currentLevel >= this.levels.info) {
+      console.info(this.formatMessage('info', message, meta));
+    }
+  }
 
-    // Daily rotate file for all logs
-    new DailyRotateFile({
-      filename: 'logs/application-%DATE%.log',
-      datePattern: 'YYYY-MM-DD',
-      zippedArchive: true,
-      maxSize: '20m',
-      maxFiles: '14d'
-    })
-  ]
-});
+  debug(message, meta = {}) {
+    if (this.currentLevel >= this.levels.debug) {
+      console.debug(this.formatMessage('debug', message, meta));
+    }
+  }
 
-// Create logs directory if it doesn't exist
-const logDir = path.join(__dirname, '../logs');
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir, { recursive: true });
+  log(level, message, meta = {}) {
+    if (this[level]) {
+      this[level](message, meta);
+    } else {
+      this.info(message, meta);
+    }
+  }
 }
 
-// Handle uncaught exceptions
-logger.exceptions.handle(
-  new winston.transports.File({ filename: 'logs/exceptions.log' })
-);
+const logger = new BrowserLogger();
 
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (ex) => {
-  throw ex;
-});
+// Set log level based on environment
+if (typeof window !== 'undefined' && window.location) {
+  // Browser environment
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' ||
+                       window.location.hostname.includes('dev');
+  logger.setLevel(isDevelopment ? 'debug' : 'info');
+}
 
 export default logger;
