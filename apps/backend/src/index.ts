@@ -7,7 +7,7 @@ import cors from 'cors';
 import { config } from 'dotenv';
 
 // Import route handlers
-// import { apiRoutes } from './routes';
+import apiRoutes from './routes/index.js';
 
 // Import middleware
 // import { authMiddleware } from './middleware';
@@ -39,7 +39,7 @@ app.get('/health', (req, res) => {
 });
 
 // API routes will be mounted here
-// app.use('/api', apiRoutes);
+app.use('/api/v1', apiRoutes);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
