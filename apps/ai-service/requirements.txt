@@ -17,7 +17,7 @@ streamlit>=1.28.0
 langchain>=0.0.350
 langchain-community>=0.0.10
 # Audio processing for Whisper ASR integration
-whisper-openai>=20231117
+openai-whisper>=20230918
 soundfile>=0.12.1
 # Additional ML utilities
 torch>=2.0.0
