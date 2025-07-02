@@ -117,8 +117,18 @@ Before installing DeckChatbot, ensure you have the following installed:
 
 3. **Install Dependencies**:
    ```bash
-   # Install Node.js dependencies
+   # Install all Node.js dependencies (Windows PowerShell)
+   # Option 1: Run the provided PowerShell script
+   powershell -ExecutionPolicy Bypass -File .\install-all.ps1
+
+   # Option 2: Run commands individually
    npm install
+   cd apps\backend && npm install
+   cd ..\..\apps\frontend && npm install
+   cd ..\..
+
+   # Option 3: For bash/cmd terminals
+   npm run install:all
 
    # Install Python dependencies
    pip install -r config/requirements.txt
