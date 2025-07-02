@@ -345,3 +345,6 @@ pids
 *.pid.lock
 CustomRoleDefinition.json
 ultimate_hybrid_docker_azure_guide.md
+.env.secure
+GIT_HEALTH_CHECK_SUMMARY.md
+SECURITY_REMEDIATION_URGENT.md
