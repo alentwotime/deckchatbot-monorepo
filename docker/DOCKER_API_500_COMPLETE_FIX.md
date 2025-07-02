@@ -48,12 +48,12 @@ Based on your session history, the Docker API 500 errors started after network t
 docker login -u alen2x
 
 # When prompted for password, enter your Docker Hub token:
-# dckr_pat_YOUR_DOCKER_TOKEN_HERE
+# dckr_pat_[YOUR_PERSONAL_ACCESS_TOKEN]
 ```
 
 Or use this one-liner:
 ```powershell
-echo "YOUR_DOCKER_TOKEN_HERE" | docker login -u alen2x --password-stdin
+echo "[YOUR_PERSONAL_ACCESS_TOKEN]" | docker login -u alen2x --password-stdin
 ```
 
 ### Step 2: Fix Docker API Issues (Choose Best Option)
@@ -179,7 +179,7 @@ $env:DOCKER_API_VERSION="1.41"
 docker context use default
 
 # 2. Login with your new token
-echo "YOUR_DOCKER_TOKEN_HERE" | docker login -u alen2x --password-stdin
+echo "[YOUR_PERSONAL_ACCESS_TOKEN]" | docker login -u alen2x --password-stdin
 
 # 3. Test Docker
 docker ps
