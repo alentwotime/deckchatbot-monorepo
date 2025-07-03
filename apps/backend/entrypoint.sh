@@ -1,2 +1,3 @@
 #!/bin/bash
-exec poetry run uvicorn backend_ai.main:app --host 0.0.0.0 --port 8000
+# Start the Node.js backend server
+exec node server.js

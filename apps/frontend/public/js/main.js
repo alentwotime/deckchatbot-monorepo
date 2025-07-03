@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // ===== THEME MANAGEMENT =====
 function initializeTheme() {
     const themeToggle = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    // Default is now dark (cyberpunk)
+    const savedTheme = localStorage.getItem('theme') || 'dark';
 
     setTheme(savedTheme);
 
@@ -56,6 +57,18 @@ function setTheme(theme) {
     // Update theme-dependent components
     if (deck3DViewer) {
         updateVisualizerTheme();
+    }
+
+    // Update robot eyes color based on theme
+    const robotEyes = document.querySelectorAll('.robot-eye');
+    if (robotEyes.length > 0) {
+        const eyeColor = isThemeDark ? 'var(--primary-color)' : 'var(--secondary-color)';
+        const eyeGlow = isThemeDark ? '0 0 8px var(--primary-color)' : '0 0 8px var(--secondary-color)';
+
+        robotEyes.forEach(eye => {
+            eye.style.background = eyeColor;
+            eye.style.boxShadow = eyeGlow;
+        });
     }
 }
 
@@ -696,6 +709,29 @@ function initializeAnimations() {
     // Observe elements for animation
     document.querySelectorAll('.upload-card, .feature-card, .section-header').forEach(el => {
         observer.observe(el);
+    });
+
+    // Initialize robot eye tracking
+    initializeRobotEyeTracking();
+}
+
+// Robot Eye Tracking
+function initializeRobotEyeTracking() {
+    document.addEventListener('mousemove', function(e) {
+        const eyes = document.querySelectorAll('.robot-eye');
+        eyes.forEach(eye => {
+            const rect = eye.getBoundingClientRect();
+            const eyeCenterX = rect.left + rect.width / 2;
+            const eyeCenterY = rect.top + rect.height / 2;
+
+            const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+            const distance = Math.min(3, Math.sqrt(Math.pow(e.clientX - eyeCenterX, 2) + Math.pow(e.clientY - eyeCenterY, 2)) / 10);
+
+            const pupilX = Math.cos(angle) * distance;
+            const pupilY = Math.sin(angle) * distance;
+
+            eye.style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+        });
     });
 }
 

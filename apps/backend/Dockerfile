@@ -1,7 +1,7 @@
-# backend/backend-ai/Dockerfile
+# backend/Dockerfile
 
 # Build stage
-FROM python:3.11-slim AS builder
+FROM node:18-slim AS builder
 
 WORKDIR /app
 
@@ -9,31 +9,22 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
+    python3 \
     git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir poetry
+# Copy package.json and package-lock.json for better caching
+COPY apps/backend/package*.json ./
 
-# Copy dependency definition files first for better caching
-COPY pyproject.toml poetry.lock* ./
-COPY apps/backend/pyproject.toml apps/backend/poetry.lock* ./apps/backend/
-COPY apps/ai-service/pyproject.toml apps/ai-service/poetry.lock* ./apps/ai-service/
-COPY shared/libs/lib2/pyproject.toml ./shared/libs/lib2/
+# Install dependencies
+RUN npm ci
 
-# Copy all application and library code
-COPY apps ./apps
-COPY shared ./shared
-
-# Change to the backend directory and install dependencies
-WORKDIR /app/apps/backend
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-root --only main
+# Copy application code
+COPY apps/backend/ ./
 
 # Production stage
-FROM python:3.11-slim AS production
+FROM node:18-slim AS production
 
 WORKDIR /app
 
@@ -50,16 +41,11 @@ RUN groupadd -r appuser && \
     mkdir -p /app && \
     chown -R appuser:appuser /app
 
-# Copy Python packages from builder stage
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+# Copy application code and node_modules from builder stage
+COPY --from=builder --chown=appuser:appuser /app /app
 
-# Copy application code
-COPY --chown=appuser:appuser apps ./apps
-COPY --chown=appuser:appuser shared ./shared
-
-# Set monorepo-aware import path
-ENV PYTHONPATH="/app"
+# Create uploads directory with proper permissions
+RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
 
 # Copy and setup entrypoint
 COPY --chown=appuser:appuser apps/backend/entrypoint.sh /app/entrypoint.sh
