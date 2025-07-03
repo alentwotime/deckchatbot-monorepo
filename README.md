@@ -131,7 +131,7 @@ Before installing DeckChatbot, ensure you have the following installed:
    npm run install:all
 
    # Install Python dependencies
-   pip install -r config/requirements.txt
+   pip install -r apps/ai-service/requirements.txt
    ```
 
 4. **Start Development Environment**:
