@@ -1,0 +1,13 @@
+#! kustomization.yaml
+# Generated code, do not edit
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+    - ../../base
+patches:
+    - path: ai-service-C:\Users\aklin\deckchatbot-monorepo\backend\backend-ai\ai-service-persistentVolumeClaim.yaml
+    - path: ai-service-service.yaml
+    - path: backend-C:\Users\aklin\deckchatbot-monorepo\backend\backend-ai-persistentVolumeClaim.yaml
+    - path: backend-service.yaml
+    - path: frontend-C:\Users\aklin\deckchatbot-monorepo\frontend-persistentVolumeClaim.yaml
+    - path: frontend-service.yaml

@@ -1,0 +1,42 @@
+#! frontend-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: frontend
+    namespace: deckchatbot-monorepo
+    labels:
+        com.docker.compose.project: deckchatbot-monorepo
+        com.docker.compose.service: frontend
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: deckchatbot-monorepo
+            com.docker.compose.service: frontend
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: deckchatbot-monorepo
+                com.docker.compose.service: frontend
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: frontend
+                  image: alentwotime/frontend:latest
+                  imagePullPolicy: IfNotPresent
+                  env:
+                    - name: REACT_APP_API_BASE_URL
+                      value: "http://backend-service:8000"
+                  ports:
+                    - name: http
+                      containerPort: 80
+                  volumeMounts:
+                    - name: app
+                      mountPath: /app
+            volumes:
+                - name: app
+                  hostPath:
+                    path: /apps/frontend

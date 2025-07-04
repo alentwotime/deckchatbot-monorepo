@@ -1,0 +1,18 @@
+#! ai-service-C:\Users\aklin\deckchatbot-monorepoackendackend-ai\ai-service-persistentVolumeClaim.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: ai-service-c--users-aklin-deckchatbot-monorepo-backend-backend-ai-ai-service
+    namespace: deckchatbot-monorepo
+    labels:
+        com.docker.compose.service: ai-service
+        com.docker.compose.volume: C:\Users\aklin\deckchatbot-monorepoackendackend-ai\ai-service
+spec:
+    accessModes:
+        # TODO would need to check which services use this volume
+        - ReadWriteOnce
+    volumeMode: Filesystem
+    resources:
+        requests:
+            storage: 100Mi

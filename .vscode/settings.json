@@ -1,0 +1,31 @@
+{
+  "folders": [
+    { "path": "frontend" },
+    { "path": "backend-ai" }
+  ],
+  "settings": {
+    "python.defaultInterpreterPath": "python",
+    "python.pythonPath": "backend-ai/.venv/Scripts/python.exe",
+    "eslint.workingDirectories": [
+      { "mode": "auto" },
+      "frontend"
+    ],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
+    "files.exclude": {
+      "**/__pycache__": true,
+      "**/.venv": true,
+      "**/node_modules": true,
+      "**/.codex-prompt.md": false
+    },
+    "search.exclude": {
+      "**/__pycache__": true,
+      "**/.venv": true,
+      "**/node_modules": true
+    }
+  },
+  "IDX.aI.enableInlineCompletion": true,
+  "IDX.aI.enableCodebaseIndexing": true
+}

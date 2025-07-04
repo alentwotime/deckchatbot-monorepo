@@ -1,0 +1,18 @@
+#! ai-service-service.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: Service
+metadata:
+    name: ai-service-service
+    namespace: deckchatbot-monorepo
+    labels:
+        com.docker.compose.project: deckchatbot-monorepo
+        com.docker.compose.service: ai-service
+spec:
+    selector:
+        com.docker.compose.project: deckchatbot-monorepo
+        com.docker.compose.service: ai-service
+    ports:
+        - name: http
+          port: 8000
+          targetPort: 8000
