@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:80"
     environment:
-      - REACT_APP_API_URL=https://hybrid-functions.azurewebsites.net/api
+      - REACT_APP_API_URL=https://AlensDeckBot.online/api
       - NODE_ENV=production
     restart: unless-stopped
     networks:
@@ -24,9 +24,11 @@ services:
     image: alentwotime/unifiedservices:backend
     environment:
       - NODE_ENV=production
-      - AI_SERVICE_URL=https://ai-service-container.eastus.azurecontainer.io:8000
+      - AI_SERVICE_URL=https://AlensDeckBot.online/ai-service
       - DATABASE_URL=${DATABASE_URL}
       - AZURE_AI_KEY=${AZURE_AI_KEY}
+      - FRONTEND_URL=https://AlensDeckBot.online
+      - CORS_ORIGIN=https://AlensDeckBot.online
     ports:
       - "8000:8000"
     restart: unless-stopped
@@ -46,6 +48,7 @@ services:
     environment:
       - ENVIRONMENT=production
       - AZURE_AI_KEY=${AZURE_AI_KEY}
+      - CORS_ORIGINS=https://AlensDeckBot.online
     ports:
       - "8001:8000"
     restart: unless-stopped

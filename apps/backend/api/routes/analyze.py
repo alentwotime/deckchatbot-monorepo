@@ -1,8 +1,6 @@
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import JSONResponse
-import base64
 import requests
-import json
 import os
 from dotenv import load_dotenv
 
@@ -10,22 +8,35 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Get configuration from environment variables
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-LLAVA_MODEL_NAME = os.getenv("LLAVA_MODEL_NAME", "llava-deckbot")
+AI_SERVICE_URL = os.getenv("AI_SERVICE_URL", "http://ai-service:8000")
 
 router = APIRouter()
 
 @router.post("/vision-query")
 async def vision_query(file: UploadFile = File(...), prompt: str = "Describe image"):
-    """Send the uploaded image to the local Ollama LLaVA REST API."""
-    img_bytes = await file.read()
-    data = base64.b64encode(img_bytes).decode()
+    """Send the uploaded image to the AI service."""
     try:
+        img_bytes = await file.read()
+
+        # Create a multipart form with the image and prompt
+        files = {'file': (file.filename, img_bytes, file.content_type)}
+        data = {'prompt': prompt}
+
+        # Send request to AI service
         resp = requests.post(
-            f"{OLLAMA_BASE_URL}/api/generate",
-            json={"model": LLAVA_MODEL_NAME, "prompt": prompt, "images": [data]},
+            f"{AI_SERVICE_URL}/vision-query",
+            files=files,
+            data=data,
+            timeout=60
         )
-        return resp.json()
+
+        if resp.status_code == 200:
+            return resp.json()
+        else:
+            return JSONResponse(
+                status_code=resp.status_code, 
+                content={"error": f"AI service returned: {resp.text}"}
+            )
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
 

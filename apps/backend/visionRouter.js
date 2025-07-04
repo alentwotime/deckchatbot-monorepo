@@ -37,8 +37,7 @@ const upload = multer({
   }
 });
 
-const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
-const LLAVA_MODEL_NAME = process.env.LLAVA_MODEL_NAME || 'llava-deckbot';
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://ai-service:8000';
 
 // Helper function to generate image hash for caching
 function generateImageHash(imagePath) {
@@ -51,16 +50,15 @@ async function makeAIRequest(imagePath, prompt, retries = 3) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const form = new FormData();
-      form.append('model', LLAVA_MODEL_NAME);
-      form.append('image', fs.createReadStream(imagePath));
+      form.append('file', fs.createReadStream(imagePath));
       form.append('prompt', prompt);
 
-      const response = await axios.post(`${OLLAMA_BASE_URL}/api/generate`, form, {
+      const response = await axios.post(`${AI_SERVICE_URL}/vision-query`, form, {
         headers: form.getHeaders(),
         timeout: 60000, // 60 second timeout
       });
 
-      return response.data;
+      return response.data.response;
     } catch (error) {
       console.warn(`AI request attempt ${attempt} failed:`, error.message);
 
@@ -169,24 +167,25 @@ router.post('/analyze', uploadLimiter, upload.single('image'), async (req, res) 
 // GET /vision/health - Health check for vision service
 router.get('/health', async (req, res) => {
   try {
-    // Test connection to Ollama service
-    const response = await axios.get(`${OLLAMA_BASE_URL}/api/tags`, {
+    // Test connection to AI service
+    const response = await axios.get(`${AI_SERVICE_URL}/health`, {
       timeout: 5000
     });
 
     res.json({
       success: true,
       status: 'healthy',
-      ollamaUrl: OLLAMA_BASE_URL,
-      modelName: LLAVA_MODEL_NAME,
-      availableModels: response.data?.models?.length || 0
+      aiServiceUrl: AI_SERVICE_URL,
+      aiServiceStatus: response.data?.status || 'unknown',
+      modelName: response.data?.model_name || 'unknown',
+      availableModels: response.data?.available_models?.length || 0
     });
   } catch (error) {
     res.status(503).json({
       success: false,
       status: 'unhealthy',
       error: 'Cannot connect to AI service',
-      ollamaUrl: OLLAMA_BASE_URL
+      aiServiceUrl: AI_SERVICE_URL
     });
   }
 });
