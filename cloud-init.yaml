@@ -1,0 +1,12 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+packages:
+  - curl
+
+runcmd:
+  - curl -fsSL https://ollama.com/install.sh | sh
+  - systemctl enable ollama
+  - systemctl start ollama
+  - su - alens -c "ollama run llava-deckbot"
+  - ip addr add 5.161.23.197 dev eth0

@@ -1,0 +1,71 @@
+{
+  "family": "deckchatbot-backend",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/deckchatbot-backend:latest",
+      "portMappings": [
+        {
+          "containerPort": 3001,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "AI_SERVICE_URL",
+          "value": "http://ai-service.deckchatbot.local:8000"
+        },
+        {
+          "name": "PORT",
+          "value": "3001"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "AI_PROVIDER",
+          "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/deckchatbot/ai-provider"
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/deckchatbot/openai-api-key"
+        },
+        {
+          "name": "OLLAMA_MODEL_NAME",
+          "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/deckchatbot/ollama-model-name"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/deckchatbot-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3001/api/hello || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "linuxParameters": {
+        "capabilities": {
+          "drop": ["ALL"],
+          "add": ["NET_BIND_SERVICE"]
+        }
+      }
+    }
+  ]
+}

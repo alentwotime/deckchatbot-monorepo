@@ -1,0 +1,16 @@
+#! kustomization.yaml
+# Generated code, do not edit
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+    - 0-deckchatbot-monorepo-namespace.yaml
+    - ai-service-pvc.yaml
+    - ai-service-deployment.yaml
+    - ai-service-service.yaml
+    - backend-pvc.yaml
+    - backend-deployment.yaml
+    - backend-service.yaml
+    - default-network-policy.yaml
+    - frontend-pvc.yaml
+    - frontend-deployment.yaml
+    - frontend-service.yaml

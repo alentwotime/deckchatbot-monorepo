@@ -1,0 +1,71 @@
+{
+  "family": "deckchatbot-ai-service",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "ai-service",
+      "image": "ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/deckchatbot-ai-service:latest",
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "PYTHONPATH",
+          "value": "/app"
+        },
+        {
+          "name": "PYTHONUNBUFFERED",
+          "value": "1"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "AI_PROVIDER",
+          "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/deckchatbot/ai-provider"
+        },
+        {
+          "name": "OLLAMA_MODEL_NAME",
+          "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/deckchatbot/ollama-model-name"
+        },
+        {
+          "name": "OLLAMA_BASE_URL",
+          "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/deckchatbot/ollama-base-url"
+        },
+        {
+          "name": "HF_API_TOKEN",
+          "valueFrom": "arn:aws:ssm:REGION:ACCOUNT_ID:parameter/deckchatbot/hf-api-token"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/deckchatbot-ai-service",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"],
+        "interval": 30,
+        "timeout": 10,
+        "retries": 3,
+        "startPeriod": 120
+      },
+      "linuxParameters": {
+        "capabilities": {
+          "drop": ["ALL"],
+          "add": ["NET_BIND_SERVICE"]
+        }
+      }
+    }
+  ]
+}

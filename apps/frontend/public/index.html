@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeckChatBot - Magic: The Gathering Deck Builder</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="robot-head">
+                    <div class="robot-eye left-eye"></div>
+                    <div class="robot-eye right-eye"></div>
+                    <div class="robot-mouth"></div>
+                </div>
+                <div class="logo-text">
+                    <span class="brand-name neon-blue">ALENS</span>
+                    <span class="brand-suffix neon-orange">DECK BOT</span>
+                </div>
+            </div>
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item">
+                    <a href="#hero" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#upload" class="nav-link">Upload</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#visualizer" class="nav-link">3D Viewer</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#blueprint" class="nav-link">Blueprint</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#chat" class="nav-link">Chat</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#features" class="nav-link">Features</a>
+                </li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-background">
+            <div class="circuit-pattern"></div>
+            <div class="lightning-effects"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-robot">
+                    <div class="large-robot-head">
+                        <div class="robot-antenna"></div>
+                        <div class="robot-eye left-eye"></div>
+                        <div class="robot-eye right-eye"></div>
+                        <div class="robot-mouth"></div>
+                    </div>
+                </div>
+                <h1 class="hero-title neon-blue">
+                    ALENS DECK BOT
+                </h1>
+                <p class="hero-subtitle">
+                    Upload drawings, visualize in 3D, generate blueprints, and chat with AI to create the ultimate Magic: The Gathering deck
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="scrollToSection('upload')">
+                        <i class="fas fa-upload"></i>
+                        Start Building
+                    </button>
+                    <button class="btn btn-secondary" onclick="scrollToSection('features')">
+                        <i class="fas fa-play"></i>
+                        Watch Demo
+                    </button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-cards">
+                    <div class="card-float card-1"></div>
+                    <div class="card-float card-2"></div>
+                    <div class="card-float card-3"></div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section id="upload" class="upload-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Upload Your Deck</h2>
+                <p class="section-subtitle">
+                    Upload hand-drawn deck lists, photos, or digital files to get started
+                </p>
+            </div>
+            <div class="upload-grid">
+                <div class="upload-card">
+                    <div class="upload-area" id="drawing-upload">
+                        <div class="upload-icon">
+                            <i class="fas fa-pencil-alt"></i>
+                        </div>
+                        <h3>Hand-Drawn Lists</h3>
+                        <p>Upload photos of your hand-written deck lists</p>
+                        <input type="file" id="drawing-input" accept="image/*" multiple>
+                        <button class="upload-btn" onclick="document.getElementById('drawing-input').click()">
+                            Choose Files
+                        </button>
+                        <div class="upload-progress" id="drawing-progress"></div>
+                    </div>
+                </div>
+                <div class="upload-card">
+                    <div class="upload-area" id="photo-upload">
+                        <div class="upload-icon">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <h3>Card Photos</h3>
+                        <p>Upload photos of your physical cards</p>
+                        <input type="file" id="photo-input" accept="image/*" multiple>
+                        <button class="upload-btn" onclick="document.getElementById('photo-input').click()">
+                            Choose Files
+                        </button>
+                        <div class="upload-progress" id="photo-progress"></div>
+                    </div>
+                </div>
+                <div class="upload-card">
+                    <div class="upload-area" id="digital-upload">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3>Digital Files</h3>
+                        <p>Upload deck files (.txt, .dec, .json)</p>
+                        <input type="file" id="digital-input" accept=".txt,.dec,.json" multiple>
+                        <button class="upload-btn" onclick="document.getElementById('digital-input').click()">
+                            Choose Files
+                        </button>
+                        <div class="upload-progress" id="digital-progress"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="upload-results" id="upload-results">
+                <div class="results-header">
+                    <h3>Processing Results</h3>
+                    <div class="results-stats"></div>
+                </div>
+                <div class="results-content"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Visualizer Section -->
+    <section id="visualizer" class="visualizer-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">3D Deck Visualizer</h2>
+                <p class="section-subtitle">
+                    Explore your deck in interactive 3D space
+                </p>
+            </div>
+            <div class="visualizer-container">
+                <div class="visualizer-controls">
+                    <div class="control-group">
+                        <label>Layout Mode</label>
+                        <select id="layout-mode">
+                            <option value="grid">Grid</option>
+                            <option value="spiral">Spiral</option>
+                            <option value="stack">Stack</option>
+                            <option value="curve">Curve</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Group By</label>
+                        <select id="group-by">
+                            <option value="none">None</option>
+                            <option value="type">Card Type</option>
+                            <option value="color">Color</option>
+                            <option value="cost">Mana Cost</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Animation Speed</label>
+                        <input type="range" id="animation-speed" min="0.5" max="3" step="0.1" value="1">
+                    </div>
+                    <div class="control-buttons">
+                        <button class="btn btn-small" id="reset-view">
+                            <i class="fas fa-undo"></i>
+                            Reset View
+                        </button>
+                        <button class="btn btn-small" id="export-3d">
+                            <i class="fas fa-download"></i>
+                            Export 3D
+                        </button>
+                    </div>
+                </div>
+                <div class="visualizer-viewport" id="three-container">
+                    <div class="loading-spinner" id="visualizer-loading">
+                        <div class="spinner"></div>
+                        <p>Loading 3D Visualizer...</p>
+                    </div>
+                </div>
+                <div class="visualizer-info">
+                    <div class="info-panel">
+                        <h4>Selected Card</h4>
+                        <div id="selected-card-info">
+                            <p>Click on a card to view details</p>
+                        </div>
+                    </div>
+                    <div class="info-panel">
+                        <h4>Deck Stats</h4>
+                        <div id="deck-stats">
+                            <div class="stat">
+                                <span class="stat-label">Total Cards:</span>
+                                <span class="stat-value" id="total-cards">0</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Avg. CMC:</span>
+                                <span class="stat-value" id="avg-cmc">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blueprint Section -->
+    <section id="blueprint" class="blueprint-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Deck Blueprint</h2>
+                <p class="section-subtitle">
+                    Generate professional deck layouts and analysis
+                </p>
+            </div>
+            <div class="blueprint-container">
+                <div class="blueprint-controls">
+                    <div class="control-group">
+                        <label>Theme</label>
+                        <select id="blueprint-theme">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="classic">Classic</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Layout</label>
+                        <select id="blueprint-layout">
+                            <option value="standard">Standard</option>
+                            <option value="compact">Compact</option>
+                            <option value="detailed">Detailed</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Include</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox">
+                                <input type="checkbox" id="include-mana-curve" checked>
+                                <span>Mana Curve</span>
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" id="include-type-dist" checked>
+                                <span>Type Distribution</span>
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" id="include-color-dist" checked>
+                                <span>Color Distribution</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-buttons">
+                        <button class="btn btn-small" id="generate-blueprint">
+                            <i class="fas fa-magic"></i>
+                            Generate
+                        </button>
+                        <button class="btn btn-small" id="export-blueprint">
+                            <i class="fas fa-download"></i>
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="blueprint-display" id="blueprint-display">
+                    <div class="blueprint-placeholder">
+                        <i class="fas fa-drafting-compass"></i>
+                        <p>Generate a blueprint to see your deck layout</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chat Section -->
+    <section id="chat" class="chat-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">AI Deck Assistant</h2>
+                <p class="section-subtitle">
+                    Chat with our AI to get deck building advice and suggestions
+                </p>
+            </div>
+            <div class="chat-container">
+                <div class="chat-window" id="chat-window">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <p>Hello! I'm your AI deck building assistant. Upload a deck or ask me anything about Magic: The Gathering deck construction!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="chat-input-wrapper">
+                            <input type="text" id="chat-input" placeholder="Ask about deck building, card synergies, or strategy..." maxlength="500">
+                            <button id="send-message" class="send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="chat-suggestions">
+                            <button class="suggestion-btn" onclick="sendSuggestion('Analyze my deck\'s mana curve')">
+                                Analyze mana curve
+                            </button>
+                            <button class="suggestion-btn" onclick="sendSuggestion('Suggest improvements for my deck')">
+                                Suggest improvements
+                            </button>
+                            <button class="suggestion-btn" onclick="sendSuggestion('What cards work well together?')">
+                                Card synergies
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-sidebar">
+                    <div class="sidebar-panel">
+                        <h4>Quick Actions</h4>
+                        <div class="quick-actions">
+                            <button class="action-btn" onclick="analyzeDeck()">
+                                <i class="fas fa-chart-line"></i>
+                                Analyze Deck
+                            </button>
+                            <button class="action-btn" onclick="suggestCards()">
+                                <i class="fas fa-lightbulb"></i>
+                                Suggest Cards
+                            </button>
+                            <button class="action-btn" onclick="checkLegality()">
+                                <i class="fas fa-gavel"></i>
+                                Check Legality
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sidebar-panel">
+                        <h4>Deck Summary</h4>
+                        <div id="deck-summary">
+                            <p>Upload a deck to see summary</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Powerful Features</h2>
+                <p class="section-subtitle">
+                    Everything you need to build and analyze Magic: The Gathering decks
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>OCR Recognition</h3>
+                    <p>Advanced optical character recognition to extract deck lists from hand-drawn notes and photos</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3>3D Visualization</h3>
+                    <p>Interactive 3D deck visualization with multiple layout modes and export capabilities</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-drafting-compass"></i>
+                    </div>
+                    <h3>Blueprint Generation</h3>
+                    <p>Professional deck blueprints with mana curves, type distributions, and statistical analysis</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Assistant</h3>
+                    <p>Intelligent deck building advice, card suggestions, and strategy recommendations</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Responsive</h3>
+                    <p>Fully responsive design that works perfectly on desktop, tablet, and mobile devices</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Export Options</h3>
+                    <p>Export your decks in multiple formats including PDF, 3D models, and standard deck formats</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="nav-brand">
+                        <div class="robot-head">
+                            <div class="robot-eye left-eye"></div>
+                            <div class="robot-eye right-eye"></div>
+                            <div class="robot-mouth"></div>
+                        </div>
+                        <div class="logo-text">
+                            <span class="brand-name neon-blue">ALENS</span>
+                            <span class="brand-suffix neon-orange">DECK BOT</span>
+                        </div>
+                    </div>
+                    <p>The ultimate Magic: The Gathering deck building companion</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Features</h4>
+                        <a href="#upload">Upload Decks</a>
+                        <a href="#visualizer">3D Visualizer</a>
+                        <a href="#blueprint">Blueprint Generator</a>
+                        <a href="#chat">AI Assistant</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Support</h4>
+                        <a href="#help">Help Center</a>
+                        <a href="#docs">Documentation</a>
+                        <a href="#contact">Contact Us</a>
+                        <a href="#feedback">Feedback</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 DeckChatBot. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <p id="loading-text">Processing...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

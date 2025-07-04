@@ -1,0 +1,10 @@
+{
+  "watch": ["server.cjs", "backend/**/*.js", "frontend/**/*.js"],
+  "ignore": [
+    "backend/venv/**",
+    "frontend/venv/**",
+    "**/*.pyc",
+    "**/__pycache__/**",
+    "node_modules/**"
+  ]
+}

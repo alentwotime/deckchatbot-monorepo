@@ -1,0 +1,68 @@
+name: Hybrid Docker Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  DOCKERHUB_USERNAME: alentwotime
+  DOCKERHUB_REPO: unifiedservices
+  AZURE_RESOURCE_GROUP: HybridProjectRG
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ env.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+    
+    - name: Build and push containers
+      run: |
+        # Build containers for consistency
+        docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO }}:frontend -f apps/frontend/Dockerfile .
+        docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO }}:backend -f apps/backend/Dockerfile .
+        docker build -t ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO }}:ai-service -f apps/ai-service/Dockerfile .
+        
+        # Push to Docker Hub
+        docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO }}:frontend
+        docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO }}:backend
+        docker push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPO }}:ai-service
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Deploy Frontend (Static Website)
+      run: |
+        cd apps/frontend
+        npm ci
+        npm run build
+        az storage blob upload-batch \
+          --account-name "hybridproject2024" \
+          --destination '$web' \
+          --source "./dist"
+    
+    - name: Deploy Backend (Azure Functions)
+      run: |
+        cd apps/backend
+        npm ci
+        npm run build
+        func azure functionapp publish hybrid-functions
+    
+    - name: Update AI Service Container
+      run: |
+        az container restart \
+          --name "ai-service-container" \
+          --resource-group "${{ env.AZURE_RESOURCE_GROUP }}"

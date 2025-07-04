@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALENS DECK BOT - Brand Assets & Templates</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        .brand-assets {
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .asset-item {
+            background: var(--charcoal);
+            border: 1px solid var(--steel-gray);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            transition: all var(--transition-normal);
+        }
+        
+        .asset-item:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .asset-preview {
+            background: var(--deep-black);
+            border: 1px solid var(--steel-gray);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .social-media-post {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, var(--deep-black) 0%, var(--charcoal) 100%);
+            border: 2px solid var(--neon-blue);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+        }
+        
+        .business-card {
+            width: 350px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--deep-black) 0%, var(--charcoal) 100%);
+            border: 2px solid var(--electric-orange);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
+        }
+        
+        .email-header {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(90deg, var(--deep-black) 0%, var(--charcoal) 50%, var(--deep-black) 100%);
+            border: 1px solid var(--neon-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .presentation-slide {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, var(--deep-black) 0%, var(--charcoal) 100%);
+            border: 2px solid var(--cyan-glow);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .favicon-showcase {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .favicon-size {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .favicon {
+            background: linear-gradient(145deg, var(--steel-gray), var(--charcoal));
+            border: 1px solid var(--neon-blue);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+        
+        .favicon-16 { width: 16px; height: 16px; }
+        .favicon-32 { width: 32px; height: 32px; }
+        .favicon-48 { width: 48px; height: 48px; }
+        .favicon-64 { width: 64px; height: 64px; }
+        
+        .mini-robot-eye {
+            width: 2px;
+            height: 2px;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 2px var(--neon-blue);
+        }
+        
+        .favicon-16 .mini-robot-eye { width: 1px; height: 1px; }
+        .favicon-32 .mini-robot-eye { width: 3px; height: 3px; }
+        .favicon-48 .mini-robot-eye { width: 4px; height: 4px; }
+        .favicon-64 .mini-robot-eye { width: 5px; height: 5px; }
+        
+        .loading-animation {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--steel-gray);
+            border-top: 3px solid var(--neon-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: relative;
+        }
+        
+        .loading-animation::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: var(--electric-orange);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--electric-orange);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .usage-guidelines {
+            background: var(--charcoal);
+            border: 1px solid var(--steel-gray);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+        
+        .usage-guidelines h4 {
+            color: var(--electric-orange);
+            margin-bottom: var(--spacing-sm);
+            text-shadow: 0 0 8px var(--electric-orange);
+        }
+        
+        .usage-guidelines ul {
+            color: var(--pure-white);
+            padding-left: var(--spacing-md);
+        }
+        
+        .usage-guidelines li {
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .download-section {
+            text-align: center;
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: var(--charcoal);
+            border-radius: 12px;
+            border: 1px solid var(--steel-gray);
+        }
+    </style>
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo-container">
+                <div class="logo-robot">
+                    <div class="robot-head">
+                        <div class="robot-eye left-eye"></div>
+                        <div class="robot-eye right-eye"></div>
+                        <div class="robot-mouth"></div>
+                    </div>
+                </div>
+                <div class="logo-text">
+                    <span class="brand-name">ALENS</span>
+                    <span class="brand-suffix">DECK BOT</span>
+                </div>
+            </div>
+            <nav class="navigation">
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Main Demo</a></li>
+                    <li><a href="brand-assets.html" class="nav-link active">Brand Assets</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Brand Assets Section -->
+    <section class="brand-assets">
+        <div class="container">
+            <h1 class="section-title">Brand Assets & Templates</h1>
+            
+            <div class="asset-grid">
+                <!-- Social Media Templates -->
+                <div class="asset-item">
+                    <h3>Social Media Post Template</h3>
+                    <div class="asset-preview">
+                        <div class="social-media-post">
+                            <div class="post-header">
+                                <div class="logo-container" style="scale: 0.7;">
+                                    <div class="robot-head" style="width: 30px; height: 30px;">
+                                        <div class="robot-eye left-eye" style="width: 4px; height: 4px; top: 8px; left: 7px;"></div>
+                                        <div class="robot-eye right-eye" style="width: 4px; height: 4px; top: 8px; right: 7px;"></div>
+                                        <div class="robot-mouth" style="width: 12px; height: 2px; bottom: 6px;"></div>
+                                    </div>
+                                    <div class="logo-text" style="margin-left: 10px;">
+                                        <span class="brand-name" style="font-size: 1rem;">ALENS</span>
+                                        <span class="brand-suffix" style="font-size: 0.7rem;">DECK BOT</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="post-content" style="text-align: center; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                                <div>
+                                    <h4 style="color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); margin-bottom: 10px;">Innovation Unleashed</h4>
+                                    <p style="color: var(--pure-white); font-size: 0.9rem;">Discover the future of technology</p>
+                                </div>
+                            </div>
+                            <div class="post-footer" style="border-top: 1px solid var(--steel-gray); padding-top: 10px;">
+                                <p style="color: var(--electric-orange); font-size: 0.8rem; text-align: center;">#FutureTech #Innovation #AI</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="usage-guidelines">
+                        <h4>Usage Guidelines:</h4>
+                        <ul>
+                            <li>Perfect for Instagram, Facebook, and LinkedIn posts</li>
+                            <li>Maintain 1:1 aspect ratio for Instagram</li>
+                            <li>Use consistent neon color scheme</li>
+                            <li>Include brand hashtags</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Business Card Template -->
+                <div class="asset-item">
+                    <h3>Business Card Template</h3>
+                    <div class="asset-preview">
+                        <div class="business-card">
+                            <div class="card-left">
+                                <div class="logo-container" style="scale: 0.6; margin-bottom: 10px;">
+                                    <div class="robot-head" style="width: 40px; height: 40px;">
+                                        <div class="robot-eye left-eye" style="width: 6px; height: 6px; top: 12px; left: 10px;"></div>
+                                        <div class="robot-eye right-eye" style="width: 6px; height: 6px; top: 12px; right: 10px;"></div>
+                                        <div class="robot-mouth" style="width: 16px; height: 3px; bottom: 10px;"></div>
+                                    </div>
+                                    <div class="logo-text" style="margin-left: 15px;">
+                                        <span class="brand-name" style="font-size: 1.2rem;">ALENS</span>
+                                        <span class="brand-suffix" style="font-size: 0.8rem;">DECK BOT</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-right" style="text-align: right;">
+                                <h4 style="color: var(--neon-blue); text-shadow: 0 0 8px var(--neon-blue); margin-bottom: 5px;">John Doe</h4>
+                                <p style="color: var(--pure-white); font-size: 0.9rem; margin-bottom: 5px;">Chief Technology Officer</p>
+                                <p style="color: var(--electric-orange); font-size: 0.8rem;">john@alensdeckbot.com</p>
+                                <p style="color: var(--cyan-glow); font-size: 0.8rem;">+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="usage-guidelines">
+                        <h4>Usage Guidelines:</h4>
+                        <ul>
+                            <li>Standard business card size: 3.5" × 2"</li>
+                            <li>Print on dark cardstock for best effect</li>
+                            <li>Use metallic or UV spot printing for glow simulation</li>
+                            <li>Maintain high contrast for readability</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Email Header Template -->
+                <div class="asset-item">
+                    <h3>Email Header Template</h3>
+                    <div class="asset-preview">
+                        <div class="email-header">
+                            <div class="logo-container">
+                                <div class="robot-head">
+                                    <div class="robot-eye left-eye"></div>
+                                    <div class="robot-eye right-eye"></div>
+                                    <div class="robot-mouth"></div>
+                                </div>
+                                <div class="logo-text">
+                                    <span class="brand-name">ALENS</span>
+                                    <span class="brand-suffix">DECK BOT</span>
+                                </div>
+                            </div>
+                            <div style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%);">
+                                <p style="color: var(--electric-orange); font-size: 0.9rem; text-shadow: 0 0 8px var(--electric-orange);">
+                                    Future Technology Solutions
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="usage-guidelines">
+                        <h4>Usage Guidelines:</h4>
+                        <ul>
+                            <li>Use in email newsletters and campaigns</li>
+                            <li>Optimize for both desktop and mobile viewing</li>
+                            <li>Include alt text for accessibility</li>
+                            <li>Link to main website</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Presentation Slide Template -->
+                <div class="asset-item">
+                    <h3>Presentation Slide Template</h3>
+                    <div class="asset-preview">
+                        <div class="presentation-slide">
+                            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                <div class="logo-container" style="scale: 0.8;">
+                                    <div class="robot-head">
+                                        <div class="robot-eye left-eye"></div>
+                                        <div class="robot-eye right-eye"></div>
+                                        <div class="robot-mouth"></div>
+                                    </div>
+                                    <div class="logo-text">
+                                        <span class="brand-name">ALENS</span>
+                                        <span class="brand-suffix">DECK BOT</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <h2 style="color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); margin-bottom: 15px;">
+                                Slide Title Here
+                            </h2>
+                            <p style="color: var(--pure-white); font-size: 1.1rem;">
+                                Your content goes here with perfect contrast and readability
+                            </p>
+                        </div>
+                    </div>
+                    <div class="usage-guidelines">
+                        <h4>Usage Guidelines:</h4>
+                        <ul>
+                            <li>Use for PowerPoint, Keynote, or Google Slides</li>
+                            <li>Maintain dark background for consistency</li>
+                            <li>Use neon colors for emphasis only</li>
+                            <li>Ensure text contrast meets accessibility standards</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Favicon Variations -->
+                <div class="asset-item">
+                    <h3>Favicon Variations</h3>
+                    <div class="asset-preview">
+                        <div class="favicon-showcase">
+                            <div class="favicon-size">
+                                <div class="favicon favicon-16">
+                                    <div class="mini-robot-eye" style="top: 4px; left: 3px;"></div>
+                                    <div class="mini-robot-eye" style="top: 4px; right: 3px;"></div>
+                                </div>
+                                <span style="font-size: 0.7rem; color: var(--steel-gray);">16×16</span>
+                            </div>
+                            <div class="favicon-size">
+                                <div class="favicon favicon-32">
+                                    <div class="mini-robot-eye" style="top: 8px; left: 7px;"></div>
+                                    <div class="mini-robot-eye" style="top: 8px; right: 7px;"></div>
+                                </div>
+                                <span style="font-size: 0.7rem; color: var(--steel-gray);">32×32</span>
+                            </div>
+                            <div class="favicon-size">
+                                <div class="favicon favicon-48">
+                                    <div class="mini-robot-eye" style="top: 12px; left: 12px;"></div>
+                                    <div class="mini-robot-eye" style="top: 12px; right: 12px;"></div>
+                                </div>
+                                <span style="font-size: 0.7rem; color: var(--steel-gray);">48×48</span>
+                            </div>
+                            <div class="favicon-size">
+                                <div class="favicon favicon-64">
+                                    <div class="mini-robot-eye" style="top: 16px; left: 16px;"></div>
+                                    <div class="mini-robot-eye" style="top: 16px; right: 16px;"></div>
+                                </div>
+                                <span style="font-size: 0.7rem; color: var(--steel-gray);">64×64</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="usage-guidelines">
+                        <h4>Usage Guidelines:</h4>
+                        <ul>
+                            <li>Use appropriate size for different platforms</li>
+                            <li>16×16 and 32×32 for browser tabs</li>
+                            <li>48×48 and 64×64 for bookmarks and shortcuts</li>
+                            <li>Maintain robot eye visibility at all sizes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Loading Animation -->
+                <div class="asset-item">
+                    <h3>Loading Animation</h3>
+                    <div class="asset-preview">
+                        <div class="loading-animation"></div>
+                    </div>
+                    <div class="usage-guidelines">
+                        <h4>Usage Guidelines:</h4>
+                        <ul>
+                            <li>Use for website loading states</li>
+                            <li>Implement with CSS animations</li>
+                            <li>Maintain brand colors</li>
+                            <li>Keep animation smooth and lightweight</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementation Guidelines -->
+            <div class="download-section">
+                <h2 style="color: var(--electric-orange); text-shadow: 0 0 15px var(--electric-orange); margin-bottom: var(--spacing-md);">
+                    Implementation Guidelines
+                </h2>
+                <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+                    <h3 style="color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); margin-bottom: var(--spacing-sm);">
+                        Brand Consistency Rules
+                    </h3>
+                    <ul style="color: var(--pure-white); margin-bottom: var(--spacing-md);">
+                        <li>Always use the official color palette</li>
+                        <li>Maintain proper contrast ratios for accessibility</li>
+                        <li>Use Orbitron font for headings, Roboto for body text</li>
+                        <li>Keep the robot character recognizable at all sizes</li>
+                        <li>Apply neon glow effects consistently</li>
+                    </ul>
+                    
+                    <h3 style="color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); margin-bottom: var(--spacing-sm);">
+                        Technical Specifications
+                    </h3>
+                    <ul style="color: var(--pure-white); margin-bottom: var(--spacing-md);">
+                        <li>Logo minimum size: 120px width for horizontal layout</li>
+                        <li>Clear space: Minimum 1x logo height on all sides</li>
+                        <li>File formats: SVG for web, PNG for raster, PDF for print</li>
+                        <li>Color profiles: sRGB for digital, CMYK for print</li>
+                        <li>Animation duration: 0.3s for interactions, 2s for ambient effects</li>
+                    </ul>
+                    
+                    <h3 style="color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); margin-bottom: var(--spacing-sm);">
+                        Usage Restrictions
+                    </h3>
+                    <ul style="color: var(--pure-white);">
+                        <li>Do not alter the robot character's proportions</li>
+                        <li>Do not use the logo on busy backgrounds without proper contrast</li>
+                        <li>Do not separate the robot head from the text without approval</li>
+                        <li>Do not use colors outside the approved palette</li>
+                        <li>Do not apply effects that compromise legibility</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-text">
+                        <span class="brand-name">ALENS</span>
+                        <span class="brand-suffix">DECK BOT</span>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Brand Guidelines</a>
+                    <a href="#" class="footer-link">Asset Downloads</a>
+                    <a href="#" class="footer-link">Usage Rights</a>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">GitHub</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ALENS DECK BOT. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

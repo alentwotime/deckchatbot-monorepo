@@ -1,0 +1,335 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'DeckChatbot ECS Services - Fargate services for frontend, backend, and AI service'
+
+Parameters:
+  InfrastructureStackName:
+    Type: String
+    Description: Name of the infrastructure CloudFormation stack
+    Default: deckchatbot-infrastructure
+
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues: [development, staging, production]
+    Description: Environment name
+
+  ImageTag:
+    Type: String
+    Default: latest
+    Description: Docker image tag to deploy
+
+  AccountId:
+    Type: String
+    Description: AWS Account ID
+
+  Region:
+    Type: String
+    Default: us-east-1
+    Description: AWS Region
+
+Resources:
+  # Frontend Service
+  FrontendService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Sub ${Environment}-frontend
+      Cluster:
+        Fn::ImportValue: !Sub ${InfrastructureStackName}-ECS-Cluster
+      TaskDefinition: !Ref FrontendTaskDefinition
+      DesiredCount: 2
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - Fn::ImportValue: !Sub ${InfrastructureStackName}-ECS-SG
+          Subnets: !Split
+            - ','
+            - Fn::ImportValue: !Sub ${InfrastructureStackName}-Private-Subnets
+          AssignPublicIp: DISABLED
+      LoadBalancers:
+        - ContainerName: frontend
+          ContainerPort: 80
+          TargetGroupArn:
+            Fn::ImportValue: !Sub ${InfrastructureStackName}-Frontend-TG
+      HealthCheckGracePeriodSeconds: 60
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      EnableExecuteCommand: true
+
+  FrontendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${Environment}-deckchatbot-frontend
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      Cpu: 256
+      Memory: 512
+      ExecutionRoleArn: !Sub 'arn:aws:iam::${AccountId}:role/${InfrastructureStackName}-ecs-task-execution-role'
+      TaskRoleArn: !Sub 'arn:aws:iam::${AccountId}:role/${InfrastructureStackName}-ecs-task-role'
+      ContainerDefinitions:
+        - Name: frontend
+          Image: !Sub '${AccountId}.dkr.ecr.${Region}.amazonaws.com/deckchatbot-frontend:${ImageTag}'
+          PortMappings:
+            - ContainerPort: 80
+              Protocol: tcp
+          Essential: true
+          Environment:
+            - Name: REACT_APP_API_BASE_URL
+              Value: !Sub 'https://${Environment}.deckchatbot.com'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: /ecs/deckchatbot-frontend
+              awslogs-region: !Ref Region
+              awslogs-stream-prefix: ecs
+          HealthCheck:
+            Command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1']
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 60
+          ReadonlyRootFilesystem: true
+          LinuxParameters:
+            Capabilities:
+              Drop: [ALL]
+
+  # Backend Service
+  BackendService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Sub ${Environment}-backend
+      Cluster:
+        Fn::ImportValue: !Sub ${InfrastructureStackName}-ECS-Cluster
+      TaskDefinition: !Ref BackendTaskDefinition
+      DesiredCount: 2
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - Fn::ImportValue: !Sub ${InfrastructureStackName}-ECS-SG
+          Subnets: !Split
+            - ','
+            - Fn::ImportValue: !Sub ${InfrastructureStackName}-Private-Subnets
+          AssignPublicIp: DISABLED
+      LoadBalancers:
+        - ContainerName: backend
+          ContainerPort: 3001
+          TargetGroupArn:
+            Fn::ImportValue: !Sub ${InfrastructureStackName}-Backend-TG
+      HealthCheckGracePeriodSeconds: 60
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      EnableExecuteCommand: true
+
+  BackendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${Environment}-deckchatbot-backend
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      Cpu: 512
+      Memory: 1024
+      ExecutionRoleArn: !Sub 'arn:aws:iam::${AccountId}:role/${InfrastructureStackName}-ecs-task-execution-role'
+      TaskRoleArn: !Sub 'arn:aws:iam::${AccountId}:role/${InfrastructureStackName}-ecs-task-role'
+      ContainerDefinitions:
+        - Name: backend
+          Image: !Sub '${AccountId}.dkr.ecr.${Region}.amazonaws.com/deckchatbot-backend:${ImageTag}'
+          PortMappings:
+            - ContainerPort: 3001
+              Protocol: tcp
+          Essential: true
+          Environment:
+            - Name: NODE_ENV
+              Value: production
+            - Name: AI_SERVICE_URL
+              Value: http://ai-service.deckchatbot.local:8000
+            - Name: PORT
+              Value: '3001'
+          Secrets:
+            - Name: AI_PROVIDER
+              ValueFrom: !Sub 'arn:aws:ssm:${Region}:${AccountId}:parameter/deckchatbot/ai-provider'
+            - Name: OPENAI_API_KEY
+              ValueFrom: !Sub 'arn:aws:ssm:${Region}:${AccountId}:parameter/deckchatbot/openai-api-key'
+            - Name: OLLAMA_MODEL_NAME
+              ValueFrom: !Sub 'arn:aws:ssm:${Region}:${AccountId}:parameter/deckchatbot/ollama-model-name'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: /ecs/deckchatbot-backend
+              awslogs-region: !Ref Region
+              awslogs-stream-prefix: ecs
+          HealthCheck:
+            Command: ['CMD-SHELL', 'curl -f http://localhost:3001/api/hello || exit 1']
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 60
+          LinuxParameters:
+            Capabilities:
+              Drop: [ALL]
+              Add: [NET_BIND_SERVICE]
+
+  # AI Service
+  AIService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Sub ${Environment}-ai-service
+      Cluster:
+        Fn::ImportValue: !Sub ${InfrastructureStackName}-ECS-Cluster
+      TaskDefinition: !Ref AIServiceTaskDefinition
+      DesiredCount: 1
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - Fn::ImportValue: !Sub ${InfrastructureStackName}-ECS-SG
+          Subnets: !Split
+            - ','
+            - Fn::ImportValue: !Sub ${InfrastructureStackName}-Private-Subnets
+          AssignPublicIp: DISABLED
+      LoadBalancers:
+        - ContainerName: ai-service
+          ContainerPort: 8000
+          TargetGroupArn:
+            Fn::ImportValue: !Sub ${InfrastructureStackName}-AIService-TG
+      ServiceRegistries:
+        - RegistryArn: !GetAtt AIServiceDiscoveryService.Arn
+      HealthCheckGracePeriodSeconds: 120
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+        DeploymentCircuitBreaker:
+          Enable: true
+          Rollback: true
+      EnableExecuteCommand: true
+
+  AIServiceTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${Environment}-deckchatbot-ai-service
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      Cpu: 1024
+      Memory: 2048
+      ExecutionRoleArn: !Sub 'arn:aws:iam::${AccountId}:role/${InfrastructureStackName}-ecs-task-execution-role'
+      TaskRoleArn: !Sub 'arn:aws:iam::${AccountId}:role/${InfrastructureStackName}-ecs-task-role'
+      ContainerDefinitions:
+        - Name: ai-service
+          Image: !Sub '${AccountId}.dkr.ecr.${Region}.amazonaws.com/deckchatbot-ai-service:${ImageTag}'
+          PortMappings:
+            - ContainerPort: 8000
+              Protocol: tcp
+          Essential: true
+          Environment:
+            - Name: PYTHONPATH
+              Value: /app
+            - Name: PYTHONUNBUFFERED
+              Value: '1'
+          Secrets:
+            - Name: AI_PROVIDER
+              ValueFrom: !Sub 'arn:aws:ssm:${Region}:${AccountId}:parameter/deckchatbot/ai-provider'
+            - Name: OLLAMA_MODEL_NAME
+              ValueFrom: !Sub 'arn:aws:ssm:${Region}:${AccountId}:parameter/deckchatbot/ollama-model-name'
+            - Name: OLLAMA_BASE_URL
+              ValueFrom: !Sub 'arn:aws:ssm:${Region}:${AccountId}:parameter/deckchatbot/ollama-base-url'
+            - Name: HF_API_TOKEN
+              ValueFrom: !Sub 'arn:aws:ssm:${Region}:${AccountId}:parameter/deckchatbot/hf-api-token'
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: /ecs/deckchatbot-ai-service
+              awslogs-region: !Ref Region
+              awslogs-stream-prefix: ecs
+          HealthCheck:
+            Command: ['CMD-SHELL', 'curl -f http://localhost:8000/health || exit 1']
+            Interval: 30
+            Timeout: 10
+            Retries: 3
+            StartPeriod: 120
+          LinuxParameters:
+            Capabilities:
+              Drop: [ALL]
+              Add: [NET_BIND_SERVICE]
+
+  AIServiceDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      Name: ai-service
+      DnsConfig:
+        DnsRecords:
+          - Type: A
+            TTL: 60
+        NamespaceId:
+          Fn::ImportValue: !Sub ${InfrastructureStackName}-ServiceDiscovery-Namespace
+      HealthCheckCustomConfig:
+        FailureThreshold: 1
+
+  # Auto Scaling
+  FrontendAutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 10
+      MinCapacity: 2
+      ResourceId: !Sub 'service/${InfrastructureStackName}-cluster/${Environment}-frontend'
+      RoleARN: !Sub 'arn:aws:iam::${AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService'
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+
+  FrontendAutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: !Sub ${Environment}-frontend-scaling-policy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref FrontendAutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        TargetValue: 70.0
+
+  BackendAutoScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 10
+      MinCapacity: 2
+      ResourceId: !Sub 'service/${InfrastructureStackName}-cluster/${Environment}-backend'
+      RoleARN: !Sub 'arn:aws:iam::${AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService'
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+
+  BackendAutoScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: !Sub ${Environment}-backend-scaling-policy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref BackendAutoScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        TargetValue: 70.0
+
+Outputs:
+  FrontendServiceArn:
+    Description: Frontend Service ARN
+    Value: !Ref FrontendService
+    Export:
+      Name: !Sub ${AWS::StackName}-Frontend-Service
+
+  BackendServiceArn:
+    Description: Backend Service ARN
+    Value: !Ref BackendService
+    Export:
+      Name: !Sub ${AWS::StackName}-Backend-Service
+
+  AIServiceArn:
+    Description: AI Service ARN
+    Value: !Ref AIService
+    Export:
+      Name: !Sub ${AWS::StackName}-AIService-Service

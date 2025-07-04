@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "ai-service"
+packages = [{include = "ai_service"}]
+version = "0.1.0"
+description = "AI service for deck image processing"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+# Runtime deps mirrored from requirements.txt
+fastapi = "^0.115.0"
+uvicorn = {version = "^0.34.0", extras = ["standard"]}
+httpx = "^0.27.0"
+pydantic = "^2.7.0"
+Pillow = "^10.3.0"
+python-multipart = "^0.0.9"
+opencv-python-headless = "^4.9.0.80"
+numpy = "^1.26.4"
+tqdm = "^4.66.4"
+pytesseract = "^0.3.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
