@@ -71,3 +71,4 @@ yarn-error.log*
 .coverage
 coverage/
 .nyc_output/
+.output.txt
