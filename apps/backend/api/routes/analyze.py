@@ -3,6 +3,15 @@ from fastapi.responses import JSONResponse
 import base64
 import requests
 import json
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Get configuration from environment variables
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+LLAVA_MODEL_NAME = os.getenv("LLAVA_MODEL_NAME", "llava-deckbot")
 
 router = APIRouter()
 
@@ -13,8 +22,8 @@ async def vision_query(file: UploadFile = File(...), prompt: str = "Describe ima
     data = base64.b64encode(img_bytes).decode()
     try:
         resp = requests.post(
-            "http://localhost:11434/api/generate",
-            json={"model": "llava-deckbot", "prompt": prompt, "images": [data]},
+            f"{OLLAMA_BASE_URL}/api/generate",
+            json={"model": LLAVA_MODEL_NAME, "prompt": prompt, "images": [data]},
         )
         return resp.json()
     except Exception as e:

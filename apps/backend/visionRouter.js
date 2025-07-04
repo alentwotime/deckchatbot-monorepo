@@ -38,7 +38,7 @@ const upload = multer({
 });
 
 const OLLAMA_BASE_URL = process.env.OLLAMA_BASE_URL || 'http://localhost:11434';
-const LLAVA_MODEL_NAME = process.env.LLAVA_MODEL_NAME || 'alentwotime/llava-deckbot';
+const LLAVA_MODEL_NAME = process.env.LLAVA_MODEL_NAME || 'llava-deckbot';
 
 // Helper function to generate image hash for caching
 function generateImageHash(imagePath) {

@@ -5,7 +5,7 @@ def generate_response(prompt):
     Generates a response from the llava-deckbot model.
     """
     try:
-        response = ollama.chat(model='alentwotime/llava-deckbot', messages=[
+        response = ollama.chat(model='llava-deckbot', messages=[
             {
                 'role': 'user',
                 'content': prompt,
