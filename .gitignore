@@ -254,6 +254,7 @@ dist
 # IDEs and editors
 .vscode/
 .idea/
+.vs/
 *.swp
 *.swo
 *~
@@ -266,6 +267,7 @@ dist
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 # Temporary files
 *.tmp
 *.temp
