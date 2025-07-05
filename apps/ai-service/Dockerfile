@@ -26,6 +26,8 @@ COPY shared/libs/lib2/lib2 ./lib2
 
 # Install dependencies
 RUN poetry config virtualenvs.create false && \
+    # Update lock file if pyproject.toml has changed
+    poetry lock && \
     poetry install --no-root --only main
 
 # Production stage
