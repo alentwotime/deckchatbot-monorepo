@@ -71,11 +71,44 @@ cleanup_test() {
 
 # Function to simulate apt lock
 simulate_apt_lock() {
+    local stuck_mode=${1:-"normal"}
+
     print_status "Simulating apt lock by starting a long-running apt process..."
 
-    # Start a sleep process that pretends to be apt
-    apt-get update > /dev/null 2>&1 &
-    APT_PID=$!
+    if [ "$stuck_mode" = "normal" ]; then
+        # Start a real apt-get update process (will finish normally)
+        apt-get update > /dev/null 2>&1 &
+        APT_PID=$!
+    elif [ "$stuck_mode" = "stuck" ]; then
+        # Create a fake apt process that will appear stuck
+        # This creates a process with "apt-get" in its name that will run for a long time
+        bash -c "echo 'Simulating stuck apt process'; while true; do sleep 10; done" &
+        FAKE_PID=$!
+        # Rename the process to look like apt-get
+        if command -v prips >/dev/null 2>&1; then
+            # If prips is available, use it to rename the process
+            prips -n "apt-get update (stuck simulation)" $FAKE_PID >/dev/null 2>&1 || true
+        fi
+        APT_PID=$FAKE_PID
+
+        # Create fake lock files to simulate a stuck apt process
+        touch /var/lib/apt/lists/lock
+        touch /var/lib/dpkg/lock
+
+        print_warning "Created a simulated stuck apt process that will never complete"
+    elif [ "$stuck_mode" = "zombie" ]; then
+        # Create a zombie process that appears to be apt
+        bash -c "echo 'Simulating zombie apt process'; sleep 1; kill -STOP \$\$" &
+        ZOMBIE_PID=$!
+        sleep 2  # Give time for the process to become a zombie
+
+        # Create fake lock files
+        touch /var/lib/apt/lists/lock
+        touch /var/lib/dpkg/lock
+
+        APT_PID=$ZOMBIE_PID
+        print_warning "Created a simulated zombie apt process"
+    fi
 
     # Verify the process is running
     if ps -p $APT_PID > /dev/null; then
@@ -120,9 +153,11 @@ run_test() {
     echo ""
     echo "Select test to run:"
     echo "1. Low disk space test"
-    echo "2. Apt lock test"
-    echo "3. Combined test (low disk space + apt lock)"
-    read -p "Enter your choice (1-3): " test_choice
+    echo "2. Normal apt lock test (will complete naturally)"
+    echo "3. Stuck apt lock test (will never complete)"
+    echo "4. Zombie apt process test"
+    echo "5. Combined test (low disk space + stuck apt lock)"
+    read -p "Enter your choice (1-5): " test_choice
 
     case $test_choice in
         1)
@@ -139,17 +174,17 @@ run_test() {
             print_status "The script should detect low disk space and perform cleanup"
             ;;
         2)
-            # Simulate apt lock
-            simulate_apt_lock
+            # Simulate normal apt lock (will complete naturally)
+            simulate_apt_lock "normal"
 
-            print_status "Apt lock simulated. Now running deploy-azure.sh..."
+            print_status "Normal apt lock simulated. Now running deploy-azure.sh..."
 
             # Run deploy-azure.sh with a flag to indicate test mode
             # This is just a simulation - we don't actually run the script
             print_status "In a real test, we would run: ./deploy-azure.sh --test-mode"
 
             # Instead, we'll just show what would happen
-            print_status "The script should detect apt lock and wait or provide options"
+            print_status "The script should detect apt lock and wait until it completes naturally"
 
             # Clean up apt lock after a delay
             print_status "Waiting 10 seconds before cleaning up apt lock..."
@@ -157,21 +192,60 @@ run_test() {
             cleanup_apt_lock
             ;;
         3)
-            # Fill disk space to leave only 100MB free
-            fill_disk_space 100
+            # Simulate stuck apt lock (will never complete)
+            simulate_apt_lock "stuck"
 
-            # Simulate apt lock
-            simulate_apt_lock
-
-            print_status "Disk space filled and apt lock simulated. Now running deploy-azure.sh..."
+            print_status "Stuck apt lock simulated. Now running deploy-azure.sh..."
 
             # Run deploy-azure.sh with a flag to indicate test mode
             # This is just a simulation - we don't actually run the script
             print_status "In a real test, we would run: ./deploy-azure.sh --test-mode"
 
             # Instead, we'll just show what would happen
-            print_status "The script should detect both low disk space and apt lock"
-            print_status "It should wait for apt to finish before attempting cleanup"
+            print_status "The script should detect that the apt process is stuck after 60 seconds of inactivity"
+            print_status "It should then provide interactive options to resolve the situation"
+
+            # Clean up apt lock after a delay
+            print_status "Waiting 10 seconds before cleaning up apt lock..."
+            sleep 10
+            cleanup_apt_lock
+            ;;
+        4)
+            # Simulate zombie apt process
+            simulate_apt_lock "zombie"
+
+            print_status "Zombie apt process simulated. Now running deploy-azure.sh..."
+
+            # Run deploy-azure.sh with a flag to indicate test mode
+            # This is just a simulation - we don't actually run the script
+            print_status "In a real test, we would run: ./deploy-azure.sh --test-mode"
+
+            # Instead, we'll just show what would happen
+            print_status "The script should detect a zombie process and offer recovery options"
+            print_status "The 'Try to fix apt' option should detect and fix the zombie process"
+
+            # Clean up apt lock after a delay
+            print_status "Waiting 10 seconds before cleaning up apt lock..."
+            sleep 10
+            cleanup_apt_lock
+            ;;
+        5)
+            # Fill disk space to leave only 100MB free
+            fill_disk_space 100
+
+            # Simulate stuck apt lock
+            simulate_apt_lock "stuck"
+
+            print_status "Disk space filled and stuck apt lock simulated. Now running deploy-azure.sh..."
+
+            # Run deploy-azure.sh with a flag to indicate test mode
+            # This is just a simulation - we don't actually run the script
+            print_status "In a real test, we would run: ./deploy-azure.sh --test-mode"
+
+            # Instead, we'll just show what would happen
+            print_status "The script should detect both low disk space and stuck apt lock"
+            print_status "It should detect the stuck process after 60 seconds and provide interactive options"
+            print_status "If the user chooses to proceed, it should skip apt operations during cleanup"
 
             # Clean up apt lock after a delay
             print_status "Waiting 10 seconds before cleaning up apt lock..."
@@ -192,12 +266,28 @@ run_test() {
 
 # Function to clean up everything
 cleanup_all() {
+    print_status "Performing cleanup..."
+
+    # Clean up apt lock first
     cleanup_apt_lock
+
+    # Then clean up disk space test
     cleanup_test
+
+    # Remove any stale lock files that might have been created
+    if [ -f /var/lib/apt/lists/lock ] || [ -f /var/lib/dpkg/lock ] || [ -f /var/lib/dpkg/lock-frontend ] || [ -f /var/cache/apt/archives/lock ]; then
+        print_status "Removing stale lock files..."
+        rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock
+    fi
+
+    print_success "Cleanup completed. System restored to original state."
 }
 
 # Trap to ensure cleanup even if script is interrupted
 trap cleanup_all EXIT INT TERM
+
+# Print warning if script is interrupted
+trap 'echo -e "\n${YELLOW}Script interrupted. Cleaning up...${NC}"' INT
 
 # Show warning and ask for confirmation
 print_warning "This script will temporarily fill your disk to test low disk space handling."

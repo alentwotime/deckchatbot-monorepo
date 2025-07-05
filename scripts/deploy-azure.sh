@@ -71,8 +71,26 @@ check_disk_space() {
 
 # Function to check if apt is running
 is_apt_running() {
-    pgrep -f "apt|dpkg" > /dev/null
+    # More specific pattern to avoid false positives
+    # Exclude grep itself and this script's processes
+    pgrep -f "apt-get|dpkg|apt " | grep -v grep | grep -v "$$" > /dev/null
     return $?
+}
+
+# Function to get details about running apt processes
+get_apt_process_info() {
+    echo "Running apt/dpkg processes:"
+    ps aux | grep -E "apt-get|dpkg|apt " | grep -v grep | grep -v "$$"
+
+    echo -e "\nLock files:"
+    for lock_file in /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock; do
+        if [ -f "$lock_file" ]; then
+            echo "$lock_file exists"
+            lsof "$lock_file" 2>/dev/null || echo "  No process is holding $lock_file"
+        else
+            echo "$lock_file does not exist"
+        fi
+    done
 }
 
 # Function to wait for apt to finish
@@ -80,15 +98,90 @@ wait_for_apt() {
     print_status "Waiting for apt/dpkg processes to finish..."
     local max_wait=300  # Maximum wait time in seconds
     local waited=0
+    local check_interval=5  # Check every 5 seconds
+    local last_active_time=$(date +%s)
+    local current_time
+    local process_info
+    local inactivity_threshold=60  # Consider process stuck after 60 seconds of inactivity
 
     while is_apt_running && [ $waited -lt $max_wait ]; do
-        print_status "Apt/dpkg is still running. Waiting 5 seconds... ($waited/$max_wait seconds)"
-        sleep 5
-        waited=$((waited + 5))
+        # Get process info before sleeping
+        process_info=$(ps aux | grep -E "apt-get|dpkg|apt " | grep -v grep | grep -v "$$")
+
+        print_status "Apt/dpkg is still running. Waiting $check_interval seconds... ($waited/$max_wait seconds)"
+        sleep $check_interval
+        waited=$((waited + check_interval))
+
+        # Check if process state has changed
+        current_time=$(date +%s)
+        new_process_info=$(ps aux | grep -E "apt-get|dpkg|apt " | grep -v grep | grep -v "$$")
+
+        if [ "$process_info" != "$new_process_info" ]; then
+            # Process state has changed, update last active time
+            last_active_time=$current_time
+        elif [ $((current_time - last_active_time)) -gt $inactivity_threshold ]; then
+            # Process appears stuck (no change for over inactivity_threshold seconds)
+            print_warning "Apt/dpkg process appears to be stuck (no activity for $inactivity_threshold seconds)."
+            get_apt_process_info
+
+            # Ask user what to do
+            echo ""
+            echo "Options:"
+            echo "1. Continue waiting"
+            echo "2. Proceed anyway (may cause issues)"
+            echo "3. Abort deployment"
+            echo "4. Try to fix apt (experimental)"
+            read -p "What would you like to do? (1-4): " apt_stuck_option
+
+            case $apt_stuck_option in
+                1)
+                    print_status "Continuing to wait..."
+                    last_active_time=$current_time  # Reset inactivity timer
+                    ;;
+                2)
+                    print_warning "Proceeding despite stuck apt process. This may cause issues."
+                    return 1
+                    ;;
+                3)
+                    print_error "Deployment aborted by user."
+                    exit 1
+                    ;;
+                4)
+                    print_warning "Attempting to fix stuck apt process (experimental)..."
+                    # Try to identify and fix common issues
+                    if [ -f /var/lib/dpkg/lock ]; then
+                        print_status "Attempting to fix dpkg lock..."
+                        # Check if the process holding the lock is actually running
+                        lock_pid=$(lsof /var/lib/dpkg/lock 2>/dev/null | awk 'NR>1 {print $2}')
+                        if [ -n "$lock_pid" ]; then
+                            if ps -p $lock_pid > /dev/null; then
+                                print_warning "Process $lock_pid is still running and holding the lock."
+                            else
+                                print_warning "Process $lock_pid appears to be defunct but still holding the lock."
+                                print_status "Attempting to remove stale lock files..."
+                                rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock
+                                dpkg --configure -a
+                            fi
+                        else
+                            print_status "No process is holding the lock, but lock file exists. Removing stale lock files..."
+                            rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock
+                            dpkg --configure -a
+                        fi
+                    fi
+                    # Reset inactivity timer
+                    last_active_time=$current_time
+                    ;;
+                *)
+                    print_status "Invalid option. Continuing to wait..."
+                    last_active_time=$current_time  # Reset inactivity timer
+                    ;;
+            esac
+        fi
     done
 
     if is_apt_running; then
         print_warning "Apt/dpkg is still running after waiting $max_wait seconds."
+        get_apt_process_info
         print_status "Proceeding with caution. Some cleanup operations may be skipped."
         return 1
     else

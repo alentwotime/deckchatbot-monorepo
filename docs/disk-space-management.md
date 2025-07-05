@@ -100,43 +100,70 @@ This script will:
 
 ## Handling APT Lock Issues
 
-The deployment script now includes improved handling for APT lock file issues:
+The deployment script now includes enhanced handling for APT lock file issues:
 
-1. **Automatic detection** of running apt/dpkg processes
-2. **Waiting mechanism** that pauses the script until apt processes complete
-3. **Interactive guidance** when lock files cannot be resolved automatically
+1. **Intelligent process detection** with improved filtering to avoid false positives
+2. **Activity monitoring** that detects truly stuck processes vs. normal long-running operations
+3. **Interactive recovery options** when a process is detected as stuck
+4. **Detailed diagnostics** showing exactly which processes and lock files are involved
 
-If you encounter APT lock errors:
+### How It Works
+
+When the script detects apt/dpkg processes running:
+
+1. It monitors the processes for activity changes
+2. After 60 seconds of no activity, it considers the process potentially stuck
+3. It provides detailed information about the processes and lock files
+4. It offers interactive options to resolve the situation
+
+### Interactive Recovery Options
+
+If a process is detected as stuck, you'll see these options:
 
 ```
-E: Could not get lock /var/cache/apt/archives/lock. It is held by process XXXX (apt-get)
+Options:
+1. Continue waiting
+2. Proceed anyway (may cause issues)
+3. Abort deployment
+4. Try to fix apt (experimental)
 ```
 
-The script will:
-1. Identify the process holding the lock
-2. Wait for up to 5 minutes for it to complete
-3. Provide options to continue without updating packages or abort
+Each option does the following:
+
+- **Continue waiting**: Resets the inactivity timer and continues monitoring
+- **Proceed anyway**: Continues the deployment, skipping operations that require apt
+- **Abort deployment**: Exits the script cleanly
+- **Try to fix apt**: Attempts automatic recovery for common issues:
+  - Detecting and removing stale lock files
+  - Running `dpkg --configure -a` to fix interrupted installations
+  - Identifying defunct processes still holding locks
 
 ### Manual Resolution of APT Lock Issues
 
-If the script cannot automatically resolve APT lock issues:
+If the automatic and interactive options don't resolve the issue:
 
 ```bash
-# Check which processes are using apt
-ps aux | grep -i apt
+# Get detailed information about apt processes and lock files
+ps aux | grep -E "apt-get|dpkg|apt " | grep -v grep
 
-# Find processes holding the lock files
+# Check all relevant lock files
+ls -l /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock
+
+# Find processes holding specific lock files
 sudo lsof /var/lib/apt/lists/lock
 sudo lsof /var/lib/dpkg/lock
 
-# If safe to do so, terminate the process
+# If safe to do so, terminate a specific process
 sudo kill <PID>
+
+# Check if any package installations were interrupted
+sudo dpkg --configure -a
 
 # As a last resort (use with caution!)
 sudo kill -9 <PID>
 ```
 
-**Warning**: Never delete lock files manually. Always let the processes complete or terminate them properly.
+**Warning**: Never delete lock files manually unless you're absolutely certain no apt processes are running. Always try to let processes complete or terminate them properly first.
 
 ## Emergency Disk Space Cleanup
 
