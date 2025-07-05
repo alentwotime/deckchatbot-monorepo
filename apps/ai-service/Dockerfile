@@ -25,8 +25,8 @@ COPY apps/ai-service/poetry.lock* ./
 COPY shared/libs/lib2/lib2 ./lib2
 
 # Install dependencies - with optimizations for disk space
-RUN # Install toml package to parse pyproject.toml
-    pip install --no-cache-dir toml && \
+# Install toml package to parse pyproject.toml
+RUN pip install --no-cache-dir toml && \
     # Extract dependencies from pyproject.toml and install with pip directly
     python -c "import toml; deps = toml.load('pyproject.toml')['tool']['poetry']['dependencies']; print('\n'.join([f'{k}{v}' if isinstance(v, str) else f'{k}' for k, v in deps.items() if k != 'python']))" > requirements.txt && \
     cat requirements.txt && \
