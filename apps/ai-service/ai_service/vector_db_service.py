@@ -10,26 +10,41 @@ import json
 from typing import List, Dict, Any, Optional
 import uuid
 
-# Monkey patch for ChromaDB telemetry issue
-import chromadb
-import chromadb.telemetry.posthog
+# Try to import chromadb, but provide a fallback if it's not available
+try:
+    # Monkey patch for ChromaDB telemetry issue
+    import chromadb
+    import chromadb.telemetry.posthog
+    CHROMADB_AVAILABLE = True
+except ImportError:
+    print("Warning: chromadb not available. Using stub implementation.")
+    CHROMADB_AVAILABLE = False
 
-# Override the problematic capture method to fix "capture() takes 1 positional argument but 3 were given" error
-original_capture = chromadb.telemetry.posthog.capture
-def safe_capture(*args, **kwargs):
-    try:
-        if len(args) == 1:
-            return original_capture(*args, **kwargs)
-        # If more arguments are provided, adjust to match the expected signature
-        return original_capture(args[0])
-    except Exception:
-        # Silently fail if telemetry capture fails
-        return None
+# Only apply monkey patch if chromadb is available
+if CHROMADB_AVAILABLE:
+    # Override the problematic capture method to fix "capture() takes 1 positional argument but 3 were given" error
+    original_capture = chromadb.telemetry.posthog.capture
+    def safe_capture(*args, **kwargs):
+        try:
+            if len(args) == 1:
+                return original_capture(*args, **kwargs)
+            # If more arguments are provided, adjust to match the expected signature
+            return original_capture(args[0])
+        except Exception:
+            # Silently fail if telemetry capture fails
+            return None
 
-chromadb.telemetry.posthog.capture = safe_capture
+    chromadb.telemetry.posthog.capture = safe_capture
 
-from chromadb.config import Settings
-from sentence_transformers import SentenceTransformer
+    from chromadb.config import Settings
+
+# Try to import sentence_transformers, but provide a fallback if it's not available
+try:
+    from sentence_transformers import SentenceTransformer
+    SENTENCE_TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    print("Warning: sentence_transformers not available. Using stub implementation.")
+    SENTENCE_TRANSFORMERS_AVAILABLE = False
 
 
 class VectorDBService:
@@ -37,6 +52,18 @@ class VectorDBService:
 
     def __init__(self, persist_directory: str = "./chroma_db"):
         self.persist_directory = persist_directory
+        self.is_available = CHROMADB_AVAILABLE and SENTENCE_TRANSFORMERS_AVAILABLE
+
+        if not self.is_available:
+            print("VectorDBService is running in stub mode due to missing dependencies.")
+            self.client = None
+            self.embedding_model = None
+            self.deck_knowledge_collection = None
+            self.conversation_history_collection = None
+            self.blueprint_analysis_collection = None
+            return
+
+        # Only initialize if dependencies are available
         self.client = chromadb.PersistentClient(
             path=persist_directory,
             settings=Settings(
@@ -55,6 +82,9 @@ class VectorDBService:
 
     def _get_or_create_collection(self, name: str):
         """Get or create a ChromaDB collection."""
+        if not self.is_available:
+            return None
+
         try:
             return self.client.get_collection(name=name)
         except ValueError:
@@ -75,6 +105,10 @@ class VectorDBService:
             str: Document ID
         """
         doc_id = str(uuid.uuid4())
+
+        if not self.is_available:
+            print(f"Skipping add_deck_knowledge in stub mode: {content[:50]}...")
+            return doc_id
 
         # Generate embedding
         embedding = self.embedding_model.encode(content).tolist()
@@ -100,6 +134,10 @@ class VectorDBService:
         Returns:
             List[Dict[str, Any]]: Search results with content and metadata
         """
+        if not self.is_available:
+            print(f"Skipping search_deck_knowledge in stub mode: {query}")
+            return []
+
         # Generate query embedding
         query_embedding = self.embedding_model.encode(query).tolist()
 
@@ -133,6 +171,10 @@ class VectorDBService:
             str: Context ID
         """
         context_id = str(uuid.uuid4())
+
+        if not self.is_available:
+            print(f"Skipping store_conversation_context in stub mode")
+            return context_id
 
         # Create searchable content from conversation
         content = f"User: {conversation_data.get('user_message', '')} Assistant: {conversation_data.get('assistant_response', '')}"
@@ -171,6 +213,10 @@ class VectorDBService:
         Returns:
             List[Dict[str, Any]]: Relevant conversation context
         """
+        if not self.is_available:
+            print(f"Skipping get_conversation_context in stub mode: {query}")
+            return []
+
         # Generate query embedding
         query_embedding = self.embedding_model.encode(query).tolist()
 
@@ -208,6 +254,10 @@ class VectorDBService:
         """
         analysis_id = str(uuid.uuid4())
 
+        if not self.is_available:
+            print(f"Skipping store_blueprint_analysis in stub mode")
+            return analysis_id
+
         # Create searchable content
         content = f"Blueprint Analysis: {analysis_data.get('description', '')} Dimensions: {analysis_data.get('dimensions', '')} Materials: {analysis_data.get('materials', '')}"
 
@@ -244,6 +294,10 @@ class VectorDBService:
         Returns:
             List[Dict[str, Any]]: Similar blueprint analyses
         """
+        if not self.is_available:
+            print(f"Skipping search_similar_blueprints in stub mode: {query}")
+            return []
+
         # Generate query embedding
         query_embedding = self.embedding_model.encode(query).tolist()
 
@@ -267,6 +321,10 @@ class VectorDBService:
 
     async def initialize_default_knowledge(self):
         """Initialize the database with default deck design knowledge."""
+        if not self.is_available:
+            print("Skipping initialize_default_knowledge in stub mode")
+            return
+
         default_knowledge = [
             {
                 "content": "Standard deck joist spacing is typically 16 inches on center for residential decks. This provides adequate support for most decking materials.",
@@ -295,14 +353,27 @@ class VectorDBService:
 
     def get_collection_stats(self) -> Dict[str, int]:
         """Get statistics about the vector database collections."""
+        if not self.is_available:
+            return {
+                "deck_knowledge_count": 0,
+                "conversation_history_count": 0,
+                "blueprint_analysis_count": 0,
+                "status": "unavailable"
+            }
+
         return {
             "deck_knowledge_count": self.deck_knowledge_collection.count(),
             "conversation_history_count": self.conversation_history_collection.count(),
-            "blueprint_analysis_count": self.blueprint_analysis_collection.count()
+            "blueprint_analysis_count": self.blueprint_analysis_collection.count(),
+            "status": "available"
         }
 
     async def reset_collections(self):
         """Reset all collections (use with caution)."""
+        if not self.is_available:
+            print("Skipping reset_collections in stub mode")
+            return
+
         self.client.reset()
         self.deck_knowledge_collection = self._get_or_create_collection("deck_knowledge")
         self.conversation_history_collection = self._get_or_create_collection("conversation_history")
@@ -324,6 +395,17 @@ async def enhance_query_with_context(query: str, user_id: str = None) -> Dict[st
     Returns:
         Dict[str, Any]: Enhanced query with context
     """
+    # Check if vector_db_service is available
+    if not vector_db_service.is_available:
+        print(f"Skipping enhance_query_with_context in stub mode: {query}")
+        return {
+            "original_query": query,
+            "relevant_knowledge": [],
+            "conversation_context": [],
+            "similar_blueprints": [],
+            "enhanced_context": f"Note: Vector database is not available. Query: {query}"
+        }
+
     # Search for relevant knowledge
     knowledge_results = await vector_db_service.search_deck_knowledge(query, n_results=3)
 
