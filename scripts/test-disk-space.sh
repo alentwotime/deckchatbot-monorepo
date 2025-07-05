@@ -108,6 +108,42 @@ simulate_apt_lock() {
 
         APT_PID=$ZOMBIE_PID
         print_warning "Created a simulated zombie apt process"
+    elif [ "$stuck_mode" = "resistant" ]; then
+        # Create a process that ignores SIGTERM (resistant to normal termination)
+        # but can still be killed with SIGKILL
+        print_status "Creating a process that ignores SIGTERM signals..."
+
+        # Create a bash script that traps and ignores SIGTERM
+        cat > /tmp/resistant_process.sh << 'EOF'
+#!/bin/bash
+# Trap SIGTERM and ignore it
+trap "echo 'Ignoring SIGTERM signal'; echo 'Send SIGKILL to terminate me'" TERM
+echo "Starting resistant process (PID: $$)"
+echo "This process ignores SIGTERM and can only be killed with SIGKILL"
+# Simulate apt-get process
+echo "apt-get update running..."
+# Create and hold lock files
+touch /var/lib/dpkg/lock
+exec {lock_fd}>/var/lib/dpkg/lock
+flock -x $lock_fd
+echo "Lock acquired on /var/lib/dpkg/lock"
+# Loop forever
+while true; do
+    sleep 10
+done
+EOF
+        chmod +x /tmp/resistant_process.sh
+
+        # Start the resistant process
+        /tmp/resistant_process.sh &
+        RESISTANT_PID=$!
+        APT_PID=$RESISTANT_PID
+
+        # Wait a moment to ensure lock files are created and held
+        sleep 2
+
+        print_warning "Created a simulated apt process that resists normal termination (PID: $APT_PID)"
+        print_warning "This process will ignore SIGTERM and can only be killed with SIGKILL"
     fi
 
     # Verify the process is running
@@ -156,8 +192,9 @@ run_test() {
     echo "2. Normal apt lock test (will complete naturally)"
     echo "3. Stuck apt lock test (will never complete)"
     echo "4. Zombie apt process test"
-    echo "5. Combined test (low disk space + stuck apt lock)"
-    read -p "Enter your choice (1-5): " test_choice
+    echo "5. Termination-resistant apt process test"
+    echo "6. Combined test (low disk space + stuck apt lock)"
+    read -p "Enter your choice (1-6): " test_choice
 
     case $test_choice in
         1)
@@ -230,6 +267,32 @@ run_test() {
             cleanup_apt_lock
             ;;
         5)
+            # Simulate termination-resistant apt process
+            simulate_apt_lock "resistant"
+
+            print_status "Termination-resistant apt process simulated. Now running deploy-azure.sh..."
+
+            # Run deploy-azure.sh with a flag to indicate test mode
+            # This is just a simulation - we don't actually run the script
+            print_status "In a real test, we would run: ./deploy-azure.sh --test-mode"
+
+            # Instead, we'll just show what would happen
+            print_status "The script should detect the process and offer termination options"
+            print_status "The normal termination should fail, requiring force kill"
+
+            # Clean up apt lock after a delay
+            print_status "Waiting 15 seconds before cleaning up apt lock..."
+            sleep 15
+            print_status "Force killing resistant process..."
+            if [ -n "$APT_PID" ] && ps -p $APT_PID > /dev/null; then
+                kill -9 $APT_PID
+                print_success "Process $APT_PID has been force killed."
+            fi
+            cleanup_apt_lock
+            # Remove the temporary script
+            rm -f /tmp/resistant_process.sh
+            ;;
+        6)
             # Fill disk space to leave only 100MB free
             fill_disk_space 100
 
@@ -278,6 +341,12 @@ cleanup_all() {
     if [ -f /var/lib/apt/lists/lock ] || [ -f /var/lib/dpkg/lock ] || [ -f /var/lib/dpkg/lock-frontend ] || [ -f /var/cache/apt/archives/lock ]; then
         print_status "Removing stale lock files..."
         rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock
+    fi
+
+    # Remove temporary script file if it exists
+    if [ -f /tmp/resistant_process.sh ]; then
+        print_status "Removing temporary script file..."
+        rm -f /tmp/resistant_process.sh
     fi
 
     print_success "Cleanup completed. System restored to original state."

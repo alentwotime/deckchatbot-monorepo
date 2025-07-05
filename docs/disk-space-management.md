@@ -85,16 +85,30 @@ sudo journalctl --vacuum-time=3d
 
 ## Testing Disk Space Handling
 
-A test script is provided to simulate low disk space scenarios:
+A test script is provided to simulate various scenarios that might occur during deployment:
 
 ```bash
 sudo bash scripts/test-disk-space.sh
 ```
 
-This script will:
-1. Fill disk space to leave only 100MB free
-2. Simulate running the deployment script
+The script offers several test scenarios:
+
+1. **Low disk space test**: Fills disk space to leave only 100MB free
+2. **Normal apt lock test**: Simulates a normal apt process that will complete naturally
+3. **Stuck apt lock test**: Simulates an apt process that will never complete
+4. **Zombie apt process test**: Simulates a zombie apt process
+5. **Termination-resistant apt process test**: Simulates a process that ignores SIGTERM signals
+6. **Combined test**: Simulates both low disk space and a stuck apt process
+
+Each test will:
+1. Set up the test conditions
+2. Simulate what would happen when running the deployment script
 3. Clean up after testing
+
+The **termination-resistant apt process test** is particularly useful for testing the new process termination options, as it creates a process that:
+- Holds a lock on /var/lib/dpkg/lock
+- Ignores normal termination signals (SIGTERM)
+- Can only be killed with SIGKILL
 
 **Note**: Use this script only in a test environment, not in production.
 
@@ -137,6 +151,30 @@ Each option does the following:
   - Detecting and removing stale lock files
   - Running `dpkg --configure -a` to fix interrupted installations
   - Identifying defunct processes still holding locks
+  - **NEW**: Offering to terminate processes that are still running and holding locks
+
+### Process Termination Options
+
+When a process is detected as still running and holding a lock, the script now offers options to terminate it:
+
+1. **Normal termination** (SIGTERM):
+   ```
+   Would you like to attempt to terminate this process? (y/n):
+   ```
+   If you select 'y', the script will:
+   - Send a SIGTERM signal to the process
+   - Wait up to 10 seconds for it to exit gracefully
+   - Clean up lock files if termination is successful
+
+2. **Force kill** (SIGKILL) for resistant processes:
+   ```
+   Would you like to force kill this process? (y/n):
+   ```
+   If a process doesn't respond to normal termination, you'll be offered this option to:
+   - Send a SIGKILL signal to the process (cannot be ignored)
+   - Clean up lock files after the process is terminated
+
+**Note**: Use the force kill option with caution, as it may leave the system in an inconsistent state. It should only be used when normal termination fails and the process is definitely stuck.
 
 ### Manual Resolution of APT Lock Issues
 
@@ -206,9 +244,51 @@ sudo growpart /dev/sda 1
 sudo resize2fs /dev/sda1
 ```
 
+## Docker Build Optimization
+
+The Docker build process can consume significant disk space, especially when building images with large dependencies. The following optimizations have been implemented in our Dockerfiles to reduce disk space usage:
+
+### AI Service Dockerfile Optimizations
+
+1. **Cleanup during build stage**:
+   ```dockerfile
+   # Clean pip cache to reduce disk space usage
+   pip cache purge && \
+   # Remove unnecessary files to reduce image size
+   find /usr/local/lib/python3.11/site-packages -name "*.pyc" -delete && \
+   find /usr/local/lib/python3.11/site-packages -name "__pycache__" -exec rm -rf {} +
+   ```
+
+2. **Selective package copying**:
+   Instead of copying the entire site-packages directory from the builder stage to the production stage, we now selectively copy only the necessary packages:
+   ```dockerfile
+   # Copy only the necessary packages instead of the entire site-packages directory
+   COPY --from=builder /usr/local/lib/python3.11/site-packages/fastapi /usr/local/lib/python3.11/site-packages/fastapi
+   COPY --from=builder /usr/local/lib/python3.11/site-packages/pydantic /usr/local/lib/python3.11/site-packages/pydantic
+   # ... other necessary packages
+   ```
+
+### General Docker Build Tips
+
+1. **Use multi-stage builds** to keep final images small
+2. **Clean up in the same RUN instruction** where packages are installed
+3. **Use .dockerignore** to prevent unnecessary files from being included in the build context
+4. **Run `docker system prune` regularly** to clean up unused images, containers, and build cache
+
+### Troubleshooting Docker Build Failures
+
+If you encounter "no space left on device" errors during Docker builds:
+
+1. Run `docker system df` to check Docker's disk usage
+2. Clean up Docker resources with `docker system prune -af --volumes`
+3. If building locally, ensure your host system has sufficient disk space
+4. Consider using the selective package copying approach for Python dependencies
+5. For CI/CD environments, increase the disk space allocation if possible
+
 ## Best Practices
 
 - Regularly monitor disk space usage with `df -h`
 - Set up automated cleanup tasks using cron jobs
 - Consider using a larger VM size for production deployments
 - Implement log rotation for application logs
+- Run `docker system prune` regularly to clean up Docker resources

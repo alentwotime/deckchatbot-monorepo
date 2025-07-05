@@ -156,6 +156,45 @@ wait_for_apt() {
                         if [ -n "$lock_pid" ]; then
                             if ps -p $lock_pid > /dev/null; then
                                 print_warning "Process $lock_pid is still running and holding the lock."
+                                # Ask if user wants to attempt to terminate the process
+                                read -p "Would you like to attempt to terminate this process? (y/n): " terminate_process
+                                if [[ "$terminate_process" == "y" ]]; then
+                                    print_status "Attempting to terminate process $lock_pid..."
+                                    # First try a gentle termination
+                                    if kill $lock_pid 2>/dev/null; then
+                                        print_status "Sent termination signal to process $lock_pid. Waiting for it to exit..."
+                                        # Wait up to 10 seconds for the process to exit
+                                        for i in {1..10}; do
+                                            if ! ps -p $lock_pid > /dev/null; then
+                                                print_success "Process $lock_pid has been terminated."
+                                                print_status "Cleaning up lock files..."
+                                                rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock
+                                                dpkg --configure -a
+                                                break
+                                            fi
+                                            sleep 1
+                                        done
+
+                                        # If process is still running after 10 seconds, ask if user wants to force kill
+                                        if ps -p $lock_pid > /dev/null; then
+                                            print_warning "Process $lock_pid is still running after 10 seconds."
+                                            read -p "Would you like to force kill this process? (y/n): " force_kill
+                                            if [[ "$force_kill" == "y" ]]; then
+                                                print_warning "Force killing process $lock_pid..."
+                                                if kill -9 $lock_pid 2>/dev/null; then
+                                                    print_success "Process $lock_pid has been force killed."
+                                                    print_status "Cleaning up lock files..."
+                                                    rm -f /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock
+                                                    dpkg --configure -a
+                                                else
+                                                    print_error "Failed to force kill process $lock_pid."
+                                                fi
+                                            fi
+                                        fi
+                                    else
+                                        print_error "Failed to terminate process $lock_pid."
+                                    fi
+                                fi
                             else
                                 print_warning "Process $lock_pid appears to be defunct but still holding the lock."
                                 print_status "Attempting to remove stale lock files..."
@@ -168,6 +207,36 @@ wait_for_apt() {
                             dpkg --configure -a
                         fi
                     fi
+
+                    # Check for other lock files
+                    for lock_file in /var/lib/apt/lists/lock /var/lib/dpkg/lock-frontend /var/cache/apt/archives/lock; do
+                        if [ -f "$lock_file" ]; then
+                            print_status "Checking $lock_file..."
+                            lock_pid=$(lsof $lock_file 2>/dev/null | awk 'NR>1 {print $2}')
+                            if [ -n "$lock_pid" ]; then
+                                print_warning "Process $lock_pid is holding $lock_file."
+                                # Ask if user wants to attempt to terminate the process
+                                read -p "Would you like to attempt to terminate this process? (y/n): " terminate_process
+                                if [[ "$terminate_process" == "y" ]]; then
+                                    print_status "Attempting to terminate process $lock_pid..."
+                                    kill $lock_pid 2>/dev/null
+                                    sleep 2
+                                    if ! ps -p $lock_pid > /dev/null; then
+                                        print_success "Process $lock_pid has been terminated."
+                                    else
+                                        print_warning "Process $lock_pid is still running. Attempting force kill..."
+                                        kill -9 $lock_pid 2>/dev/null
+                                        sleep 1
+                                        if ! ps -p $lock_pid > /dev/null; then
+                                            print_success "Process $lock_pid has been force killed."
+                                        else
+                                            print_error "Failed to terminate process $lock_pid."
+                                        fi
+                                    fi
+                                fi
+                            fi
+                        fi
+                    done
                     # Reset inactivity timer
                     last_active_time=$current_time
                     ;;
