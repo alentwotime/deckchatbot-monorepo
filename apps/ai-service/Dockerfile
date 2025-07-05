@@ -25,10 +25,14 @@ COPY apps/ai-service/poetry.lock* ./
 COPY shared/libs/lib2/lib2 ./lib2
 
 # Install dependencies - with optimizations for disk space
-RUN # Update lock file if pyproject.toml has changed
-    poetry lock && \
-    # Install only main dependencies, no dev dependencies
-    poetry install --no-root --only main && \
+RUN # Install toml package to parse pyproject.toml
+    pip install --no-cache-dir toml && \
+    # Extract dependencies from pyproject.toml and install with pip directly
+    python -c "import toml; deps = toml.load('pyproject.toml')['tool']['poetry']['dependencies']; print('\n'.join([f'{k}{v}' if isinstance(v, str) else f'{k}' for k, v in deps.items() if k != 'python']))" > requirements.txt && \
+    cat requirements.txt && \
+    pip install --no-cache-dir -r requirements.txt && \
+    # Install whisper explicitly
+    pip install --no-cache-dir openai-whisper==20231117 && \
     # Clean pip cache to reduce disk space usage
     pip cache purge && \
     # Remove unnecessary files to reduce image size
@@ -106,8 +110,11 @@ COPY --chown=appuser:appuser apps/ai-service/README.md* ./
 # Set monorepo-aware import path, disable Poetry virtualenv creation, and set HOME
 ENV PYTHONPATH="/app" \
     POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_VIRTUALENVS_IN_PROJECT=false \
+    POETRY_NO_INTERACTION=1 \
     POETRY_CACHE_DIR="/home/appuser/.cache/pypoetry" \
-    HOME="/home/appuser"
+    HOME="/home/appuser" \
+    PIP_NO_CACHE_DIR=1
 
 # Copy and setup entrypoint
 COPY --chown=appuser:appuser apps/ai-service/entrypoint.sh /app/entrypoint.sh
@@ -119,11 +126,17 @@ RUN mkdir -p /home/appuser && \
     mkdir -p /home/appuser/.cache/pypoetry && \
     mkdir -p /home/appuser/.cache/pypoetry/virtualenvs && \
     chown -R appuser:appuser /home/appuser && \
-    chmod -R 755 /home/appuser && \
+    chmod -R 777 /home/appuser && \
     chmod -R 777 /home/appuser/.cache && \
-    # Ensure whisper is installed correctly and remove Poetry if present
+    chmod -R 777 /home/appuser/.cache/pypoetry && \
+    chmod -R 777 /home/appuser/.cache/pypoetry/virtualenvs && \
+    # Ensure whisper is installed correctly and completely remove Poetry and related files
     pip install --no-cache-dir openai-whisper==20231117 && \
-    pip uninstall -y poetry poetry-core poetry-plugin-export 2>/dev/null || true && \
+    pip uninstall -y poetry poetry-core poetry-plugin-export virtualenv 2>/dev/null || true && \
+    pip freeze | grep -i poetry | xargs -r pip uninstall -y && \
+    rm -rf /home/appuser/.poetry /home/appuser/.config/pypoetry 2>/dev/null || true && \
+    find / -name "poetry.lock" -delete 2>/dev/null || true && \
+    find / -name "pyproject.toml" -delete 2>/dev/null || true && \
     chmod -R 755 /usr/local/lib/python3.11/site-packages
 
 # Switch to non-root user
