@@ -115,12 +115,13 @@ ENV PYTHONPATH="/app" \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_VIRTUALENVS_IN_PROJECT=false \
     POETRY_NO_INTERACTION=1 \
-    POETRY_CACHE_DIR="/home/appuser/.cache/pypoetry" \
+    # Set Poetry cache to /dev/null to prevent any cache operations
+    POETRY_CACHE_DIR="/dev/null" \
     # Disable virtualenv creation
     VIRTUALENV_SYSTEM_SITE_PACKAGES=true \
     VIRTUAL_ENV_DISABLE_PROMPT=1 \
     # Additional environment variables to prevent virtualenv creation
-    POETRY_VIRTUALENVS_PATH="/home/appuser/.cache/pypoetry/virtualenvs" \
+    POETRY_VIRTUALENVS_PATH="/dev/null" \
     POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=true \
     POETRY_VIRTUALENVS_OPTIONS_NO_PIP=true \
     POETRY_VIRTUALENVS_OPTIONS_NO_SETUPTOOLS=true
@@ -133,30 +134,28 @@ RUN chmod +x /app/entrypoint.sh
 RUN mkdir -p /home/appuser && \
     mkdir -p /home/appuser/.cache && \
     mkdir -p /home/appuser/.cache/pip && \
-    # Create pypoetry directory with proper permissions to prevent virtualenv creation errors
-    mkdir -p /home/appuser/.cache/pypoetry && \
-    mkdir -p /home/appuser/.cache/pypoetry/virtualenvs && \
+    # Set very permissive permissions for all directories
     chown -R appuser:appuser /home/appuser && \
     chmod -R 777 /home/appuser && \
     chmod -R 777 /home/appuser/.cache && \
     chmod -R 777 /home/appuser/.cache/pip && \
-    chmod -R 777 /home/appuser/.cache/pypoetry && \
-    chmod -R 777 /home/appuser/.cache/pypoetry/virtualenvs && \
-    # Ensure whisper is installed correctly and completely remove Poetry and related files
-    pip install --no-cache-dir openai-whisper==20231117 && \
+    # Completely remove Poetry and virtualenv-related packages
     pip uninstall -y poetry poetry-core poetry-plugin-export virtualenv 2>/dev/null || true && \
     pip freeze | grep -i poetry | xargs -r pip uninstall -y && \
     pip freeze | grep -i virtualenv | xargs -r pip uninstall -y && \
-    # Create a dummy file in the virtualenvs directory to ensure it exists and is writable
-    touch /home/appuser/.cache/pypoetry/virtualenvs/.keep && \
     # Remove any remaining Poetry files
-    rm -rf /home/appuser/.poetry /home/appuser/.config/pypoetry 2>/dev/null || true && \
+    rm -rf /home/appuser/.poetry /home/appuser/.config/pypoetry /home/appuser/.cache/pypoetry 2>/dev/null || true && \
     find / -name "poetry.lock" -delete 2>/dev/null || true && \
     find / -name "pyproject.toml" -delete 2>/dev/null || true && \
     # Make sure whisper and its dependencies are properly installed and accessible
     pip install --no-cache-dir --force-reinstall openai-whisper==20231117 soundfile && \
     # Set permissions for all Python site-packages to ensure they're writable
-    chmod -R 777 /usr/local/lib/python3.11/site-packages
+    chmod -R 777 /usr/local/lib/python3.11/site-packages && \
+    # Create a temporary directory for any runtime file creation
+    mkdir -p /tmp/runtime && \
+    chmod 777 /tmp/runtime && \
+    # Set HOME to a writable location
+    echo 'export HOME="/tmp/runtime"' >> /home/appuser/.bashrc
 
 # Switch to non-root user
 USER appuser
