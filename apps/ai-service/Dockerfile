@@ -54,8 +54,10 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy the shared library
 COPY --chown=appuser:appuser shared/libs/lib2/lib2 ./lib2
 
-# Copy the AI service app code
-COPY --chown=appuser:appuser apps/ai-service/ .
+# Copy only the necessary AI service app code (excluding Poetry files)
+COPY --chown=appuser:appuser apps/ai-service/ai_service ./ai_service
+# Copy any other necessary files but exclude Poetry-related files
+COPY --chown=appuser:appuser apps/ai-service/README.md* ./
 
 # Set monorepo-aware import path
 ENV PYTHONPATH="/app"
@@ -64,11 +66,8 @@ ENV PYTHONPATH="/app"
 COPY --chown=appuser:appuser apps/ai-service/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# Configure Poetry to not create virtualenvs
-RUN mkdir -p /home/appuser/.config/pypoetry && \
-    echo '[virtualenvs]' > /home/appuser/.config/pypoetry/config.toml && \
-    echo 'create = false' >> /home/appuser/.config/pypoetry/config.toml && \
-    chown -R appuser:appuser /home/appuser
+# Ensure home directory permissions are correct
+RUN chown -R appuser:appuser /home/appuser
 
 # Switch to non-root user
 USER appuser
