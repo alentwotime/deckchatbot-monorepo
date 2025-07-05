@@ -34,8 +34,8 @@ RUN pip install --no-cache-dir toml && \
     python convert_deps.py > requirements.txt && \
     cat requirements.txt && \
     pip install --no-cache-dir -r requirements.txt && \
-    # Install whisper explicitly
-    pip install --no-cache-dir openai-whisper==20231117 && \
+    # Install whisper and soundfile explicitly
+    pip install --no-cache-dir openai-whisper==20231117 soundfile && \
     # Clean pip cache to reduce disk space usage
     pip cache purge && \
     # Remove temporary conversion script
@@ -84,9 +84,9 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages/numpy /usr/local/lib
 COPY --from=builder /usr/local/lib/python3.11/site-packages/tqdm /usr/local/lib/python3.11/site-packages/tqdm
 COPY --from=builder /usr/local/lib/python3.11/site-packages/chromadb /usr/local/lib/python3.11/site-packages/chromadb
 COPY --from=builder /usr/local/lib/python3.11/site-packages/sentence_transformers /usr/local/lib/python3.11/site-packages/sentence_transformers
-# Copy whisper and soundfile packages for speech recognition
+# Copy whisper package for speech recognition
 COPY --from=builder /usr/local/lib/python3.11/site-packages/whisper /usr/local/lib/python3.11/site-packages/whisper
-COPY --from=builder /usr/local/lib/python3.11/site-packages/soundfile /usr/local/lib/python3.11/site-packages/soundfile
+# Note: soundfile will be installed directly in the production stage
 # Copy torch and related dependencies for whisper
 COPY --from=builder /usr/local/lib/python3.11/site-packages/torch /usr/local/lib/python3.11/site-packages/torch
 COPY --from=builder /usr/local/lib/python3.11/site-packages/transformers /usr/local/lib/python3.11/site-packages/transformers
@@ -102,7 +102,7 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages/typing_extensions* /
 COPY --from=builder /usr/local/lib/python3.11/site-packages/python_multipart /usr/local/lib/python3.11/site-packages/python_multipart
 
 # Ensure whisper is installed correctly and remove Poetry if present
-RUN pip install --no-cache-dir openai-whisper==20231117 && \
+RUN pip install --no-cache-dir openai-whisper==20231117 soundfile && \
     pip uninstall -y poetry poetry-core poetry-plugin-export 2>/dev/null || true && \
     chmod -R 755 /usr/local/lib/python3.11/site-packages
 
@@ -161,7 +161,7 @@ RUN mkdir -p /home/appuser && \
     rm -rf /root/.poetry /root/.config/pypoetry /root/.cache/pypoetry 2>/dev/null || true && \
     find / -name "poetry.lock" -delete 2>/dev/null || true && \
     find / -name "pyproject.toml" -delete 2>/dev/null || true && \
-    # Make sure whisper and its dependencies are properly installed and accessible
+    # Make sure whisper and soundfile are properly installed and accessible
     pip install --no-cache-dir --force-reinstall openai-whisper==20231117 soundfile && \
     # Set permissions for all Python site-packages to ensure they're writable
     chmod -R 777 /usr/local/lib/python3.11/site-packages && \
