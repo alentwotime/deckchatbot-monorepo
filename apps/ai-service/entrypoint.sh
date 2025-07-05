@@ -30,12 +30,33 @@ export POETRY_VIRTUALENVS_OPTIONS_NO_PIP=true
 export POETRY_VIRTUALENVS_OPTIONS_NO_SETUPTOOLS=true
 
 # Make sure all directories exist and are writable
-mkdir -p /tmp/poetry_cache
-mkdir -p /tmp/poetry_venvs
-mkdir -p /tmp/runtime
-chmod 777 /tmp/poetry_cache
-chmod 777 /tmp/poetry_venvs
-chmod 777 /tmp/runtime
+mkdir -p /tmp/poetry_cache 2>/dev/null || true
+mkdir -p /tmp/poetry_venvs 2>/dev/null || true
+mkdir -p /tmp/runtime 2>/dev/null || true
+
+# Try to set permissions, but don't fail if we can't
+chmod 777 /tmp/poetry_cache 2>/dev/null || echo "Warning: Could not set permissions on /tmp/poetry_cache"
+chmod 777 /tmp/poetry_venvs 2>/dev/null || echo "Warning: Could not set permissions on /tmp/poetry_venvs"
+chmod 777 /tmp/runtime 2>/dev/null || echo "Warning: Could not set permissions on /tmp/runtime"
+
+# If we can't write to /tmp directories, use user's home directory instead
+if [ ! -w "/tmp/poetry_cache" ]; then
+    echo "Warning: /tmp/poetry_cache is not writable, using ~/.poetry_cache instead"
+    mkdir -p ~/.poetry_cache
+    export POETRY_CACHE_DIR=~/.poetry_cache
+fi
+
+if [ ! -w "/tmp/poetry_venvs" ]; then
+    echo "Warning: /tmp/poetry_venvs is not writable, using ~/.poetry_venvs instead"
+    mkdir -p ~/.poetry_venvs
+    export POETRY_VIRTUALENVS_PATH=~/.poetry_venvs
+fi
+
+if [ ! -w "/tmp/runtime" ]; then
+    echo "Warning: /tmp/runtime is not writable, using ~/.runtime instead"
+    mkdir -p ~/.runtime
+    export RUNTIME_DIR=~/.runtime
+fi
 
 # Check for system dependencies
 echo "Verifying system dependencies..."
@@ -180,18 +201,68 @@ if ! python -c "import torch" &> /dev/null; then
     safe_pip_install "torch" " --index-url https://download.pytorch.org/whl/cpu"
 fi
 
+# Verify chromadb dependencies are installed
+echo "Checking chromadb dependencies..."
+for dep in "pydantic" "requests" "tqdm" "typing_extensions" "numpy" "overrides" "posthog" "importlib_resources" "grpcio" "pypika"; do
+    if ! pip show $dep &> /dev/null; then
+        echo "Installing chromadb dependency: $dep"
+        safe_pip_install "$dep" ""
+    fi
+done
+
+# Handle hnswlib separately as it requires special build dependencies
+if ! pip show hnswlib &> /dev/null; then
+    echo "Installing chromadb dependency: hnswlib"
+    if ! safe_pip_install "hnswlib" ""; then
+        echo "Note: hnswlib installation failed. This is expected in some environments."
+        echo "The application will continue to function using alternative similarity search methods."
+    fi
+fi
+
 # Verify chromadb is installed
 if ! python -c "import chromadb" &> /dev/null; then
     echo "Warning: chromadb module is not installed."
-    safe_pip_install "chromadb" "==0.4.22"
+    # Try installing with all dependencies first
+    if ! safe_pip_install "chromadb" "==0.4.22"; then
+        # If that fails, try installing with --no-deps and then install key dependencies separately
+        pip install --no-cache-dir --no-deps chromadb==0.4.22
+        echo "Installed chromadb with --no-deps, now installing key dependencies..."
+        # Skip hnswlib if we already tried to install it above
+        if pip show hnswlib &> /dev/null; then
+            echo "hnswlib is already installed, skipping..."
+        else
+            echo "Note: hnswlib may not install correctly, but chromadb can still function."
+            safe_pip_install "hnswlib" "" || echo "hnswlib installation skipped, using alternative methods."
+        fi
+        safe_pip_install "pypika" ""
+        safe_pip_install "overrides" ""
+        safe_pip_install "posthog" ""
+    fi
 fi
+
+# Verify click is installed (required by uvicorn)
+if ! python -c "import click" &> /dev/null; then
+    echo "Warning: click module is not installed."
+    safe_pip_install "click" ""
+fi
+
+# Verify uvicorn dependencies
+for dep in "h11" "httptools" "python-dotenv" "pyyaml" "uvloop" "watchfiles" "websockets"; do
+    if ! pip show $dep &> /dev/null; then
+        echo "Installing uvicorn dependency: $dep"
+        safe_pip_install "$dep" ""
+    fi
+done
 
 # Final verification of all critical dependencies
 echo "Performing final verification of all critical dependencies..."
 missing_deps=0
 
 # List of critical Python packages to verify
-critical_packages=("fastapi" "pydantic" "PIL" "cv2" "numpy" "pytesseract" "whisper" "soundfile" "chromadb" "sentence_transformers" "torch" "uvicorn" "transformers" "tokenizers" "huggingface_hub" "python_multipart" "starlette" "httpx")
+critical_packages=("fastapi" "pydantic" "PIL" "cv2" "numpy" "pytesseract" "whisper" "soundfile" "chromadb" "sentence_transformers" "torch" "uvicorn" "transformers" "tokenizers" "huggingface_hub" "python_multipart" "starlette" "httpx" "click")
+
+# hnswlib is optional - chromadb can use alternative methods
+optional_packages=("hnswlib")
 
 for package in "${critical_packages[@]}"; do
     if ! python -c "import $package" &> /dev/null; then
@@ -199,6 +270,15 @@ for package in "${critical_packages[@]}"; do
         missing_deps=$((missing_deps + 1))
     else
         echo "✓ $package is available"
+    fi
+done
+
+# Check optional packages
+for package in "${optional_packages[@]}"; do
+    if ! python -c "import $package" &> /dev/null; then
+        echo "NOTE: Optional package $package is not available. Some features may use alternatives."
+    else
+        echo "✓ Optional package $package is available"
     fi
 done
 

@@ -9,7 +9,9 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
-    libtesseract-dev && \
+    libtesseract-dev \
+    python3-dev \
+    cmake && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -83,6 +85,7 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages/cv2 /usr/local/lib/p
 COPY --from=builder /usr/local/lib/python3.11/site-packages/numpy /usr/local/lib/python3.11/site-packages/numpy
 COPY --from=builder /usr/local/lib/python3.11/site-packages/tqdm /usr/local/lib/python3.11/site-packages/tqdm
 COPY --from=builder /usr/local/lib/python3.11/site-packages/chromadb /usr/local/lib/python3.11/site-packages/chromadb
+COPY --from=builder /usr/local/lib/python3.11/site-packages/hnswlib* /usr/local/lib/python3.11/site-packages/
 COPY --from=builder /usr/local/lib/python3.11/site-packages/sentence_transformers /usr/local/lib/python3.11/site-packages/sentence_transformers
 # Copy whisper package for speech recognition
 COPY --from=builder /usr/local/lib/python3.11/site-packages/whisper /usr/local/lib/python3.11/site-packages/whisper

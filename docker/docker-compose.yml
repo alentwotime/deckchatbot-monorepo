@@ -41,6 +41,7 @@ services:
       dockerfile: ./apps/backend/Dockerfile
     env_file:
       - ../.env
+      - ../.env.docker
     environment:
       - AI_SERVICE_URL=http://ai-service:8000
       - AI_PROVIDER=${AI_PROVIDER:-openai}
@@ -87,6 +88,7 @@ services:
       dockerfile: ./apps/ai-service/Dockerfile
     env_file:
       - ../.env
+      - ../.env.docker
     environment:
       - HF_API_TOKEN=${HF_API_TOKEN:-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}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-openai-key}

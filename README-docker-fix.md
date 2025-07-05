@@ -5,6 +5,11 @@ This document explains the changes made to fix the Docker build issues and envir
 ## Issues Fixed
 
 1. **Environment Variable Warnings**:
+   - Warning: `The "SESSION_SECRET" variable is not set. Defaulting to a blank string.`
+   - Warning: `The "JWT_SECRET" variable is not set. Defaulting to a blank string.`
+   - Warning: `The "ENCRYPTION_KEY" variable is not set. Defaulting to a blank string.`
+   - Warning: `The "DATABASE_URL" variable is not set. Defaulting to a blank string.`
+   - Warning: `The "AZURE_AI_KEY" variable is not set. Defaulting to a blank string.`
    - Warning: `The "OPENAI_API_KEY" variable is not set. Defaulting to a blank string.`
    - Warning: `The "OPENAI_ADMIN_API_KEY" variable is not set. Defaulting to a blank string.`
    - Warning: `The "HF_API_TOKEN" variable is not set. Defaulting to a blank string.`
@@ -25,7 +30,21 @@ This document explains the changes made to fix the Docker build issues and envir
    - Removed the `version: '3.8'` line from the docker-compose.yml file as it's no longer needed in newer Docker Compose versions.
 
 2. **Added Default Values for Environment Variables**:
-   - Modified the docker-compose.yml file to provide default values for environment variables:
+   - Created a `.env.docker` file with default values for all required environment variables:
+     ```
+     SESSION_SECRET=docker-dev-session-secret
+     JWT_SECRET=docker-dev-jwt-secret
+     ENCRYPTION_KEY=docker-dev-encryption-key-32chars
+     DATABASE_URL=sqlite:///./docker.db
+     AZURE_AI_KEY=dummy-azure-ai-key-for-docker-dev
+     ```
+   - Updated docker-compose.yml to include this file for both backend and ai-service:
+     ```yaml
+     env_file:
+       - ../.env
+       - ../.env.docker
+     ```
+   - Kept the existing default values for other environment variables:
      ```yaml
      environment:
        - HF_API_TOKEN=${HF_API_TOKEN:-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}
@@ -34,7 +53,22 @@ This document explains the changes made to fix the Docker build issues and envir
      ```
    - This ensures that even if these variables are not defined in the environment or .env file, Docker will use the provided default values.
 
-3. **AI Service Dockerfile Already Fixed**:
+3. **AI Service Permission Issue Fixed**:
+   - Fixed the issue where the AI service container was exiting with error: `chmod: changing permissions of '/tmp/poetry_cache': Operation not permitted`
+   - Modified the entrypoint.sh script to handle permission errors gracefully:
+     ```bash
+     # Try to set permissions, but don't fail if we can't
+     chmod 777 /tmp/poetry_cache 2>/dev/null || echo "Warning: Could not set permissions on /tmp/poetry_cache"
+     ```
+   - Added fallback to use directories in the user's home directory when /tmp is not writable:
+     ```bash
+     # If we can't write to /tmp directories, use user's home directory instead
+     if [ ! -w "/tmp/poetry_cache" ]; then
+         echo "Warning: /tmp/poetry_cache is not writable, using ~/.poetry_cache instead"
+         mkdir -p ~/.poetry_cache
+         export POETRY_CACHE_DIR=~/.poetry_cache
+     fi
+     ```
    - The Dockerfile already includes a `poetry lock` command to update the lock file if the pyproject.toml has changed.
    - The entrypoint.sh file correctly starts the AI service using uvicorn directly without Poetry.
 
