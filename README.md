@@ -569,6 +569,22 @@ Azure VM deployment provides the best balance of performance, cost, and scalabil
 - SSH client (built-in on macOS/Linux, PuTTY on Windows)
 
 **Step 1: Create Azure VM**
+
+**Option 1: Automated Setup (Recommended)**
+1. **Run the Azure VM setup script**:
+   ```powershell
+   .\scripts\create-azure-vm.ps1
+   ```
+   This script will:
+   - Check prerequisites (Azure CLI, login status)
+   - Create a resource group if needed
+   - Create an Azure VM with recommended settings
+   - Open required ports
+   - Display connection information
+
+   For detailed instructions, see [Azure VM Setup Guide](docs/azure-vm-setup.md)
+
+**Option 2: Manual Setup via Azure Portal**
 1. **Login to Azure Portal**: https://portal.azure.com
 2. **Create Virtual Machine**:
    - Click "Create a resource" → "Virtual Machine"
