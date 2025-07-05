@@ -18,8 +18,12 @@ opencv-python-headless = "^4.9.0.80"
 numpy = "^1.26.4"
 tqdm = "^4.66.4"
 pytesseract = "^0.3.10"
+# Vector database dependencies
 chromadb = "^0.4.22"
 sentence-transformers = "^2.2.2"
+# Whisper ASR dependencies
+openai-whisper = "^20231117"
+soundfile = "^0.12.1"
 
 [build-system]
 requires = ["poetry-core"]

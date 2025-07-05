@@ -25,8 +25,7 @@ COPY apps/ai-service/poetry.lock* ./
 COPY shared/libs/lib2/lib2 ./lib2
 
 # Install dependencies - with optimizations for disk space
-RUN poetry config virtualenvs.create false && \
-    # Update lock file if pyproject.toml has changed
+RUN # Update lock file if pyproject.toml has changed
     poetry lock && \
     # Install only main dependencies, no dev dependencies
     poetry install --no-root --only main && \
@@ -75,6 +74,10 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages/sentence_transformer
 # Copy additional dependencies that might be required
 COPY --from=builder /usr/local/lib/python3.11/site-packages/typing_extensions* /usr/local/lib/python3.11/site-packages/
 COPY --from=builder /usr/local/lib/python3.11/site-packages/python_multipart /usr/local/lib/python3.11/site-packages/python_multipart
+
+# Ensure whisper is installed correctly
+RUN pip install --no-cache-dir openai-whisper==20231117 && \
+    chmod -R 755 /usr/local/lib/python3.11/site-packages
 
 # Copy the shared library
 COPY --chown=appuser:appuser shared/libs/lib2/lib2 ./lib2
