@@ -71,7 +71,7 @@ if (-not (Test-Path $SSHKeyPath)) {
         }
 
         Write-Host "Generating new SSH key..." -ForegroundColor Yellow
-        ssh-keygen -t rsa -b 4096 -f "$HOME\.ssh\id_rsa" -N '""'
+        ssh-keygen -t rsa -b 4096 -f "$HOME\.ssh\id_rsa" -N ""
 
         if (Test-Path $SSHKeyPath) {
             Write-Host "✅ SSH key created successfully" -ForegroundColor Green

@@ -69,15 +69,56 @@ check_disk_space() {
     fi
 }
 
+# Function to check if apt is running
+is_apt_running() {
+    pgrep -f "apt|dpkg" > /dev/null
+    return $?
+}
+
+# Function to wait for apt to finish
+wait_for_apt() {
+    print_status "Waiting for apt/dpkg processes to finish..."
+    local max_wait=300  # Maximum wait time in seconds
+    local waited=0
+
+    while is_apt_running && [ $waited -lt $max_wait ]; do
+        print_status "Apt/dpkg is still running. Waiting 5 seconds... ($waited/$max_wait seconds)"
+        sleep 5
+        waited=$((waited + 5))
+    done
+
+    if is_apt_running; then
+        print_warning "Apt/dpkg is still running after waiting $max_wait seconds."
+        print_status "Proceeding with caution. Some cleanup operations may be skipped."
+        return 1
+    else
+        print_success "Apt/dpkg processes have completed."
+        return 0
+    fi
+}
+
 # Function to clean up disk space
 cleanup_disk_space() {
     print_status "Cleaning up disk space..."
 
-    # Clean package cache
-    apt clean
+    # Wait for any apt processes to finish before cleaning
+    wait_for_apt
 
-    # Remove old package lists
-    rm -rf /var/lib/apt/lists/*
+    # Clean package cache (only if apt is not running)
+    if ! is_apt_running; then
+        print_status "Cleaning apt cache..."
+        apt clean || true
+    else
+        print_warning "Skipping apt clean as apt is still running"
+    fi
+
+    # Remove old package lists (only if apt is not running)
+    if ! is_apt_running; then
+        print_status "Removing old package lists..."
+        rm -rf /var/lib/apt/lists/* || true
+    else
+        print_warning "Skipping package list removal as apt is still running"
+    fi
 
     # Remove old kernels (keeping the current one)
     dpkg -l 'linux-*' | awk '/^ii/{ print $2}' | grep -v "$(uname -r | sed 's/-generic//')" | xargs apt-get -y purge 2>/dev/null || true
@@ -109,10 +150,37 @@ cleanup_disk_space() {
     find /var/log -type f -name "*.7" -delete
 
     # Clean apt cache
-    apt-get autoremove -y
-    apt-get autoclean -y
+    if ! is_apt_running; then
+        print_status "Running apt autoremove and autoclean..."
+        apt-get autoremove -y || true
+        apt-get autoclean -y || true
+    else
+        print_warning "Skipping apt autoremove/autoclean as apt is still running"
+    fi
+
+    # Check if we're still critically low on space
+    if ! check_disk_space 256; then
+        print_warning "Still critically low on disk space. Performing emergency cleanup..."
+
+        # More aggressive cleanup for emergency situations
+        print_status "Clearing additional caches..."
+        rm -rf /var/cache/apt/* || true
+        rm -rf /var/tmp/* || true
+
+        # Clear user caches
+        find /home -type f -name "*.log" -delete || true
+        find /home -type f -name "*.tmp" -delete || true
+
+        # Clear build artifacts
+        find /opt -name "node_modules" -type d -exec rm -rf {} + 2>/dev/null || true
+        find /opt -name ".git" -type d -exec du -sh {} \; 2>/dev/null || true
+
+        # Clear additional logs
+        find /var/log -type f -exec truncate --size=0 {} \; || true
+    fi
 
     # Display new disk space
+    print_status "Disk space after cleanup:"
     df -h /
 }
 
@@ -202,12 +270,77 @@ if ! check_disk_space 1024; then
 fi
 
 print_status "Updating system packages..."
+
+# Check for running apt processes before updating
+if is_apt_running; then
+    print_warning "Another apt/dpkg process is already running."
+    print_status "Waiting for it to complete before proceeding..."
+    wait_for_apt
+
+    # If apt is still running after waiting, provide guidance
+    if is_apt_running; then
+        print_error "Unable to proceed with package updates while another apt process is running."
+        print_status "You can try one of the following:"
+        print_status "1. Wait for the other apt process to complete"
+        print_status "2. Check which process is holding the lock: 'ps aux | grep apt'"
+        print_status "3. If safe to do so, you can kill the process: 'sudo kill <PID>'"
+        print_status "4. As a last resort, run with --cleanup to free up disk space without updating packages"
+
+        # Ask if user wants to continue without updating
+        read -p "Do you want to continue without updating packages? (y/n): " skip_update
+        if [[ "$skip_update" != "y" ]]; then
+            print_error "Deployment aborted. Please try again later."
+            exit 1
+        else
+            print_warning "Continuing without updating packages. This may cause issues later."
+        fi
+    fi
+fi
+
 # Try to update, but handle disk space errors
-if ! apt update; then
-    print_error "Failed to update package lists. This might be due to disk space issues."
-    cleanup_disk_space
-    print_status "Retrying package update after cleanup..."
-    apt update
+if ! is_apt_running || [[ "$skip_update" != "y" ]]; then
+    if ! apt update; then
+        print_error "Failed to update package lists. This might be due to disk space issues."
+        cleanup_disk_space
+        print_status "Retrying package update after cleanup..."
+
+        # Second attempt after cleanup
+        if ! apt update; then
+            print_error "Still unable to update package lists after cleanup."
+            print_status "Checking for apt lock issues..."
+
+            if [ -f /var/lib/apt/lists/lock ] || [ -f /var/lib/dpkg/lock ]; then
+                print_warning "Apt lock files detected. Another process may be using apt."
+                print_status "Process holding the lock:"
+                lsof /var/lib/apt/lists/lock /var/lib/dpkg/lock 2>/dev/null || echo "No process information available"
+
+                print_status "You can try one of the following:"
+                print_status "1. Wait for the other apt process to complete"
+                print_status "2. Run with --cleanup to free up disk space without updating packages"
+
+                read -p "Do you want to continue without updating packages? (y/n): " skip_update
+                if [[ "$skip_update" != "y" ]]; then
+                    print_error "Deployment aborted. Please try again later."
+                    exit 1
+                else
+                    print_warning "Continuing without updating packages. This may cause issues later."
+                fi
+            else
+                print_error "Critical error: Unable to update packages and no lock files detected."
+                print_status "This might be due to severe disk space issues or network problems."
+                print_status "Current disk space:"
+                df -h /
+
+                read -p "Do you want to continue without updating packages? (y/n): " skip_update
+                if [[ "$skip_update" != "y" ]]; then
+                    print_error "Deployment aborted. Please try again later."
+                    exit 1
+                else
+                    print_warning "Continuing without updating packages. This may cause issues later."
+                fi
+            fi
+        fi
+    fi
 fi
 
 # Check disk space before upgrade
