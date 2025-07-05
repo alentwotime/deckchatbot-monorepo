@@ -869,6 +869,45 @@ sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
+#### Docker Daemon Configuration
+
+**Issue**: Docker performance or resource issues
+```
+Symptoms: Slow builds, container crashes, disk space problems
+```
+
+**Solution**: Optimize Docker daemon configuration
+1. Use our automated configuration scripts:
+
+   **Windows**:
+   ```powershell
+   # Run as Administrator
+   .\scripts\daemon-config.ps1
+   Restart-Service docker
+   ```
+
+   **Linux**:
+   ```bash
+   # Run with sudo
+   sudo ./scripts/daemon-config.sh
+   sudo systemctl restart docker
+   ```
+
+2. Verify the configuration:
+   ```bash
+   docker info
+   ```
+
+These scripts create an optimized `daemon.json` file with:
+- Efficient builder cache management
+- Network settings matching our docker-compose configuration
+- BuildKit enabled for faster builds
+- Appropriate resource limits for AI workloads
+- Log rotation to prevent disk space issues
+- Security enhancements
+
+For detailed documentation, see [Docker Daemon Configuration Guide](docs/docker-daemon-configuration.md).
+
 #### Node.js and Python Issues
 
 **Issue**: Node.js version incompatibility
