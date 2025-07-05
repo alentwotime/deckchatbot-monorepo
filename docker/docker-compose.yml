@@ -94,6 +94,11 @@ services:
       - HF_API_TOKEN=${HF_API_TOKEN:-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}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-openai-key}
       - OPENAI_ADMIN_API_KEY=${OPENAI_ADMIN_API_KEY:-dummy-admin-key}
+      - SESSION_SECRET=${SESSION_SECRET:-docker-dev-session-secret}
+      - JWT_SECRET=${JWT_SECRET:-docker-dev-jwt-secret}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-docker-dev-encryption-key-32chars}
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///./docker.db}
+      - AZURE_AI_KEY=${AZURE_AI_KEY:-dummy-azure-ai-key-for-docker-dev}
     ports:
       - "8001:8000"
     restart: unless-stopped
