@@ -90,8 +90,9 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages/safetensors* /usr/lo
 COPY --from=builder /usr/local/lib/python3.11/site-packages/typing_extensions* /usr/local/lib/python3.11/site-packages/
 COPY --from=builder /usr/local/lib/python3.11/site-packages/python_multipart /usr/local/lib/python3.11/site-packages/python_multipart
 
-# Ensure whisper is installed correctly
+# Ensure whisper is installed correctly and remove Poetry if present
 RUN pip install --no-cache-dir openai-whisper==20231117 && \
+    pip uninstall -y poetry poetry-core poetry-plugin-export 2>/dev/null || true && \
     chmod -R 755 /usr/local/lib/python3.11/site-packages
 
 # Copy the shared library
@@ -102,18 +103,27 @@ COPY --chown=appuser:appuser apps/ai-service/ai_service ./ai_service
 # Copy any other necessary files but exclude Poetry-related files
 COPY --chown=appuser:appuser apps/ai-service/README.md* ./
 
-# Set monorepo-aware import path
-ENV PYTHONPATH="/app"
+# Set monorepo-aware import path, disable Poetry virtualenv creation, and set HOME
+ENV PYTHONPATH="/app" \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_CACHE_DIR="/home/appuser/.cache/pypoetry" \
+    HOME="/home/appuser"
 
 # Copy and setup entrypoint
 COPY --chown=appuser:appuser apps/ai-service/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# Create and set permissions for home directory
+# Create and set permissions for home directory and cache directories
 RUN mkdir -p /home/appuser && \
+    mkdir -p /home/appuser/.cache && \
+    mkdir -p /home/appuser/.cache/pypoetry && \
+    mkdir -p /home/appuser/.cache/pypoetry/virtualenvs && \
     chown -R appuser:appuser /home/appuser && \
-    # Ensure whisper is installed correctly
+    chmod -R 755 /home/appuser && \
+    chmod -R 777 /home/appuser/.cache && \
+    # Ensure whisper is installed correctly and remove Poetry if present
     pip install --no-cache-dir openai-whisper==20231117 && \
+    pip uninstall -y poetry poetry-core poetry-plugin-export 2>/dev/null || true && \
     chmod -R 755 /usr/local/lib/python3.11/site-packages
 
 # Switch to non-root user
