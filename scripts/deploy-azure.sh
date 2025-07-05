@@ -5,11 +5,11 @@
 #
 # Azure Configuration:
 # Subscription: Azure subscription 1
-# Resource Group: db82500a-1f73-43d9-bf55-c5e0f63ee888/resourcegroups/cloud-shell-storage-eastus
-# Storage Account: cs210032004c5b3ebc0
-# File Share: cs-icjalenz-gmail-com-10032004c5b3ebc0
-# Region: East US
-# Domain: AlensDeckBot.online (from Godaddy)
+# Resource Group: deckchatbot-rg
+# VM Name: deckchatbot-vm
+# Region: eastus
+# Public IP: 172.191.9.27
+# Username: azureuser
 
 set -e  # Exit on any error
 
@@ -151,11 +151,11 @@ REACT_APP_API_BASE_URL=http://localhost:8000
 AI_SERVICE_URL=http://localhost:8001
 HF_API_TOKEN=
 AZURE_SUBSCRIPTION=Azure subscription 1
-AZURE_RESOURCE_GROUP=db82500a-1f73-43d9-bf55-c5e0f63ee888/resourcegroups/cloud-shell-storage-eastus
-AZURE_STORAGE_ACCOUNT=cs210032004c5b3ebc0
-AZURE_FILE_SHARE=cs-icjalenz-gmail-com-10032004c5b3ebc0
-AZURE_REGION=East US
-AZURE_DOMAIN=AlensDeckBot.online
+AZURE_RESOURCE_GROUP=deckchatbot-rg
+AZURE_VM_NAME=deckchatbot-vm
+AZURE_REGION=eastus
+AZURE_PUBLIC_IP=172.191.9.27
+AZURE_USERNAME=azureuser
 EOF
     fi
 else

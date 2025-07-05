@@ -584,6 +584,8 @@ Azure VM deployment provides the best balance of performance, cost, and scalabil
 
    For detailed instructions, see [Azure VM Setup Guide](docs/azure-vm-setup.md)
 
+   To view the current deployment status, see [Deployment Status](docs/deployment-status.md)
+
 **Option 2: Manual Setup via Azure Portal**
 1. **Login to Azure Portal**: https://portal.azure.com
 2. **Create Virtual Machine**:
