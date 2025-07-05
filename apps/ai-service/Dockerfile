@@ -24,48 +24,12 @@ COPY apps/ai-service/poetry.lock* ./
 # Copy the shared library (path is relative to the monorepo root)
 COPY shared/libs/lib2/lib2 ./lib2
 
+# Copy the conversion script
+COPY apps/ai-service/convert_deps.py ./
+
 # Install dependencies - with optimizations for disk space
 # Install toml package to parse pyproject.toml
 RUN pip install --no-cache-dir toml && \
-    # Create a Python script to convert Poetry dependencies to pip format
-    echo '
-import toml
-
-def convert_poetry_dep(name, spec):
-    # Skip python dependency
-    if name == "python":
-        return None
-
-    # Handle simple string version
-    if isinstance(spec, str):
-        # Convert Poetry\'s caret notation to pip\'s version
-        version = spec.replace("^", "")
-        return f"{name}=={version}"
-
-    # Handle dictionary with version and extras
-    if isinstance(spec, dict) and "version" in spec:
-        version = spec["version"].replace("^", "")
-        extras = ""
-        if "extras" in spec:
-            extras = f"[{spec[\"extras\"][0]}]"
-        return f"{name}{extras}=={version}"
-
-    # Fallback for other cases
-    return name
-
-# Load dependencies from pyproject.toml
-deps = toml.load("pyproject.toml")["tool"]["poetry"]["dependencies"]
-
-# Convert each dependency to pip format
-pip_deps = []
-for name, spec in deps.items():
-    pip_dep = convert_poetry_dep(name, spec)
-    if pip_dep:
-        pip_deps.append(pip_dep)
-
-# Write to requirements.txt
-print("\\n".join(pip_deps))
-' > convert_deps.py && \
     # Extract dependencies from pyproject.toml and install with pip directly
     python convert_deps.py > requirements.txt && \
     cat requirements.txt && \
@@ -95,11 +59,13 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
+# Create non-root user with proper home directory permissions
 RUN groupadd -r appuser && \
-    useradd -r -g appuser -u 1001 appuser && \
+    useradd -r -g appuser -u 1001 -m appuser && \
     mkdir -p /app && \
-    chown -R appuser:appuser /app
+    chown -R appuser:appuser /app && \
+    chmod 755 /home && \
+    chmod 755 /home/appuser
 
 # Copy Python packages from builder stage - selectively to reduce disk space usage
 # Copy only the necessary packages instead of the entire site-packages directory
@@ -152,17 +118,17 @@ COPY --chown=appuser:appuser apps/ai-service/README.md* ./
 ENV PYTHONPATH="/app" \
     HOME="/home/appuser" \
     PIP_NO_CACHE_DIR=1 \
-    # Explicitly disable all Poetry-related functionality
+    # Completely disable Poetry by setting environment variables
+    POETRY_DISABLED=1 \
     POETRY_VIRTUALENVS_CREATE=false \
     POETRY_VIRTUALENVS_IN_PROJECT=false \
     POETRY_NO_INTERACTION=1 \
-    # Set Poetry cache to /dev/null to prevent any cache operations
-    POETRY_CACHE_DIR="/dev/null" \
+    POETRY_CACHE_DIR="/tmp/poetry_cache" \
     # Disable virtualenv creation
     VIRTUALENV_SYSTEM_SITE_PACKAGES=true \
     VIRTUAL_ENV_DISABLE_PROMPT=1 \
     # Additional environment variables to prevent virtualenv creation
-    POETRY_VIRTUALENVS_PATH="/dev/null" \
+    POETRY_VIRTUALENVS_PATH="/tmp/poetry_venvs" \
     POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=true \
     POETRY_VIRTUALENVS_OPTIONS_NO_PIP=true \
     POETRY_VIRTUALENVS_OPTIONS_NO_SETUPTOOLS=true
@@ -175,28 +141,35 @@ RUN chmod +x /app/entrypoint.sh
 RUN mkdir -p /home/appuser && \
     mkdir -p /home/appuser/.cache && \
     mkdir -p /home/appuser/.cache/pip && \
+    mkdir -p /tmp/poetry_cache && \
+    mkdir -p /tmp/poetry_venvs && \
+    mkdir -p /tmp/runtime && \
     # Set very permissive permissions for all directories
     chown -R appuser:appuser /home/appuser && \
     chmod -R 777 /home/appuser && \
     chmod -R 777 /home/appuser/.cache && \
     chmod -R 777 /home/appuser/.cache/pip && \
+    chmod -R 777 /tmp/poetry_cache && \
+    chmod -R 777 /tmp/poetry_venvs && \
+    chmod -R 777 /tmp/runtime && \
     # Completely remove Poetry and virtualenv-related packages
     pip uninstall -y poetry poetry-core poetry-plugin-export virtualenv 2>/dev/null || true && \
-    pip freeze | grep -i poetry | xargs -r pip uninstall -y && \
-    pip freeze | grep -i virtualenv | xargs -r pip uninstall -y && \
+    pip freeze | grep -i poetry | xargs -r pip uninstall -y 2>/dev/null || true && \
+    pip freeze | grep -i virtualenv | xargs -r pip uninstall -y 2>/dev/null || true && \
     # Remove any remaining Poetry files
     rm -rf /home/appuser/.poetry /home/appuser/.config/pypoetry /home/appuser/.cache/pypoetry 2>/dev/null || true && \
+    rm -rf /root/.poetry /root/.config/pypoetry /root/.cache/pypoetry 2>/dev/null || true && \
     find / -name "poetry.lock" -delete 2>/dev/null || true && \
     find / -name "pyproject.toml" -delete 2>/dev/null || true && \
     # Make sure whisper and its dependencies are properly installed and accessible
     pip install --no-cache-dir --force-reinstall openai-whisper==20231117 soundfile && \
     # Set permissions for all Python site-packages to ensure they're writable
     chmod -R 777 /usr/local/lib/python3.11/site-packages && \
-    # Create a temporary directory for any runtime file creation
-    mkdir -p /tmp/runtime && \
-    chmod 777 /tmp/runtime && \
-    # Set HOME to a writable location
-    echo 'export HOME="/tmp/runtime"' >> /home/appuser/.bashrc
+    # Ensure HOME is properly set in .bashrc
+    echo 'export HOME="/home/appuser"' > /home/appuser/.bashrc && \
+    # Disable Poetry in .bashrc
+    echo 'export POETRY_DISABLED=1' >> /home/appuser/.bashrc && \
+    echo 'export POETRY_VIRTUALENVS_CREATE=false' >> /home/appuser/.bashrc
 
 # Switch to non-root user
 USER appuser
