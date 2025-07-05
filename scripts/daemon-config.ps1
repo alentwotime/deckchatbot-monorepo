@@ -20,7 +20,7 @@ $daemonConfig = @{
             "enabled" = $true
         }
     }
-    
+
     # Container settings
     "default-address-pools" = @(
         @{
@@ -28,13 +28,13 @@ $daemonConfig = @{
             "size" = 24
         }
     )
-    
+
     # Runtime settings
     "experimental" = $false
     "features" = @{
         "buildkit" = $true
     }
-    
+
     # Resource limits
     "default-shm-size" = "2G"
     "default-ulimits" = @{
@@ -44,25 +44,25 @@ $daemonConfig = @{
             "Soft" = 64000
         }
     }
-    
+
     # Logging configuration
     "log-driver" = "json-file"
     "log-opts" = @{
         "max-size" = "50m"
         "max-file" = "3"
     }
-    
+
     # Storage settings
     "storage-driver" = "windowsfilter"
     "storage-opts" = @(
         "size=50GB"
     )
-    
+
     # Security settings
     "no-new-privileges" = $true
     "selinux-enabled" = $false
     "userns-remap" = ""
-    
+
     # Performance settings
     "registry-mirrors" = @(
         "https://registry-1.docker.io"
@@ -96,7 +96,9 @@ Write-Host "  • Performance optimizations for concurrent operations" -Foregrou
 Write-Host ""
 Write-Host "To apply these changes:" -ForegroundColor Yellow
 Write-Host "1. Restart the Docker service:" -ForegroundColor White
-Write-Host "   Restart-Service docker" -ForegroundColor White
+Write-Host "   Restart-Service com.docker.service" -ForegroundColor White
+Write-Host "   # If the above command fails, try:" -ForegroundColor White
+Write-Host "   # Get-Service *docker* | Restart-Service" -ForegroundColor White
 Write-Host ""
 Write-Host "2. Verify the configuration:" -ForegroundColor White
 Write-Host "   docker info" -ForegroundColor White

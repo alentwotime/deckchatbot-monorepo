@@ -26,7 +26,9 @@ After running the script, restart the Docker service to apply the changes:
 
 ```powershell
 # Windows (PowerShell as Administrator)
-Restart-Service docker
+Restart-Service com.docker.service
+# If the above command fails, try:
+Get-Service *docker* | Restart-Service
 
 # Linux/macOS
 sudo systemctl restart docker
@@ -216,7 +218,7 @@ If you encounter issues after applying the configuration:
    ```
    # Windows
    Get-EventLog -LogName Application -Source docker -Newest 50
-   
+
    # Linux
    sudo journalctl -u docker
    ```

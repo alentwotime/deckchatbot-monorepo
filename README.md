@@ -886,7 +886,9 @@ Symptoms: Slow builds, container crashes, disk space problems
    ```powershell
    # Run as Administrator
    .\scripts\daemon-config.ps1
-   Restart-Service docker
+   Restart-Service com.docker.service
+   # If the above command fails, try:
+   Get-Service *docker* | Restart-Service
    ```
 
    **Linux**:
