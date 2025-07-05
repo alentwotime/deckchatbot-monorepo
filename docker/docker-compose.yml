@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   frontend:
     build:
@@ -124,6 +126,7 @@ services:
 networks:
   decknet:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 192.168.65.0/24
+    # Removed custom subnet configuration that was causing issues
+    driver_opts:
+      com.docker.network.bridge.name: decknet
+      com.docker.network.driver.mtu: 1500
