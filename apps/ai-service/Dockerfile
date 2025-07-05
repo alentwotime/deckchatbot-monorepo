@@ -66,8 +66,9 @@ ENV PYTHONPATH="/app"
 COPY --chown=appuser:appuser apps/ai-service/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# Ensure home directory permissions are correct
-RUN chown -R appuser:appuser /home/appuser
+# Create and set permissions for home directory
+RUN mkdir -p /home/appuser && \
+    chown -R appuser:appuser /home/appuser
 
 # Switch to non-root user
 USER appuser
