@@ -27,14 +27,55 @@ COPY shared/libs/lib2/lib2 ./lib2
 # Install dependencies - with optimizations for disk space
 # Install toml package to parse pyproject.toml
 RUN pip install --no-cache-dir toml && \
+    # Create a Python script to convert Poetry dependencies to pip format
+    echo '
+import toml
+
+def convert_poetry_dep(name, spec):
+    # Skip python dependency
+    if name == "python":
+        return None
+
+    # Handle simple string version
+    if isinstance(spec, str):
+        # Convert Poetry\'s caret notation to pip\'s version
+        version = spec.replace("^", "")
+        return f"{name}=={version}"
+
+    # Handle dictionary with version and extras
+    if isinstance(spec, dict) and "version" in spec:
+        version = spec["version"].replace("^", "")
+        extras = ""
+        if "extras" in spec:
+            extras = f"[{spec[\"extras\"][0]}]"
+        return f"{name}{extras}=={version}"
+
+    # Fallback for other cases
+    return name
+
+# Load dependencies from pyproject.toml
+deps = toml.load("pyproject.toml")["tool"]["poetry"]["dependencies"]
+
+# Convert each dependency to pip format
+pip_deps = []
+for name, spec in deps.items():
+    pip_dep = convert_poetry_dep(name, spec)
+    if pip_dep:
+        pip_deps.append(pip_dep)
+
+# Write to requirements.txt
+print("\\n".join(pip_deps))
+' > convert_deps.py && \
     # Extract dependencies from pyproject.toml and install with pip directly
-    python -c "import toml; deps = toml.load('pyproject.toml')['tool']['poetry']['dependencies']; print('\n'.join([f'{k}{v}' if isinstance(v, str) else f'{k}' for k, v in deps.items() if k != 'python']))" > requirements.txt && \
+    python convert_deps.py > requirements.txt && \
     cat requirements.txt && \
     pip install --no-cache-dir -r requirements.txt && \
     # Install whisper explicitly
     pip install --no-cache-dir openai-whisper==20231117 && \
     # Clean pip cache to reduce disk space usage
     pip cache purge && \
+    # Remove temporary conversion script
+    rm -f convert_deps.py && \
     # Remove unnecessary files to reduce image size
     find /usr/local/lib/python3.11/site-packages -name "*.pyc" -delete && \
     find /usr/local/lib/python3.11/site-packages -name "__pycache__" -exec rm -rf {} +
