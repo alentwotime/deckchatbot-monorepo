@@ -92,11 +92,25 @@ The following changes were made to fix the issue:
 5. Modified the batch file to use the simplified docker-compose configuration (docker-compose-simple.yml) to avoid image reference issues
 6. Updated documentation to provide comprehensive troubleshooting steps
 
+## WSL Configuration
+
+If you're using Docker with Windows Subsystem for Linux (WSL), you may need to configure your WSL environment for optimal performance and user experience.
+
+For detailed instructions on configuring WSL, including how to disable the daily login message, see:
+- [WSL_CONFIGURATION.md](./WSL_CONFIGURATION.md)
+
+To quickly disable the daily login message in WSL, you can run the provided script:
+```bash
+# Run from WSL terminal
+bash ./docker/disable-wsl-login-message.sh
+```
+
 ## Additional Resources
 
 For more detailed information about Docker API issues, see:
 - [DOCKER_API_FIX_GUIDE.md](./DOCKER_API_FIX_GUIDE.md)
 - [DOCKER_API_500_COMPLETE_FIX.md](./DOCKER_API_500_COMPLETE_FIX.md)
+- [DOCKER_DAEMON_CONFIG.md](./DOCKER_DAEMON_CONFIG.md)
 
 You can also run the automated fix scripts:
 - `fix-docker-api-issues.ps1` - API compatibility fix (no admin required)
