@@ -31,7 +31,8 @@ ssh azureuser@172.191.9.27
 1. Connect to the VM using SSH
 2. Run the automated deployment script:
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/aklin/deckchatbot-monorepo/main/scripts/deploy-azure.sh | bash
+   Invoke-WebRequest -Uri https://raw.githubusercontent.com/AlenTwoTime/deckchatbot-monorepo/main/scripts/deploy-azure.sh -OutFile deploy-azure.sh
+   bash deploy-azure.sh
    ```
 3. Optional: Configure a domain name
    - Point your domain's A record to: 172.191.9.27

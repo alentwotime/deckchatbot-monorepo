@@ -5,19 +5,19 @@
 param (
     [Parameter(Mandatory=$false)]
     [string]$VMName = "deckchatbot-vm",
-    
+
     [Parameter(Mandatory=$false)]
     [string]$ResourceGroupName = "deckchatbot-rg",
-    
+
     [Parameter(Mandatory=$false)]
     [string]$Location = "eastus",
-    
+
     [Parameter(Mandatory=$false)]
     [string]$VMSize = "Standard_B2s",
-    
+
     [Parameter(Mandatory=$false)]
     [string]$AdminUsername = "azureuser",
-    
+
     [Parameter(Mandatory=$false)]
     [string]$SSHKeyPath = "$HOME\.ssh\id_rsa.pub"
 )
@@ -47,7 +47,7 @@ try {
     Write-Host "❌ Not logged in to Azure. Please login first." -ForegroundColor Red
     Write-Host "   Running 'az login'..." -ForegroundColor Yellow
     az login
-    
+
     # Check again if login was successful
     try {
         $account = az account show | ConvertFrom-Json
@@ -63,16 +63,16 @@ try {
 if (-not (Test-Path $SSHKeyPath)) {
     Write-Host "SSH key not found at $SSHKeyPath" -ForegroundColor Yellow
     $createKey = Read-Host "Do you want to create a new SSH key? (y/n)"
-    
+
     if ($createKey -eq "y") {
         $sshKeyDir = Split-Path -Parent $SSHKeyPath
         if (-not (Test-Path $sshKeyDir)) {
             New-Item -ItemType Directory -Path $sshKeyDir | Out-Null
         }
-        
+
         Write-Host "Generating new SSH key..." -ForegroundColor Yellow
         ssh-keygen -t rsa -b 4096 -f "$HOME\.ssh\id_rsa" -N '""'
-        
+
         if (Test-Path $SSHKeyPath) {
             Write-Host "✅ SSH key created successfully" -ForegroundColor Green
         } else {
@@ -156,7 +156,8 @@ Write-Host ""
 Write-Host "Next Steps:" -ForegroundColor Yellow
 Write-Host "1. Connect to your VM using SSH" -ForegroundColor White
 Write-Host "2. Run the automated deployment script:" -ForegroundColor White
-Write-Host "   curl -fsSL https://raw.githubusercontent.com/aklin/deckchatbot-monorepo/main/scripts/deploy-azure.sh | bash" -ForegroundColor White
+Write-Host "   Invoke-WebRequest -Uri https://raw.githubusercontent.com/AlenTwoTime/deckchatbot-monorepo/main/scripts/deploy-azure.sh -OutFile deploy-azure.sh" -ForegroundColor White
+Write-Host "   bash deploy-azure.sh" -ForegroundColor White
 Write-Host ""
 Write-Host "Optional: Configure a domain name" -ForegroundColor Yellow
 Write-Host "1. Point your domain's A record to: $publicIP" -ForegroundColor White

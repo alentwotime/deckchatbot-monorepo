@@ -582,7 +582,9 @@ Azure VM deployment provides the best balance of performance, cost, and scalabil
    - Open required ports
    - Display connection information
 
-   For detailed instructions, see [Azure VM Setup Guide](docs/azure-vm-setup.md)
+   For detailed instructions, see:
+   - [Azure VM Setup Guide](docs/azure-vm-setup.md)
+   - [PowerShell Deployment Guide](docs/powershell-deployment-guide.md) (for Windows users)
 
    To view the current deployment status, see [Deployment Status](docs/deployment-status.md)
 
@@ -614,7 +616,8 @@ ssh azureuser@YOUR_VM_PUBLIC_IP
 **Step 3: Automated Installation**
 ```bash
 # Download and run the automated deployment script
-curl -fsSL https://raw.githubusercontent.com/aklin/deckchatbot-monorepo/main/scripts/deploy-azure.sh | bash
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/AlenTwoTime/deckchatbot-monorepo/main/scripts/deploy-azure.sh -OutFile deploy-azure.sh
+bash deploy-azure.sh
 ```
 
 **What the script does:**
@@ -734,10 +737,10 @@ chmod +x *.sh
 
 **Cost Estimation**: ~$120-230/month (varies by usage)
 
-For detailed AWS deployment instructions, see:
-- **Step-by-Step Guide**: [`docs/aws-step-by-step-guide.md`](docs/aws-step-by-step-guide.md)
-- **Quick Reference**: [`docs/aws-quick-reference.md`](docs/aws-quick-reference.md)
+For AWS deployment details, see the AWS README:
 - **Technical Details**: [`aws/README.md`](aws/README.md)
+
+Note: Detailed AWS deployment guides have been moved to the archived code folder.
 
 ### Alternative Deployment Options
 
@@ -776,7 +779,7 @@ docker stack deploy -c docker/docker-compose.swarm.yml deckchatbot
 | Render.com | Free | 5 minutes | Low | None |
 | Self-Hosted | $5-20 | 45 minutes | Medium | Medium |
 
-**📋 Complete Cost Comparison**: See [`docs/cost-effective-deployment-alternatives.md`](docs/cost-effective-deployment-alternatives.md) for detailed comparison of all hosting options.
+**📋 Cost Comparison**: The table above provides a basic comparison of deployment options. Detailed cost comparison documentation has been moved to the archived code folder.
 
 ## AI Enhancements Setup
 
