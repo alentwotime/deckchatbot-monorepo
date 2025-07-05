@@ -64,6 +64,18 @@ If Docker Compose gets stuck on "Network docker_decknet Creating" for an extende
    docker compose -f docker-compose-simple.yml up --build
    ```
 
+4. Test your subnet configuration:
+   ```powershell
+   .\test-subnet-config.ps1
+   ```
+   This script tests if the subnet 192.168.65.0/24 is correctly configured and if there are any conflicts.
+
+5. Check the subnet configuration guide:
+   ```powershell
+   notepad SUBNET_CONFIGURATION.md
+   ```
+   This guide explains the trade-offs between using a custom subnet (192.168.65.0/24) and default Docker networking.
+
 ### Port Conflicts
 
 If you see errors about ports already being in use:
