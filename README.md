@@ -913,6 +913,29 @@ These scripts create an optimized `daemon.json` file with:
 
 For detailed documentation, see [Docker Daemon Configuration Guide](docs/docker-daemon-configuration.md).
 
+#### Disk Space Issues
+
+**Issue**: Deployment fails with "No space left on device" errors
+```
+Symptoms: Package installation fails, Docker build fails, apt update/upgrade errors
+```
+
+**Solution**: Use our enhanced disk space management features
+1. Run the cleanup-only mode to free up disk space:
+   ```bash
+   # Run with sudo
+   sudo ./scripts/deploy-azure.sh --cleanup
+   ```
+
+2. Check current disk usage:
+   ```bash
+   df -h
+   ```
+
+3. For persistent disk space issues, consider expanding your VM's disk size in the Azure portal.
+
+The deployment script now includes automatic disk space checks and cleanup operations to prevent failures due to insufficient disk space. For detailed documentation, see [Disk Space Management Guide](docs/disk-space-management.md).
+
 #### Node.js and Python Issues
 
 **Issue**: Node.js version incompatibility
