@@ -40,11 +40,13 @@ FROM python:3.11-slim AS production
 
 WORKDIR /app
 
-# Install runtime dependencies (OCR tools needed for production)
+# Install runtime dependencies (OCR tools and audio processing tools needed for production)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
-    tesseract-ocr && \
+    tesseract-ocr \
+    ffmpeg \
+    libsndfile1 && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -71,6 +73,19 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages/numpy /usr/local/lib
 COPY --from=builder /usr/local/lib/python3.11/site-packages/tqdm /usr/local/lib/python3.11/site-packages/tqdm
 COPY --from=builder /usr/local/lib/python3.11/site-packages/chromadb /usr/local/lib/python3.11/site-packages/chromadb
 COPY --from=builder /usr/local/lib/python3.11/site-packages/sentence_transformers /usr/local/lib/python3.11/site-packages/sentence_transformers
+# Copy whisper and soundfile packages for speech recognition
+COPY --from=builder /usr/local/lib/python3.11/site-packages/whisper /usr/local/lib/python3.11/site-packages/whisper
+COPY --from=builder /usr/local/lib/python3.11/site-packages/soundfile /usr/local/lib/python3.11/site-packages/soundfile
+# Copy torch and related dependencies for whisper
+COPY --from=builder /usr/local/lib/python3.11/site-packages/torch /usr/local/lib/python3.11/site-packages/torch
+COPY --from=builder /usr/local/lib/python3.11/site-packages/transformers /usr/local/lib/python3.11/site-packages/transformers
+COPY --from=builder /usr/local/lib/python3.11/site-packages/tokenizers /usr/local/lib/python3.11/site-packages/tokenizers
+COPY --from=builder /usr/local/lib/python3.11/site-packages/huggingface_hub /usr/local/lib/python3.11/site-packages/huggingface_hub
+COPY --from=builder /usr/local/lib/python3.11/site-packages/filelock* /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/lib/python3.11/site-packages/regex* /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/lib/python3.11/site-packages/requests* /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/lib/python3.11/site-packages/packaging* /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/lib/python3.11/site-packages/safetensors* /usr/local/lib/python3.11/site-packages/
 # Copy additional dependencies that might be required
 COPY --from=builder /usr/local/lib/python3.11/site-packages/typing_extensions* /usr/local/lib/python3.11/site-packages/
 COPY --from=builder /usr/local/lib/python3.11/site-packages/python_multipart /usr/local/lib/python3.11/site-packages/python_multipart
@@ -96,7 +111,10 @@ RUN chmod +x /app/entrypoint.sh
 
 # Create and set permissions for home directory
 RUN mkdir -p /home/appuser && \
-    chown -R appuser:appuser /home/appuser
+    chown -R appuser:appuser /home/appuser && \
+    # Ensure whisper is installed correctly
+    pip install --no-cache-dir openai-whisper==20231117 && \
+    chmod -R 755 /usr/local/lib/python3.11/site-packages
 
 # Switch to non-root user
 USER appuser
