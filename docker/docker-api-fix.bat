@@ -8,6 +8,9 @@ echo.
 echo You can now use Docker commands normally.
 echo To make these settings permanent, add them to your system environment variables.
 echo.
-echo Running docker-compose with the fixed API version...
+echo Setting Docker context to default...
+docker context use default
+echo.
+echo Running docker-compose with the simplified configuration...
 cd %~dp0
-docker-compose up --build -d
+docker-compose -f docker-compose-simple.yml up --build -d

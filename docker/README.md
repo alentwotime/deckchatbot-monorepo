@@ -21,7 +21,8 @@ Run the provided batch file to set the correct Docker API version and start the 
 This script will:
 1. Set the Docker API version to 1.41 (a compatible version)
 2. Enable Docker CLI experimental features
-3. Run docker-compose with the fixed configuration
+3. Set the Docker context to default
+4. Run docker-compose with the simplified configuration (docker-compose-simple.yml)
 
 ## Manual Fix
 
@@ -32,9 +33,14 @@ If you prefer to fix the issue manually:
    $env:DOCKER_API_VERSION="1.41"
    ```
 
-2. Run docker-compose:
+2. Set the Docker context to default:
    ```powershell
-   docker-compose up --build -d
+   docker context use default
+   ```
+
+3. Run docker-compose with the simplified configuration:
+   ```powershell
+   docker-compose -f docker-compose-simple.yml up --build -d
    ```
 
 ## Permanent Fix
@@ -53,6 +59,8 @@ The following changes were made to fix the issue:
 1. Added version specification to docker-compose.yml (version: '3.8')
 2. Removed custom subnet configuration that was causing issues
 3. Created a batch file to set the DOCKER_API_VERSION environment variable
+4. Updated the batch file to set the Docker context to default
+5. Modified the batch file to use the simplified docker-compose configuration (docker-compose-simple.yml) to avoid image reference issues
 
 ## Additional Resources
 
