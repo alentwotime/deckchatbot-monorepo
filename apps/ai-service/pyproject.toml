@@ -19,6 +19,7 @@ numpy = "^1.26.4"
 tqdm = "^4.66.4"
 pytesseract = "^0.3.10"
 chromadb = "^0.4.22"
+sentence-transformers = "^2.2.2"
 
 [build-system]
 requires = ["poetry-core"]
