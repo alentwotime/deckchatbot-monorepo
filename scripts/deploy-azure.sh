@@ -149,7 +149,8 @@ if [ ! -f .env ]; then
         cat > .env << EOF
 REACT_APP_API_BASE_URL=http://localhost:8000
 AI_SERVICE_URL=http://localhost:8001
-HF_API_TOKEN=
+HF_API_TOKEN=${HF_API_TOKEN}
+HUGGING_FACE_API_KEY=${HUGGING_FACE_API_KEY}
 AZURE_SUBSCRIPTION=Azure subscription 1
 AZURE_RESOURCE_GROUP=deckchatbot-rg
 AZURE_VM_NAME=deckchatbot-vm

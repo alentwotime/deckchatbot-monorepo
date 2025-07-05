@@ -64,6 +64,12 @@ ENV PYTHONPATH="/app"
 COPY --chown=appuser:appuser apps/ai-service/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
+# Configure Poetry to not create virtualenvs
+RUN mkdir -p /home/appuser/.config/pypoetry && \
+    echo '[virtualenvs]' > /home/appuser/.config/pypoetry/config.toml && \
+    echo 'create = false' >> /home/appuser/.config/pypoetry/config.toml && \
+    chown -R appuser:appuser /home/appuser
+
 # Switch to non-root user
 USER appuser
 
