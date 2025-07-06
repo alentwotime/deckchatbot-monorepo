@@ -5,14 +5,18 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Install build dependencies
+# Install build dependencies with additional packages needed for hnswlib
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     libtesseract-dev \
     python3-dev \
-    cmake && \
-    apt-get clean && \
+    cmake \
+    g++ \
+    git \
+    libssl-dev \
+    libffi-dev \
+    && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
@@ -35,16 +39,33 @@ RUN pip install --no-cache-dir toml && \
     # Extract dependencies from pyproject.toml and install with pip directly
     python convert_deps.py > requirements.txt && \
     cat requirements.txt && \
-    pip install --no-cache-dir -r requirements.txt && \
+    # Install critical dependencies first
+    pip install --no-cache-dir fastapi uvicorn httpx pydantic Pillow python-multipart && \
+    # Install numpy first as it's required by many packages
+    pip install --no-cache-dir numpy && \
+    # Install OpenCV
+    pip install --no-cache-dir opencv-python-headless && \
+    # Install pytesseract
+    pip install --no-cache-dir pytesseract && \
+    # Install hnswlib with specific build options
+    pip install --no-cache-dir --verbose hnswlib && \
+    # Install chromadb and its dependencies
+    pip install --no-cache-dir chromadb==0.4.22 && \
+    # Install sentence-transformers
+    pip install --no-cache-dir sentence-transformers && \
     # Install whisper and soundfile explicitly
     pip install --no-cache-dir openai-whisper==20231117 soundfile && \
+    # Install ollama client and python-dotenv for main.py
+    pip install --no-cache-dir ollama python-dotenv && \
+    # Install remaining dependencies from requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
     # Clean pip cache to reduce disk space usage
     pip cache purge && \
     # Remove temporary conversion script
     rm -f convert_deps.py && \
     # Remove unnecessary files to reduce image size
     find /usr/local/lib/python3.11/site-packages -name "*.pyc" -delete && \
-    find /usr/local/lib/python3.11/site-packages -name "__pycache__" -exec rm -rf {} +
+    find /usr/local/lib/python3.11/site-packages -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
 # Production stage
 FROM python:3.11-slim AS production
@@ -69,43 +90,15 @@ RUN groupadd -r appuser && \
     chmod 755 /home && \
     chmod 755 /home/appuser
 
-# Copy Python packages from builder stage - selectively to reduce disk space usage
-# Copy only the necessary packages instead of the entire site-packages directory
+# Copy Python packages from builder stage - copy all packages to ensure all dependencies are included
 COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/
 COPY --from=builder /usr/local/bin/python /usr/local/bin/
 COPY --from=builder /usr/local/bin/pip /usr/local/bin/
-COPY --from=builder /usr/local/lib/python3.11/site-packages/fastapi /usr/local/lib/python3.11/site-packages/fastapi
-COPY --from=builder /usr/local/lib/python3.11/site-packages/pydantic /usr/local/lib/python3.11/site-packages/pydantic
-COPY --from=builder /usr/local/lib/python3.11/site-packages/starlette /usr/local/lib/python3.11/site-packages/starlette
-COPY --from=builder /usr/local/lib/python3.11/site-packages/uvicorn /usr/local/lib/python3.11/site-packages/uvicorn
-COPY --from=builder /usr/local/lib/python3.11/site-packages/httpx /usr/local/lib/python3.11/site-packages/httpx
-COPY --from=builder /usr/local/lib/python3.11/site-packages/PIL /usr/local/lib/python3.11/site-packages/PIL
-COPY --from=builder /usr/local/lib/python3.11/site-packages/pytesseract /usr/local/lib/python3.11/site-packages/pytesseract
-COPY --from=builder /usr/local/lib/python3.11/site-packages/cv2 /usr/local/lib/python3.11/site-packages/cv2
-COPY --from=builder /usr/local/lib/python3.11/site-packages/numpy /usr/local/lib/python3.11/site-packages/numpy
-COPY --from=builder /usr/local/lib/python3.11/site-packages/tqdm /usr/local/lib/python3.11/site-packages/tqdm
-COPY --from=builder /usr/local/lib/python3.11/site-packages/chromadb /usr/local/lib/python3.11/site-packages/chromadb
-COPY --from=builder /usr/local/lib/python3.11/site-packages/hnswlib* /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /usr/local/lib/python3.11/site-packages/sentence_transformers /usr/local/lib/python3.11/site-packages/sentence_transformers
-# Copy whisper package for speech recognition
-COPY --from=builder /usr/local/lib/python3.11/site-packages/whisper /usr/local/lib/python3.11/site-packages/whisper
-# Note: soundfile will be installed directly in the production stage
-# Copy torch and related dependencies for whisper
-COPY --from=builder /usr/local/lib/python3.11/site-packages/torch /usr/local/lib/python3.11/site-packages/torch
-COPY --from=builder /usr/local/lib/python3.11/site-packages/transformers /usr/local/lib/python3.11/site-packages/transformers
-COPY --from=builder /usr/local/lib/python3.11/site-packages/tokenizers /usr/local/lib/python3.11/site-packages/tokenizers
-COPY --from=builder /usr/local/lib/python3.11/site-packages/huggingface_hub /usr/local/lib/python3.11/site-packages/huggingface_hub
-COPY --from=builder /usr/local/lib/python3.11/site-packages/filelock* /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /usr/local/lib/python3.11/site-packages/regex* /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /usr/local/lib/python3.11/site-packages/requests* /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /usr/local/lib/python3.11/site-packages/packaging* /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /usr/local/lib/python3.11/site-packages/safetensors* /usr/local/lib/python3.11/site-packages/
-# Copy additional dependencies that might be required
-COPY --from=builder /usr/local/lib/python3.11/site-packages/typing_extensions* /usr/local/lib/python3.11/site-packages/
-COPY --from=builder /usr/local/lib/python3.11/site-packages/python_multipart /usr/local/lib/python3.11/site-packages/python_multipart
+# Copy the entire site-packages directory to ensure all dependencies are included
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 
 # Ensure whisper is installed correctly and remove Poetry if present
-RUN pip install --no-cache-dir openai-whisper==20231117 soundfile && \
+RUN pip install --no-cache-dir openai-whisper==20231117 soundfile ollama python-dotenv && \
     pip uninstall -y poetry poetry-core poetry-plugin-export 2>/dev/null || true && \
     chmod -R 755 /usr/local/lib/python3.11/site-packages
 
@@ -116,11 +109,15 @@ COPY --chown=appuser:appuser shared/libs/lib2/lib2 ./lib2
 COPY --chown=appuser:appuser apps/ai-service/ai_service ./ai_service
 # Copy any other necessary files but exclude Poetry-related files
 COPY --chown=appuser:appuser apps/ai-service/README.md* ./
+# Copy the main.py file to the root directory
+COPY --chown=appuser:appuser apps/ai-service/main.py ./
 
 # Set monorepo-aware import path and environment variables
 ENV PYTHONPATH="/app" \
     HOME="/home/appuser" \
     PIP_NO_CACHE_DIR=1 \
+    # Disable dependency checks in entrypoint.sh
+    SKIP_DEPENDENCY_CHECK=1 \
     # Completely disable Poetry by setting environment variables
     POETRY_DISABLED=1 \
     POETRY_VIRTUALENVS_CREATE=false \

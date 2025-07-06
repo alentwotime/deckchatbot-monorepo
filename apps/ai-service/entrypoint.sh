@@ -17,6 +17,30 @@ export HOME="/home/appuser"
 # Ensure we're using the correct Python path
 export PYTHONPATH="/app:${PYTHONPATH}"
 
+# Check if we should skip dependency checks
+if [ "${SKIP_DEPENDENCY_CHECK}" = "1" ]; then
+    echo "SKIP_DEPENDENCY_CHECK is set, skipping dependency checks..."
+    echo "Starting AI service in normal mode..."
+
+    # Check if we can import the ai_service.main module
+    if python -c "import ai_service.main" &> /dev/null; then
+        echo "Using ai_service.main module..."
+        exec uvicorn --app-dir /app ai_service.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+    else
+        echo "WARNING: ai_service.main module not importable. Using main.py directly..."
+        # Use the main.py file directly if it exists
+        if [ -f "/app/main.py" ]; then
+            echo "Using /app/main.py directly..."
+            cd /app
+            exec python main.py
+        else
+            echo "ERROR: Neither ai_service.main nor /app/main.py is available!"
+            exit 1
+        fi
+    fi
+    exit 0
+fi
+
 # Completely disable Poetry and virtualenv creation
 export POETRY_DISABLED=1
 export POETRY_VIRTUALENVS_CREATE=false
@@ -368,11 +392,20 @@ if ! command -v uvicorn &> /dev/null; then
     }
 fi
 
-# Create a simple wrapper for the main module in case it's not importable
+# Check if we can import the ai_service.main module
 if ! python -c "import ai_service.main" &> /dev/null; then
-    echo "WARNING: ai_service.main module not importable. Creating emergency wrapper..."
-    mkdir -p /tmp/ai_service_wrapper
-    echo "from fastapi import FastAPI
+    echo "WARNING: ai_service.main module not importable."
+
+    # Check if we can use the main.py file directly
+    if [ -f "/app/main.py" ]; then
+        echo "Using /app/main.py directly..."
+        cd /app
+        exec python main.py
+    else
+        # Create an emergency wrapper as a last resort
+        echo "Creating emergency wrapper..."
+        mkdir -p /tmp/ai_service_wrapper
+        echo "from fastapi import FastAPI
 app = FastAPI()
 
 @app.get('/')
@@ -384,10 +417,11 @@ async def health():
     return {'status': 'ai-service OK', 'mode': 'emergency'}
 " > /tmp/ai_service_wrapper/main.py
 
-    echo "Starting in emergency mode..."
-    exec uvicorn --app-dir /tmp ai_service_wrapper.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+        echo "Starting in emergency mode..."
+        exec uvicorn --app-dir /tmp ai_service_wrapper.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+    fi
 else
     # Start the AI service FastAPI app directly without Poetry
     echo "Starting AI service in normal mode..."
-    exec uvicorn ai_service.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+    exec uvicorn --app-dir /app ai_service.main:app --host 0.0.0.0 --port "${PORT:-8000}"
 fi

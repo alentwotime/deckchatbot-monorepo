@@ -18,7 +18,7 @@ RUN apt-get update && \
 COPY apps/backend/package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy application code
 COPY apps/backend/ ./
