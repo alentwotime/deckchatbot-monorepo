@@ -61,27 +61,21 @@ RUN apk update && \
     # Clean up
     rm -rf /var/cache/apk/*
 
-# Create non-root user for nginx
-RUN addgroup -g 1001 -S nginx-user && \
-    adduser -S nginx-user -u 1001 -G nginx-user
+# Create directory for nginx pid file with proper permissions
+RUN mkdir -p /run && chown -R nginx:nginx /run
 
 # Remove default nginx content
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy built application from builder stage
-COPY --from=builder --chown=nginx-user:nginx-user /app/apps/frontend/dist /usr/share/nginx/html
+COPY --from=builder --chown=nginx:nginx /app/apps/frontend/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY apps/frontend/nginx.conf /etc/nginx/nginx.conf
 
-# Update nginx configuration to run as non-root user
-RUN sed -i 's/user nginx;/user nginx-user;/' /etc/nginx/nginx.conf && \
-    # Set PID file to a writable location
-    sed -i 's|pid.*|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf && \
-    # Create necessary directories with proper permissions
-    mkdir -p /var/cache/nginx/client_temp /var/cache/nginx/proxy_temp /var/cache/nginx/fastcgi_temp /var/cache/nginx/uwsgi_temp /var/cache/nginx/scgi_temp /var/log/nginx /var/run /run/nginx && \
-    chown -R nginx-user:nginx-user /var/cache/nginx /var/log/nginx /var/run /run/nginx /usr/share/nginx/html && \
-    chmod -R 755 /var/cache/nginx /run/nginx
+# Create necessary directories with proper permissions
+RUN mkdir -p /var/cache/nginx /var/log/nginx /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp /tmp/nginx && \
+    chown -R nginx:nginx /var/cache/nginx /var/log/nginx /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp /tmp/nginx /usr/share/nginx/html
 
 # Security best practices
 RUN # Remove unnecessary packages and files \
@@ -93,10 +87,10 @@ RUN # Remove unnecessary packages and files \
 
 # Health check configuration
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:80/ || exit 1
+    CMD curl -f http://localhost:80/health || exit 1
 
-# Switch to non-root user
-USER nginx-user
+# Switch to nginx user for security
+USER nginx
 
 EXPOSE 80
 

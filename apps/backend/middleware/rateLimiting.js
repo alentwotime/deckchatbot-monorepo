@@ -54,9 +54,11 @@ export const dbLimiter = rateLimit({
 // Speed limiter for heavy operations (slows down instead of blocking)
 export const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  delayAfter: 10, // Allow 10 requests per windowMs without delay
-  delayMs: () => 500, // Add 500ms delay per request after delayAfter (using function syntax)
-  maxDelayMs: 5000, // Maximum delay of 5 seconds
+  delayAfter: 30, // Allow 30 requests per windowMs without delay (increased from 10)
+  delayMs: () => 500, // Fixed 500ms delay per request after delayAfter
+  validate: { delayMs: false }, // Disable validation warning
+  maxDelayMs: 2000, // Maximum delay of 2 seconds (reduced from 5 seconds)
+  skip: (req) => req.path === '/health', // Skip health check endpoint
 });
 
 // Custom rate limiter with Redis backend for distributed systems

@@ -3,18 +3,18 @@ services:
     build:
       context: ..
       dockerfile: ./apps/frontend/Dockerfile
-    container_name: docker-frontend-1
     ports:
-      - "80:80"
+      - "3000:80"
     restart: unless-stopped
     depends_on:
       backend:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost" ]
       interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 10s
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -25,13 +25,11 @@ services:
       - no-new-privileges:true
     read_only: true
     tmpfs:
-      - /var/cache/nginx:exec,nosuid,size=100m
-      - /var/cache/nginx/client_temp:exec,nosuid,size=20m
-      - /var/cache/nginx/proxy_temp:exec,nosuid,size=20m
-      - /var/cache/nginx/fastcgi_temp:exec,nosuid,size=20m
-      - /var/cache/nginx/uwsgi_temp:exec,nosuid,size=20m
-      - /var/cache/nginx/scgi_temp:exec,nosuid,size=20m
-      - /var/run:exec,nosuid,size=100m
+      - /var/cache/nginx:noexec,nosuid,size=100m
+      - /var/run:noexec,nosuid,size=100m
+      - /tmp/nginx:exec,size=10m
+    volumes:
+      - nginx_logs:/var/log/nginx
     deploy:
       resources:
         limits:
@@ -45,35 +43,30 @@ services:
     build:
       context: ..
       dockerfile: ./apps/backend/Dockerfile
-    container_name: docker-backend-1
     env_file:
       - ../.env
-      - ../.env.docker
     environment:
       - AI_SERVICE_URL=http://ai-service:8000
       - AI_PROVIDER=${AI_PROVIDER:-openai}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-openai-key}
       - OPENAI_ADMIN_API_KEY=${OPENAI_ADMIN_API_KEY:-dummy-admin-key}
       - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-llava-deckbot}
-      - NODE_ENV=development
-      - SESSION_SECRET=docker-dev-session-secret
-      - JWT_SECRET=docker-dev-jwt-secret
-      - ENCRYPTION_KEY=docker-dev-encryption-key-32chars
-      - DATABASE_URL=sqlite:///./docker.db
-      - PORT=3000
+      - NODE_ENV=production
+      - SESSION_SECRET=${SESSION_SECRET:-change-me-in-production}
+      - FRONTEND_URL=http://frontend
     ports:
-      - "3000:3000"
+      - "8000:8000"
     restart: unless-stopped
     depends_on:
       ai-service:
         condition: service_healthy
     entrypoint: /app/entrypoint.sh
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 5
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -86,6 +79,9 @@ services:
       - ALL
     cap_add:
       - NET_BIND_SERVICE
+    volumes:
+      - backend_logs:/app/logs
+      - backend_uploads:/app/uploads
     deploy:
       resources:
         limits:
@@ -99,31 +95,23 @@ services:
     build:
       context: ..
       dockerfile: ./apps/ai-service/Dockerfile
-    container_name: docker-ai-service-1
     env_file:
       - ../.env
-      - ../.env.docker
     environment:
-      - AI_PROVIDER=ocr
-      - PORT=8000
-      - SKIP_DEPENDENCY_CHECK=1
       - HF_API_TOKEN=${HF_API_TOKEN:-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}
       - OPENAI_API_KEY=${OPENAI_API_KEY:-dummy-openai-key}
       - OPENAI_ADMIN_API_KEY=${OPENAI_ADMIN_API_KEY:-dummy-admin-key}
-      - SESSION_SECRET=${SESSION_SECRET:-docker-dev-session-secret}
-      - JWT_SECRET=${JWT_SECRET:-docker-dev-jwt-secret}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-docker-dev-encryption-key-32chars}
-      - DATABASE_URL=${DATABASE_URL:-sqlite:///./docker.db}
-      - AZURE_AI_KEY=${AZURE_AI_KEY:-dummy-azure-ai-key-for-docker-dev}
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
     ports:
-      - "8000:8000"
+      - "8001:8000"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 30s
-      timeout: 15s
-      retries: 5
-      start_period: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -136,6 +124,9 @@ services:
       - ALL
     cap_add:
       - NET_BIND_SERVICE
+    volumes:
+      - ai_service_data:/app/data
+      - ai_service_logs:/app/logs
     deploy:
       resources:
         limits:
@@ -148,8 +139,19 @@ services:
 networks:
   decknet:
     driver: bridge
-    name: deckbot-network
     # Removed custom subnet configuration that was causing issues
     driver_opts:
       com.docker.network.bridge.name: decknet
       com.docker.network.driver.mtu: 1500
+
+volumes:
+  nginx_logs:
+    driver: local
+  backend_logs:
+    driver: local
+  backend_uploads:
+    driver: local
+  ai_service_data:
+    driver: local
+  ai_service_logs:
+    driver: local
