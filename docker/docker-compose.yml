@@ -24,8 +24,13 @@ services:
       - no-new-privileges:true
     read_only: true
     tmpfs:
-      - /var/cache/nginx:noexec,nosuid,size=100m
-      - /var/run:noexec,nosuid,size=100m
+      - /var/cache/nginx:exec,nosuid,size=100m
+      - /var/cache/nginx/client_temp:exec,nosuid,size=20m
+      - /var/cache/nginx/proxy_temp:exec,nosuid,size=20m
+      - /var/cache/nginx/fastcgi_temp:exec,nosuid,size=20m
+      - /var/cache/nginx/uwsgi_temp:exec,nosuid,size=20m
+      - /var/cache/nginx/scgi_temp:exec,nosuid,size=20m
+      - /var/run:exec,nosuid,size=100m
     deploy:
       resources:
         limits:
