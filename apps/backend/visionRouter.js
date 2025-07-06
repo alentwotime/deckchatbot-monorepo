@@ -105,7 +105,7 @@ router.post('/analyze', uploadLimiter, upload.single('image'), async (req, res) 
       });
     }
 
-    console.log(`🤖 Cache miss - making AI request to ${OLLAMA_BASE_URL}`);
+    console.log(`🤖 Cache miss - making AI request to ${AI_SERVICE_URL}`);
 
     // Make AI request with retry logic
     const aiResult = await makeAIRequest(imagePath, prompt);
