@@ -36,7 +36,8 @@
     "axios": "^1.6.7",
     "pg": "^8.11.3",
     "redis": "^4.6.13",
-    "node-cache": "^5.1.2"
+    "node-cache": "^5.1.2",
+    "isomorphic-dompurify": "^2.25.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
