@@ -1,0 +1,80 @@
+# Fixed Docker Compose Configuration
+# Addresses service dependencies and health checks
+
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: docker-backend-1
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - ../backend:/app
+      - /app/node_modules
+    networks:
+      - app-network
+    # Health check for backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: docker-frontend-1
+    ports:
+      - "80:80"
+    # Wait for backend to be healthy before starting
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - app-network
+    # Health check for frontend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  ai-service:
+    build:
+      context: ../ai-service
+      dockerfile: Dockerfile
+    container_name: docker-ai-service-1
+    ports:
+      - "8000:8000"
+    environment:
+      - SKIP_DEPENDENCY_CHECK=true
+    networks:
+      - app-network
+    # Health check for ai-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
+    name: deckbot-network
+
+volumes:
+  backend_node_modules:
+    name: backend_node_modules
