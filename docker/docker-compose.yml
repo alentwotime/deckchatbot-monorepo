@@ -3,14 +3,15 @@ services:
     build:
       context: ..
       dockerfile: ./apps/frontend/Dockerfile
+    container_name: docker-frontend-1
     ports:
-      - "3000:80"
+      - "80:80"
     restart: unless-stopped
     depends_on:
       backend:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost" ]
+      test: [ "CMD", "curl", "-f", "http://localhost/health" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -44,6 +45,7 @@ services:
     build:
       context: ..
       dockerfile: ./apps/backend/Dockerfile
+    container_name: docker-backend-1
     env_file:
       - ../.env
       - ../.env.docker
@@ -58,15 +60,16 @@ services:
       - JWT_SECRET=docker-dev-jwt-secret
       - ENCRYPTION_KEY=docker-dev-encryption-key-32chars
       - DATABASE_URL=sqlite:///./docker.db
+      - PORT=3000
     ports:
-      - "8000:8000"
+      - "3000:3000"
     restart: unless-stopped
     depends_on:
       ai-service:
         condition: service_healthy
     entrypoint: /app/entrypoint.sh
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -96,6 +99,7 @@ services:
     build:
       context: ..
       dockerfile: ./apps/ai-service/Dockerfile
+    container_name: docker-ai-service-1
     env_file:
       - ../.env
       - ../.env.docker
@@ -112,7 +116,7 @@ services:
       - DATABASE_URL=${DATABASE_URL:-sqlite:///./docker.db}
       - AZURE_AI_KEY=${AZURE_AI_KEY:-dummy-azure-ai-key-for-docker-dev}
     ports:
-      - "8001:8000"
+      - "8000:8000"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
@@ -144,6 +148,7 @@ services:
 networks:
   decknet:
     driver: bridge
+    name: deckbot-network
     # Removed custom subnet configuration that was causing issues
     driver_opts:
       com.docker.network.bridge.name: decknet
