@@ -2,6 +2,8 @@
 
 Welcome to DeckChatbot, a smart, single-page application designed to streamline the deck design and quoting process for sales professionals. By leveraging AI and Azure cloud services, this tool assists in converting customer sketches into interactive 2D blueprints and 3D models, calculating materials, and providing real-time guidance.
 
+> **Note**: This repository is configured with automatic git push. All commits are automatically pushed to the remote repository.
+
 ## Table of Contents
 
 1. [Project Overview](#project-overview)

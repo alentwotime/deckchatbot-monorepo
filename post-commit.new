@@ -1,0 +1,23 @@
+#!/bin/sh
+# Post-commit hook to automatically push changes to the remote repository
+# This ensures that changes are always pushed through git
+
+# Get the current branch name
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Push changes to the remote repository
+echo "Automatically pushing changes to remote repository..."
+git push origin $BRANCH
+
+# Check if push was successful
+PUSH_STATUS=$?
+if [ $PUSH_STATUS -ne 0 ]; then
+    echo "Warning: Automatic push failed. You may need to push manually."
+    echo "Use 'git push origin $BRANCH' to push your changes."
+    echo "If you're having authentication issues, run:"
+    echo "  git credential-manager get"
+    echo "to verify your credentials are properly stored."
+fi
+
+# Exit with the status of the push command
+exit $PUSH_STATUS
