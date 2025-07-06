@@ -76,6 +76,8 @@ COPY apps/frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Update nginx configuration to run as non-root user
 RUN sed -i 's/user nginx;/user nginx-user;/' /etc/nginx/nginx.conf && \
+    # Set PID file to a writable location
+    sed -i 's|pid.*|pid /tmp/nginx.pid;|' /etc/nginx/nginx.conf && \
     # Create necessary directories with proper permissions
     mkdir -p /var/cache/nginx/client_temp /var/cache/nginx/proxy_temp /var/cache/nginx/fastcgi_temp /var/cache/nginx/uwsgi_temp /var/cache/nginx/scgi_temp /var/log/nginx /var/run && \
     chown -R nginx-user:nginx-user /var/cache/nginx /var/log/nginx /var/run /usr/share/nginx/html && \

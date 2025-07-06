@@ -55,7 +55,7 @@ export const dbLimiter = rateLimit({
 export const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
   delayAfter: 10, // Allow 10 requests per windowMs without delay
-  delayMs: 500, // Add 500ms delay per request after delayAfter
+  delayMs: () => 500, // Add 500ms delay per request after delayAfter (using function syntax)
   maxDelayMs: 5000, // Maximum delay of 5 seconds
 });
 
@@ -78,22 +78,22 @@ export const createCustomLimiter = (options = {}) => {
     try {
       // Get current request count from cache
       const requests = await cacheService.get(key) || [];
-      
+
       // Filter out old requests outside the window
       const validRequests = requests.filter(timestamp => timestamp > windowStart);
-      
+
       // Check if limit exceeded
       if (validRequests.length >= max) {
         const oldestRequest = Math.min(...validRequests);
         const retryAfter = Math.ceil((oldestRequest + windowMs - now) / 1000);
-        
+
         res.set({
           'RateLimit-Limit': max,
           'RateLimit-Remaining': 0,
           'RateLimit-Reset': new Date(oldestRequest + windowMs).toISOString(),
           'Retry-After': retryAfter
         });
-        
+
         return res.status(429).json({
           error: message,
           retryAfter: `${retryAfter} seconds`
@@ -102,10 +102,10 @@ export const createCustomLimiter = (options = {}) => {
 
       // Add current request timestamp
       validRequests.push(now);
-      
+
       // Store updated request list
       await cacheService.set(key, validRequests, Math.ceil(windowMs / 1000));
-      
+
       // Set rate limit headers
       res.set({
         'RateLimit-Limit': max,
@@ -135,9 +135,9 @@ export const adaptiveLimiter = (baseOptions = {}) => {
       // Get current server load (simplified - in production, use actual metrics)
       const memUsage = process.memoryUsage();
       const loadFactor = memUsage.heapUsed / memUsage.heapTotal;
-      
+
       let adjustedMax = baseMax;
-      
+
       if (loadFactor > loadThresholds.high) {
         adjustedMax = Math.floor(baseMax * 0.3); // Reduce to 30% under high load
       } else if (loadFactor > loadThresholds.medium) {
@@ -170,7 +170,7 @@ export const createUserBasedLimiter = (getUserLimits) => {
         ...userLimits,
         keyGenerator: (req) => `user:${req.user?.id || req.ip}`
       });
-      
+
       return limiter(req, res, next);
     } catch (error) {
       console.error('User-based rate limiting error:', error);
