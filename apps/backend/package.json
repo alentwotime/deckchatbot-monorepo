@@ -20,6 +20,8 @@
     "@azure/keyvault-secrets": "^4.8.0",
     "express": "^5.0.0",
     "express-session": "^1.18.0",
+    "express-rate-limit": "^7.1.5",
+    "express-slow-down": "^2.0.1",
     "socket.io": "^4.7.4",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
